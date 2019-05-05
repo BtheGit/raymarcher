@@ -134,7 +134,31 @@ class Screen {
     const gridUnit = GRID_UNIT;
     const mapWidthUnit = mapXRatio * GRID_UNIT;
     const mapHeightUnit = mapYRatio * GRID_UNIT;
-    // Render grid, scaled.
+
+    // Render grid lines
+    for (let i = 0; i <= WORLD_MAP[0].length; i++){
+      // VERTICAL
+      this.ctx.beginPath();
+      this.ctx.lineWidth = 1;
+      this.ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      this.ctx.moveTo(0 + (i * mapWidthUnit), 0);
+      this.ctx.lineTo(0 + (i * mapWidthUnit), mapHeight);
+      this.ctx.closePath();
+      this.ctx.stroke();
+    }
+    
+    for(let i = 0; i < WORLD_MAP.length; i++){
+      // HORIZONTAL
+      this.ctx.beginPath();
+      this.ctx.lineWidth = 1;
+      this.ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      this.ctx.moveTo(0, 0 + (i * mapHeightUnit));
+      this.ctx.lineTo(mapWidth, 0 + (i * mapHeightUnit));
+      this.ctx.closePath();
+      this.ctx.stroke();
+    }
+
+    // Render grid elements, scaled.
     for(let i = 0; i < world.length; i++){
       const rowOffset = i;
       const row = world[i];
