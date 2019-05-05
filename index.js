@@ -3,27 +3,34 @@
 
 // # Constants
 
-const WORLD_WIDTH = 1000;
-const WORLD_HEIGHT = 1000;
 const STARTING_POSX = 200;
 const STARTING_POSY = 200;
 const STARTING_DIR = 0; // Angle in degrees.
 const WALL_HEIGHT = 100;
 const VIEW_DISTANCE = 1000;
 const FRAMERATE = 1000 / 30;
-// Hard coded for now
-const WORLD = [
+const GRID_UNIT = 10;
+const PI2 = Math.PI * 2;
+// TODO: Hard coded for now
+const WORLD_MAP = [
   [1,1,1,1,1,1,1,1,1,1],
-  [1,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,1],
+  [1,1,1,0,0,0,0,0,0,1],
+  [1,1,1,0,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,1],
   [1,0,0,0,1,1,0,0,0,1],
   [1,0,0,0,1,1,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,1,0,1],
+  [1,0,0,0,0,0,0,1,0,1],
+  [1,0,0,0,0,0,0,1,0,1],
   [1,1,1,1,1,1,1,1,1,1],
 ];
+// TODO:
+const TEXTURES = {
+  1: 'indigo',
+}
+// TODO: World size will be dynamically determined based on the grid unit size and the world map dimensions.
+const WORLD_WIDTH = WORLD_MAP[0].length * GRID_UNIT;
+const WORLD_HEIGHT = WORLD_MAP.length * GRID_UNIT;
 
 // # Helper functions
 const radians = degrees => degrees * (Math.PI / 180);
@@ -70,8 +77,25 @@ class Screen {
     this.width = 0;
     this.height = 0;
     this.clear();
+    // When this is true, draw minimap overlay.
+    // Can have all conditional render options set as single object with getters/setters later. (HUD, etc)
+    this.isMapActive = false;
   }
 
+  // Getters/Setters
+  showMap(){
+    this.isMapActive = true;
+  }
+
+  hideMap(){
+    this.isMapActive = false;
+  }
+
+  toggleMap(){
+    this.isMapActive = !this.isMapActive;
+  }
+
+  // Display Helpers
   resizeCanvas(width, height) {
     this.canvas.width = this.width = width;
     this.canvas.height = this.height = height;
@@ -87,8 +111,83 @@ class Screen {
     this.ctx.fillRect(0,0, this.canvas.width, this.canvas.height);
   }
 
+  // Main draw functions
+  drawMapOverlay(){
+    // TODO: Lots of hardcoded stuff to make dynamic.
+    const emptyCellColor = 'rgba(5,5,5,0.3)';
+    // TODO: For simplicity's sake, we'll hard code the placement and size of the minimap for now at the top left.
+    // Probably would be nicer as a full screen overlay with transparency;
+    const mapLeft = 0;
+    const mapTop = 0;
+    const mapWidth = 200;
+    const mapHeight = 200;
+    const mapXRatio = mapWidth / WORLD_WIDTH;
+    const mapYRatio = mapHeight / WORLD_HEIGHT;
+    // Get player position and direction
+    const playerPos = new Vector(25, 55);
+    const playerDir = 0;
+    const playerSize = 5;
+    // Get current world map.
+    // This will be a class with useful methods... later
+    const world = WORLD_MAP;
+    const gridUnit = GRID_UNIT;
+    const mapWidthUnit = mapXRatio * GRID_UNIT;
+    const mapHeightUnit = mapYRatio * GRID_UNIT;
+    // Render grid, scaled.
+    for(let i = 0; i < world.length; i++){
+      const rowOffset = i;
+      const row = world[i];
+      for(let j = 0; j < row.length; j++){
+        const columnOffset = j;
+        const cell = row[j];
+        const textureId = cell; // In the future the cell will have more data so this will require extracing the data
+        const cellTexture = TEXTURES[textureId];
+        
+        // TODO: For simplicity's sake, we'll hard code the placement and size of the minimap for now at the top left.
+        const cellLeft = 0 + (rowOffset * mapWidthUnit);
+        const cellTop = 0 + (columnOffset * mapHeightUnit);
+        this.ctx.beginPath();
+        this.ctx.fillStyle = cellTexture ? cellTexture : emptyCellColor;
+        this.ctx.fillRect(cellLeft, cellTop, mapWidthUnit, mapHeightUnit);
+        this.ctx.closePath();
+      } 
+    }
+    // Render player and dir (use arrow or triangle)
+    const playerPosXOnMap = playerPos.x * mapXRatio;
+    const playerPosYOnMap = playerPos.y * mapYRatio;
+    this.ctx.beginPath();
+    this.ctx.fillStyle = 'red';
+    this.ctx.arc(playerPosXOnMap, playerPosYOnMap, playerSize, 0, PI2);
+    this.ctx.fill();
+
+    const lengthOfPlayerSight = playerSize * 3;
+    const playerViewDirX = (Math.cos(radians(playerDir)) * lengthOfPlayerSight) + playerPosXOnMap;
+    const playerViewDirY = (Math.sin(radians(playerDir)) * lengthOfPlayerSight) + playerPosYOnMap;
+    this.ctx.beginPath();
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeStyle = 'red';
+    this.ctx.moveTo(playerPosXOnMap, playerPosYOnMap);
+    this.ctx.lineTo(playerViewDirX, playerViewDirY);
+    this.ctx.stroke();
+  }
+
+  drawScreen(){
+
+  }
+
   draw() {
     this.clear();
+    this.drawScreen();
+    if(this.isMapActive){
+      this.drawMapOverlay();
+    }
+  }
+}
+
+class Player {
+  constructor(){
+    this.pos = new Vector();
+    this.dir = 0;
   }
 }
 
@@ -99,10 +198,14 @@ class Game {
     // Use one canvas but have display modes (or a map overlay when tabv is pressed).
     this.screen = new Screen('display-main');
     this.screen.resizeCanvas(1200,550);
+    this.player = new Player();
     // this.player = new Raycaster({pos: new Vector(STARTING_POSX, STARTING_POSY), dir: STARTING_DIR, map: this.map, pov: this.pov, world: this.walls });
 
     document.addEventListener('keydown', ({ key }) => {
       switch(key){
+        case '`':
+          this.screen.toggleMap();
+          break;
         case 'a':
           // this.player.rotate(-1);
           break;
@@ -117,6 +220,7 @@ class Game {
           break;
       }      
     })
+
   }
 
   start() {
@@ -143,7 +247,7 @@ class Game {
   }
 
   drawScreen(){
-
+    this.screen.draw();
   }
 
 }
