@@ -70,7 +70,7 @@ class Vector {
  * @param {string} id The DOM id of the canvas element this screen instance wraps.
  */
 class Screen {
-  constructor(id){
+  constructor(game, id){
     this.canvas = document.getElementById(id);
     this.ctx = this.canvas.getContext('2d');
     this.backgroundColor = 'black';
@@ -80,6 +80,7 @@ class Screen {
     // When this is true, draw minimap overlay.
     // Can have all conditional render options set as single object with getters/setters later. (HUD, etc)
     this.isMapActive = false;
+    this.game = game;
   }
 
   // Getters/Setters
@@ -124,8 +125,8 @@ class Screen {
     const mapXRatio = mapWidth / WORLD_WIDTH;
     const mapYRatio = mapHeight / WORLD_HEIGHT;
     // Get player position and direction
-    const playerPos = new Vector(25, 55);
-    const playerDir = 0;
+    const playerPos = this.game.player.pos;
+    const playerDir = this.game.player.dir;
     const playerSize = 5;
     // Get current world map.
     // This will be a class with useful methods... later
@@ -186,8 +187,26 @@ class Screen {
 
 class Player {
   constructor(){
-    this.pos = new Vector();
+    this.pos = new Vector(50,30);
     this.dir = 0;
+    this.walkSpeed = 2;
+    this.rotateSpeed = 10;
+  }
+
+  move({ x, y } = {}){
+    if(x != null) {
+      const newPosX = clamp(this.pos.x + (x * this.walkSpeed), 1, WORLD_WIDTH - 1); // The 1 offset is to prevent being in a boundary wall
+      this.pos.x = newPosX;
+    }
+    if(y != null) {
+      const newPosY = clamp(this.pos.y + (y * this.walkSpeed), 1, WORLD_HEIGHT - 1);
+      this.pos.y = newPosY;
+    }
+  }
+
+  rotate(rotation){
+    const newDir = this.dir + (rotation * this.rotateSpeed);
+    this.dir = newDir;
   }
 }
 
@@ -196,10 +215,9 @@ class Game {
     this.interval = FRAMERATE;
     this.animationFrame = null;
     // Use one canvas but have display modes (or a map overlay when tabv is pressed).
-    this.screen = new Screen('display-main');
+    this.screen = new Screen(this, 'display-main');
     this.screen.resizeCanvas(1200,550);
     this.player = new Player();
-    // this.player = new Raycaster({pos: new Vector(STARTING_POSX, STARTING_POSY), dir: STARTING_DIR, map: this.map, pov: this.pov, world: this.walls });
 
     document.addEventListener('keydown', ({ key }) => {
       switch(key){
@@ -207,16 +225,16 @@ class Game {
           this.screen.toggleMap();
           break;
         case 'a':
-          // this.player.rotate(-1);
+          this.player.rotate(-1);
           break;
         case 'd':
-          // this.player.rotate(1);
+          this.player.rotate(1);
           break;
         case 'w':
-          // this.player.move(getMovementDelta({ angle: this.player.dir }))
+          this.player.move(getMovementDelta({ angle: this.player.dir }))
           break;
         case 's':
-          // this.player.move(getMovementDelta({ angle: this.player.dir, forward: false }))
+          this.player.move(getMovementDelta({ angle: this.player.dir, forward: false }))
           break;
       }      
     })
