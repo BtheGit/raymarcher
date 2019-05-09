@@ -1,6 +1,8 @@
 // This will be for the most bare bones implementation and playing around.
 // If this goes on long enough, we'll modularize and add in a build system.
 
+// I'm mixing angles and radians. I should probably store the dir as radians to save recalculations.
+
 // # Constants
 
 const STARTING_POSX = 200;
@@ -33,13 +35,13 @@ const WORLD_WIDTH = WORLD_MAP[0].length * GRID_UNIT;
 const WORLD_HEIGHT = WORLD_MAP.length * GRID_UNIT;
 
 // # Helper functions
-const radians = degrees => degrees * (Math.PI / 180);
-const degrees = radians => radians / (Math.PI/ 180);
+const toRadians = degrees => degrees * (Math.PI / 180);
+const toDegrees = radians => radians / (Math.PI/ 180);
 const vectorDistance = (vector1, vector2) => Math.sqrt((vector1.x - vector2.x) ** 2 + (vector1.y - vector2.y) ** 2);
 const random = (upper = 100, lower = 0) => Math.max(Math.floor(Math.random() * (upper + 1)), lower);
 const clamp = (number, min, max) => Math.max(min, Math.min(number, max));
-const getMovementDelta = ({angle, forward = true, speed = 1 }) => {
-  const rads = radians(angle);
+const getMovementDelta = ({angle, forward = true, speed = .5 }) => {
+  const rads = toRadians(angle);
   const xDelta = Math.cos(rads) * speed;
   const yDelta = Math.sin(rads) * speed;
   const x = forward ? xDelta : -xDelta;
@@ -81,6 +83,8 @@ class Screen {
     // Can have all conditional render options set as single object with getters/setters later. (HUD, etc)
     this.isMapActive = false;
     this.game = game;
+    this.fov = 60;
+    this.drawDistance = 500;
   }
 
   // Getters/Setters
@@ -186,8 +190,8 @@ class Screen {
     this.ctx.fill();
 
     const lengthOfPlayerSight = playerSize * 3;
-    const playerViewDirX = (Math.cos(radians(playerDir)) * lengthOfPlayerSight) + playerPosXOnMap;
-    const playerViewDirY = (Math.sin(radians(playerDir)) * lengthOfPlayerSight) + playerPosYOnMap;
+    const playerViewDirX = (Math.cos(toRadians(playerDir)) * lengthOfPlayerSight) + playerPosXOnMap;
+    const playerViewDirY = (Math.sin(toRadians(playerDir)) * lengthOfPlayerSight) + playerPosYOnMap;
     this.ctx.beginPath();
     this.ctx.lineWidth = 2;
     this.ctx.strokeStyle = 'red';
@@ -197,6 +201,83 @@ class Screen {
   }
 
   drawScreen(){
+    // The idea here is to use ray marching to save intersection computations (in a small world this is more expensive than just calculating
+    // intersections with all objects, but in a massive world it's much cheaper (stable time in fact with a given limititation on drawdistance)).
+    // This is made possible because the walls are only drawn on grid vertices, which are at regular, predictable intervals.
+    // However, the player himself (and sprites later) will be at any valid vector (ie, not in a cell marked as a wall).
+    // So, before we start marching our rays up the gridlines, we first need to calculate the player's dx and dy relative to the closest grid 
+    // line in the player dir.
+
+    // const degrees = this.game.player.dir;
+    const degrees = 30;
+    const rads = toRadians(degrees);
+    const posX = this.game.player.pos.x;
+    const posY = this.game.player.pos.y;
+    
+    // Let's experiment with one ray.
+    // TODO: If we can't guarantee the rays direction are clamped, we should clamp the value here.
+    const cos = Math.cos(rads);
+    const sin = Math.sin(rads);
+    const slope = sin / cos; // Same as Math.tan(rads)
+    const gridUnit = GRID_UNIT;
+
+    // Values used for the initial calculation.
+    const offsetX = posX % gridUnit;
+    const offsetY = posY % gridUnit;
+
+
+
+    // There are a few things conditional on the direction we are facing.
+    // So we need to know:
+    // a) whether The slope is pointing in such a way that it will only intercept one axis (ie 0, 90, 180, 270)
+    // b) which quadrant the slope is in. (ie is it -dx -dy, dx dy, dx -dy, -dx dy)
+    // let dx, dy;
+    // let dirX, dirY;
+
+    // For one direction, the delta will be 1 or -1.
+    // The other direction it will be 
+    // if(degrees === 0){
+
+    // }
+    // else if(degrees === 90){
+
+    // }
+    // else if(degrees === 180){
+
+    // }
+    // else if(degrees === 270){
+
+    // }
+    // else if(degrees > 0 && degrees < 90){
+    //   dirX = 1;
+    //   dirY = 1;
+    // }
+    // else if(degrees > 90 && degrees < 180){
+    //   dirX = -1;
+    //   dirY = 1;
+    // }
+    // else if(degrees > 180 && degrees < 270){
+    //   dirX = -1;
+    //   dirY = -1;
+    // }
+    // else if(degrees > 270 && degrees < 360){
+    //   dirX = 1;
+    //   dirY = -1;
+    // }
+    // else {
+    //   throw new Error('How do you have an angle that is not clamped between 0 and 360???');
+    // }
+
+    // Then we need to calculate the first intercept (which could be x or y)
+    // We'll keep marching along the ray at x or y intercepts. Once we have an intercept step distance we can just use multiples
+    // However, bear in mind that it may not be alternating between x and y evenly. An angle like 10 will intercept along the y axis
+    // many times before intercepting an x axis.
+
+
+    // How do we know which direction we are going (ie, whether to use dx or (gridunit - dx))?
+    // For the experiment, let's just assume it is in the direction we already know.
+    let dx = gridUnit - offsetX;
+    let dy = gridUnit - offsetY;
 
   }
 
@@ -229,7 +310,14 @@ class Player {
   }
 
   rotate(rotation){
-    const newDir = this.dir + (rotation * this.rotateSpeed);
+    // Clamp the angle between 0 and 360;
+    let newDir = this.dir + (rotation * this.rotateSpeed);
+    if (newDir >= 360) {
+      newDir %= 360;
+    }
+    else if (newDir < 0) {
+      newDir = 360 - (Math.abs(newDir) % 360);
+    }
     this.dir = newDir;
   }
 }
@@ -240,29 +328,16 @@ class Game {
     this.animationFrame = null;
     // Use one canvas but have display modes (or a map overlay when tabv is pressed).
     this.screen = new Screen(this, 'display-main');
-    this.screen.resizeCanvas(1200,550);
+    this.screen.resizeCanvas(1000,550);
     this.player = new Player();
+    this.keyState = {}; // Active store of keypresses
 
     document.addEventListener('keydown', ({ key }) => {
-      switch(key){
-        case '`':
-          this.screen.toggleMap();
-          break;
-        case 'a':
-          this.player.rotate(-1);
-          break;
-        case 'd':
-          this.player.rotate(1);
-          break;
-        case 'w':
-          this.player.move(getMovementDelta({ angle: this.player.dir }))
-          break;
-        case 's':
-          this.player.move(getMovementDelta({ angle: this.player.dir, forward: false }))
-          break;
-      }      
+      this.keyState[key] = true;
     })
-
+    document.addEventListener('keyup', ({ key }) => {
+      this.keyState[key] = false;
+    })
   }
 
   start() {
@@ -273,7 +348,8 @@ class Game {
       const now = Date.now(timestamp);
       delta = now - then;
       if(delta > this.interval) {
-        /* BEGIN Game Loop */      
+        /* BEGIN Game Loop */
+        this.updatePlayerPositioning();      
         this.drawScreen();
         /* END Game Loop */
         then = now - (delta % this.interval)
@@ -281,6 +357,27 @@ class Game {
       this.animationFrame = requestAnimationFrame(draw);
     }
     this.animationFrame = requestAnimationFrame(draw)
+  }
+
+  updatePlayerPositioning(){
+    if(this.keyState['`']){
+      this.screen.showMap();
+    }
+    else {
+      this.screen.hideMap();
+    }
+    if(this.keyState.a){
+      this.player.rotate(-1);
+    }
+    if(this.keyState.d){
+      this.player.rotate(1);
+    }
+    if(this.keyState.w){
+      this.player.move(getMovementDelta({ angle: this.player.dir }))
+    }
+    if(this.keyState.s){
+      this.player.move(getMovementDelta({ angle: this.player.dir, forward: false }))
+    }
   }
 
   stop() {
