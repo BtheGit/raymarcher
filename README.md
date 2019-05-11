@@ -30,4 +30,4 @@ This is just a bit of faffing about with making a basic raymarcher in HTML5 canv
 
 ## Random working notes
 
-We'll start with a single ray for each n radians. But we need to have vertical rays as well if we decide to have variable height walls.
+I'm doing a refactor in toto here. A good opportunity to reconsider how the screen drawing is being split up.
