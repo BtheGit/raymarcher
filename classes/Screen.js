@@ -9,6 +9,8 @@ class Screen {
     this.backgroundColor = 'black';
     this.width = 0;
     this.height = 0;
+    // Just to make sure the canvas is reset before beginning.
+    // Might want to remove this.
     this.clear();
     // When this is true, draw minimap overlay.
     // Can have all conditional render options set as single object with getters/setters later. (HUD, etc)
@@ -55,8 +57,8 @@ class Screen {
     // Probably would be nicer as a full screen overlay with transparency;
     const mapLeft = 0;
     const mapTop = 0;
-    const mapWidth = 200;
-    const mapHeight = 200;
+    const mapWidth = 400;
+    const mapHeight = 400;
     const mapXRatio = mapWidth / MAP_WIDTH;
     const mapYRatio = mapHeight / MAP_HEIGHT;
     // Get player position and direction
@@ -66,7 +68,7 @@ class Screen {
     // Get current world map.
     // This will be a class with useful methods... later
     const world = MAP;
-    const GRID_UNIT = 10;
+    const GRID_UNIT = 1;
     const mapWidthUnit = mapXRatio * GRID_UNIT;
     const mapHeightUnit = mapYRatio * GRID_UNIT;
 
@@ -95,10 +97,10 @@ class Screen {
 
     // Render grid elements, scaled.
     for(let i = 0; i < world.length; i++){
-      const rowOffset = i;
+      const columnOffset = i;
       const row = world[i];
       for(let j = 0; j < row.length; j++){
-        const columnOffset = j;
+        const rowOffset = j;
         const cell = row[j];
         const textureId = cell; // In the future the cell will have more data so this will require extracing the data
         const cellTexture = TEXTURES[textureId];
@@ -139,6 +141,9 @@ class Screen {
     // So, before we start marching our rays up the gridlines, we first need to calculate the player's dx and dy relative to the closest grid 
     // line in the player dir.
 
+
+    // TEMPORARY
+    
   }
 
   draw() {
