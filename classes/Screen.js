@@ -57,14 +57,14 @@ class Screen {
     // Probably would be nicer as a full screen overlay with transparency;
     const mapLeft = 0;
     const mapTop = 0;
-    const mapWidth = 400;
-    const mapHeight = 400;
+    const mapWidth = 200;
+    const mapHeight = 200;
     const mapXRatio = mapWidth / MAP_WIDTH;
     const mapYRatio = mapHeight / MAP_HEIGHT;
     // Get player position and direction
     const playerPos = this.game.player.pos;
     const playerDir = this.game.player.dir;
-    const playerSize = 5;
+    const playerSize = 3;
     // Get current world map.
     // This will be a class with useful methods... later
     const world = MAP;
@@ -133,22 +133,34 @@ class Screen {
     this.ctx.stroke();
   }
 
-  drawScreen(){
-    // The idea here is to use ray marching to save intersection computations (in a small world this is more expensive than just calculating
-    // intersections with all objects, but in a massive world it's much cheaper (stable time in fact with a given limititation on drawdistance)).
-    // This is made possible because the walls are only drawn on grid vertices, which are at regular, predictable intervals.
-    // However, the player himself (and sprites later) will be at any valid vector (ie, not in a cell marked as a wall).
-    // So, before we start marching our rays up the gridlines, we first need to calculate the player's dx and dy relative to the closest grid 
-    // line in the player dir.
-
-
-    // TEMPORARY
-    
+  drawPlayerPOV(){
+    const { rays } = this.game.player;
+    if(!rays){
+      return;
+    }
+    // console.log(rays[0])
+    for(let i = 0; i < rays.length; i++){
+      const ray = rays[i];
+      // TODO: Make ray class to abstract and use getters.
+      const { normalizedDistance, intersectingCell } = ray;
+      const columnHeight = clamp(screenHeight / normalizedDistance, 0, screenHeight);
+      const top = (screenHeight / 2) - (columnHeight / 2);
+      const VIEW_DISTANCE = 25;
+      const wallHue = TEXTURES[intersectingCell];
+      const brightness = (((VIEW_DISTANCE - normalizedDistance) / VIEW_DISTANCE) * 40) + 10; // clamps the brightness between 10 and 50.
+      const hsl = `hsl(${ wallHue }, 100%, ${ brightness }%)`;
+      this.ctx.fillStyle = hsl;
+      // this.ctx.strokeStyle = hsl;
+      this.ctx.beginPath();
+      this.ctx.fillRect(i,top, 1, columnHeight);
+      // this.ctx.strokeRect(i,top, 1, columnHeight);
+      this.ctx.closePath();
+    }
   }
 
   draw() {
     this.clear();
-    this.drawScreen();
+    this.drawPlayerPOV();
     if(this.isMapActive){
       this.drawMapOverlay();
     }

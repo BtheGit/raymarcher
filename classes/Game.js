@@ -1,11 +1,14 @@
+
+
 class Game {
   constructor(framerate){
     this.interval = framerate;
     this.animationFrame = null;
     // Use one canvas but have display modes (or a map overlay when tabv is pressed).
     this.screen = new Screen(this, 'display-main');
-    this.screen.resizeCanvas(1000,550);
-    this.player = new Player();
+    this.screen.resizeCanvas(SCREEN_WIDTH,SCREEN_HEIGHT);
+    this.map = new Map(MAP);
+    this.player = new Player(this.map);
     this.keyState = {}; // Active store of keypresses
 
     document.addEventListener('keydown', ({ key }) => {
@@ -25,7 +28,8 @@ class Game {
       delta = now - then;
       if(delta > this.interval) {
         /* BEGIN Game Loop */
-        this.updatePlayerPositioning();      
+        this.updatePlayerPositioning();
+        this.player.cast();      
         this.drawScreen();
         /* END Game Loop */
         then = now - (delta % this.interval)
@@ -43,16 +47,16 @@ class Game {
       this.screen.hideMap();
     }
     if(this.keyState.a){
-      this.player.rotate(-1);
-    }
-    if(this.keyState.d){
       this.player.rotate(1);
     }
+    if(this.keyState.d){
+      this.player.rotate(-1);
+    }
     if(this.keyState.w){
-      this.player.move(getMovementDelta({ angle: this.player.dir }))
+      this.player.moveForward();
     }
     if(this.keyState.s){
-      this.player.move(getMovementDelta({ angle: this.player.dir, forward: false }))
+      this.player.moveBack();
     }
   }
 
