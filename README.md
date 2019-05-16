@@ -2,7 +2,11 @@
 
 # Raymarcher Test
 
-This is just a bit of faffing about with making a basic raymarcher in HTML5 canvas. But in the interests of making lists that never get completed, here are some potential milestones:
+This is just a bit of faffing about with making a basic raymarcher in HTML5 canvas. 
+
+### Feature checkpoints
+
+In the interests of making lists that never get completed, here are some potential milestones:
 
 - [x] Make a basic raymarcher in 2d:
   - Have a point, FOV, walls
@@ -24,11 +28,16 @@ This is just a bit of faffing about with making a basic raymarcher in HTML5 canv
 - [x] Have collision detection
 - [ ] Handle non-wall objects as sprites
 - [ ] Give different objects different motion types and displays
+- [ ] Floor and ceiling textures.
+- [ ] Allow for placing textures on walls face by face
 
 ### Alternate fun ideas with raycasters:
+
 - A few dots running around shooting rays that get brighter where they intersect or illuminating bubbles flying around.
 - Try voxel terrain instead
 
+### Immediate bug fixes
+- Enable wall slipping. it's impossible to slip along walls when you're right up against them. Perhaps a combination of creating an artifical limit to keep player from directly contacting wall as well as a calculation to move perpendicular at some velocity if you are not directly walking into a wall but at an angle.
 
-## Random working notes
+### Random working notes
 

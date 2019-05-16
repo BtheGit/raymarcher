@@ -4,7 +4,7 @@ class Player {
     this.pos = pos;
     this.dir = dir;
     this.plane = plane;
-    this.walkSpeed = .15;
+    this.walkSpeed = .1;
     this.rotationSpeed = .1;
     this.rays = [];
     this.cast();
@@ -87,30 +87,35 @@ class Player {
     const newPosY = this.pos.y + this.dir.y * this.walkSpeed;
     const cellX = Math.floor(newPosX);
     const cellY = Math.floor(newPosY);
-    const nextCell = this.map.grid[cellX][cellY];
     
-    if(nextCell === 0){
+    // We split up moving along the axes to avoid getting stuck on walls
+    const nextCellX = this.map.grid[cellX][Math.floor(this.pos.y)];
+    if(nextCellX === 0){
       this.pos.x = newPosX;
+    }
+    const nextCellY = this.map.grid[Math.floor(this.pos.x)][cellY];
+    if(nextCellY === 0){
       this.pos.y = newPosY;
     }
+
   }
 
   moveBack(){
-    // For now, the rule will simply be that players can only move through empty cells.
-    // In the future when cells become complex objects, we will need a traversable rule.
-    // (Things like sprites that are traversable)
 
     const newPosX = this.pos.x - this.dir.x * this.walkSpeed;
     const newPosY = this.pos.y - this.dir.y * this.walkSpeed;
     const cellX = Math.floor(newPosX);
     const cellY = Math.floor(newPosY);
-    const nextCell = this.map.grid[cellX][cellY];
-    
-    if(nextCell === 0){
+
+    // We split up moving along the axes to avoid getting stuck on walls
+    const nextCellX = this.map.grid[cellX][Math.floor(this.pos.y)];
+    if(nextCellX === 0){
       this.pos.x = newPosX;
+    }
+    const nextCellY = this.map.grid[Math.floor(this.pos.x)][cellY];
+    if(nextCellY === 0){
       this.pos.y = newPosY;
     }
-
   }
 
   rotate(rotation){
