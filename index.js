@@ -73,10 +73,10 @@ const PI2 = Math.PI * 2;
 // TODO: Load textures before executing game loop
 // TODO: Loading screen
 const tiles = [
-  './images/tiles/hedge1.jpg',
+  './images/tiles/light_brick1.jpg',
   './images/tiles/marble1.jpg',
-  './images/tiles/mosaic1.jpg',
-  './images/tiles/mosaic2.jpg',
+  './images/tiles/concrete1.jpg',
+  './images/tiles/rusted_steel1.jpg',
   './images/tiles/red_brick1.jpg',
 ];
 
