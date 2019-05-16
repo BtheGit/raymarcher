@@ -186,7 +186,12 @@ class Screen {
         this.ctx.fillRect(i,top, 1, columnHeight);
         this.ctx.closePath();
       }
-
+      // This creates artificial shading on half the vertices to give them extra three dimensional feel.
+      if(wallOrientation === 1){
+        this.ctx.globalAlpha = .2;
+        this.ctx.fillRect(i, top, 1, columnHeight);
+        this.ctx.globalAlpha = 1;
+      }
     }
   }
 
