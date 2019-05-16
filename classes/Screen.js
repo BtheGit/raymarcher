@@ -160,13 +160,12 @@ class Screen {
       const ray = rays[i];
       // TODO: Make ray class to abstract and use getters.
       const { normalizedDistance, wall, wallOrientation, wallIntersection, rayDir } = ray;
-      const columnHeight = clamp(screenHeight / normalizedDistance, 0, screenHeight);
+      const columnHeight = screenHeight / normalizedDistance;
       const top = (screenHeight / 2) - (columnHeight / 2);
       const VIEW_DISTANCE = 25;
       const brightnessMultiplier = 1.3;
       const darknessMultiplier = 0.9;
       const brightness = (((VIEW_DISTANCE - (normalizedDistance * brightnessMultiplier)) / VIEW_DISTANCE) * 40) + 10; // clamps the brightness between 10 and 50.
-      
       // If a texture doesn't exist, use a fallback color
       const wallTexture = this.game.images[wall - 1];
       if(wallTexture){
