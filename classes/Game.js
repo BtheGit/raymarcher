@@ -1,7 +1,8 @@
 
 
 class Game {
-  constructor(framerate){
+  constructor(images, framerate){
+    this.images = images;
     this.interval = framerate;
     this.animationFrame = null;
     // Use one canvas but have display modes (or a map overlay when tabv is pressed).

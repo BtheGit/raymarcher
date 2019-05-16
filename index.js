@@ -25,16 +25,17 @@ const MAP = [
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,4,0,0,0,0,5,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,4,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,1],
+  [1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,3,0,0,0,0,1],
+  [1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,5,0,0,0,1],
+  [1,4,0,0,0,0,5,0,4,0,0,0,0,0,0,0,0,0,0,0,3,0,0,1],
+  [1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,5,0,0,0,1],
+  [1,4,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,3,0,0,0,0,1],
+  [1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,1],
   [1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
+
 
 // TODO: World size will be dynamically determined based on the grid unit size and the world map dimensions.
 const MAP_WIDTH = MAP[0].length;
@@ -56,22 +57,48 @@ const screenHeight = SCREEN_HEIGHT;
 
 this.screen = new Screen(this, 'display-main');
 this.screen.resizeCanvas(512,384);
-const TEXTURES = {
-  1: '10',
-  2: '50',
-  3: '100',
-  4: '150',
-  5: '200',
+const HUES = {
+  1: '330',
+  2: '160',
+  3: '180',
+  4: '200',
+  5: '220',
 }
-
 
 // const WALL_HEIGHT = 100;
 const VIEW_DISTANCE = 1000;
 const FRAMERATE = 1000 / 30;
 const PI2 = Math.PI * 2;
 
-// TODO:
+// TODO: Load textures before executing game loop
+// TODO: Loading screen
+const tiles = [
+  './images/tiles/hedge1.jpg',
+  './images/tiles/marble1.jpg',
+  './images/tiles/mosaic1.jpg',
+  './images/tiles/mosaic2.jpg',
+  './images/tiles/red_brick1.jpg',
+];
 
+const loadImagePromise = imagePath => {
+  return new Promise((resolve, reject) => {
+    const img = document.createElement('img');
+    img.addEventListener('load', () => {
+      resolve(img);
+    })
+    img.src = imagePath;
+  })
+}
 
-const game = new Game(FRAMERATE);
-game.start();
+const loadImages = (tiles) => {
+  return Promise.all(tiles.map(loadImagePromise));
+}
+
+const loadAssets = async () => {
+  const images = await loadImages(tiles);
+  // TODO: Create Texture handling class
+  const game = new Game(images, FRAMERATE);
+  game.start();
+}
+
+loadAssets();

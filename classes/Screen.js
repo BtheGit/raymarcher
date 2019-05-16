@@ -103,7 +103,7 @@ class Screen {
         const rowOffset = j;
         const cell = row[j];
         const textureId = cell; // In the future the cell will have more data so this will require extracing the data
-        const cellTexture = TEXTURES[textureId];
+        const cellTexture = HUES[textureId];
         
         // TODO: For simplicity's sake, we'll hard code the placement and size of the minimap for now at the top left.
         const cellLeft = 0 + (rowOffset * mapWidthUnit);
@@ -133,6 +133,23 @@ class Screen {
     this.ctx.stroke();
   }
 
+  drawPOVBackground(){
+    // TODO: Each level should specify it's background colors (TODO: TODO: texture mapping ceilings and floors)
+    // Until then, this can be drawn once on an offscreen canvas and reused instead of redrawn each frame.
+    // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
+    const skyGradient = this.ctx.createLinearGradient(0,0,0, this.height / 2);
+    skyGradient.addColorStop(0, "#68d8f2")
+    skyGradient.addColorStop(1, "#0844a5")
+    this.ctx.fillStyle = skyGradient;
+    this.ctx.fillRect(0, 0, this.width, this.height);
+    const floorGradient = this.ctx.createLinearGradient(0, this.height / 2 ,0, this.height);
+    floorGradient.addColorStop(0, "#333")
+    floorGradient.addColorStop(0.2, "#14300e")
+    floorGradient.addColorStop(1, "#1c660a")
+    this.ctx.fillStyle = floorGradient;
+    this.ctx.fillRect(0, (this.height / 2), this.width, (this.height / 2));
+  }
+
   drawPlayerPOV(){
     const { rays } = this.game.player;
     if(!rays){
@@ -142,24 +159,41 @@ class Screen {
     for(let i = 0; i < rays.length; i++){
       const ray = rays[i];
       // TODO: Make ray class to abstract and use getters.
-      const { normalizedDistance, intersectingCell } = ray;
+      const { normalizedDistance, wall, wallOrientation, wallIntersection, rayDir } = ray;
       const columnHeight = clamp(screenHeight / normalizedDistance, 0, screenHeight);
       const top = (screenHeight / 2) - (columnHeight / 2);
       const VIEW_DISTANCE = 25;
-      const wallHue = TEXTURES[intersectingCell];
-      const brightness = (((VIEW_DISTANCE - normalizedDistance) / VIEW_DISTANCE) * 40) + 10; // clamps the brightness between 10 and 50.
-      const hsl = `hsl(${ wallHue }, 100%, ${ brightness }%)`;
-      this.ctx.fillStyle = hsl;
-      // this.ctx.strokeStyle = hsl;
-      this.ctx.beginPath();
-      this.ctx.fillRect(i,top, 1, columnHeight);
-      // this.ctx.strokeRect(i,top, 1, columnHeight);
-      this.ctx.closePath();
+      const brightnessMultiplier = 1.3;
+      const darknessMultiplier = 0.9;
+      const brightness = (((VIEW_DISTANCE - (normalizedDistance * brightnessMultiplier)) / VIEW_DISTANCE) * 40) + 10; // clamps the brightness between 10 and 50.
+      
+      // If a texture doesn't exist, use a fallback color
+      const wallTexture = this.game.images[wall - 1];
+      if(wallTexture){
+        const textureWidth = wallTexture.width;
+        const wallIntersectionOffset = wallIntersection - Math.floor(wallIntersection);
+        let textureStripLeft = Math.floor(wallIntersectionOffset * textureWidth);
+        this.ctx.drawImage(wallTexture, textureStripLeft, 0, 1, wallTexture.height, i, top, 1, columnHeight);
+        this.ctx.fillStyle = 'black';
+        this.ctx.globalAlpha = 1 - (VIEW_DISTANCE - (normalizedDistance * darknessMultiplier)) / VIEW_DISTANCE;
+        this.ctx.fillRect(i, top, 1, columnHeight);
+        this.ctx.globalAlpha = 1;
+      }
+      else {
+        const wallHue = HUES[wall];
+        const hsl = `hsl(${ wallHue }, 100%, ${ brightness }%)`;
+        this.ctx.fillStyle = hsl;
+        this.ctx.beginPath();
+        this.ctx.fillRect(i,top, 1, columnHeight);
+        this.ctx.closePath();
+      }
+
     }
   }
 
   draw() {
     this.clear();
+    this.drawPOVBackground();
     this.drawPlayerPOV();
     if(this.isMapActive){
       this.drawMapOverlay();

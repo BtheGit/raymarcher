@@ -61,9 +61,17 @@ class Player {
         ? (activeCell.x - this.pos.x + (1 - stepX) / 2) / rayDir.x
         : (activeCell.y - this.pos.y + (1 - stepY) / 2) / rayDir.y
       
+      // Exact intersection point with wall
+      const wallIntersection = wallOrientation === 0
+        ? this.pos.y + normalizedDistance * rayDir.y
+        : this.pos.x + normalizedDistance * rayDir.x;
+              
       const ray = {
         normalizedDistance,
-        intersectingCell: wall,
+        wall,
+        wallOrientation,
+        wallIntersection,
+        rayDir,
       }
       rays.push(ray);
     }
