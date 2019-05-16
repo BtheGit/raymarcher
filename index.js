@@ -6,8 +6,8 @@
 
 // # Constants
 
-const SCREEN_WIDTH = 512;
-const SCREEN_HEIGHT = 384;
+const SCREEN_WIDTH = 1024;
+const SCREEN_HEIGHT = 786;
 
 const MAP = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -48,7 +48,7 @@ const STARTING_POSITION = new Vector(22, 12);
 // const STARTING_CAMERA_PLANE = new Vector(0, 0.66);
 
 // temp
-const RAY_COUNT = 512;
+const RAY_COUNT = SCREEN_WIDTH;
 const map = MAP;
 const position = STARTING_POSITION;
 const screenWidth = RAY_COUNT;

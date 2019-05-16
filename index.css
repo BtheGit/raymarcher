@@ -16,3 +16,8 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+#display-main {
+  width: 100%;
+  height: auto;
+}
