@@ -166,6 +166,10 @@ class ImageBuffer {
     this.ctx = this.canvas.getContext('2d');
     this.ctx.drawImage(this.rawImage, 0, 0);
   }
+
+  getCanvas(){
+    return this.canvas;
+  }
   
   getImageData(){
     return(this.ctx.getImageData(0,0, this.width, this.height));
@@ -190,6 +194,17 @@ class BokehImage {
     //   this.width = this.canvas.width = 512;
     //   this.height = this.canvas.height = 192;
     // })
+  }
+
+  getCanvas(){
+    // Because of the way bokehfy uses the parent of the bokeh field canvas as a barometer
+    // on resize events. We need to manually update the size here if it is 0 (ie a resize event has
+    // occured) before returning the image.
+    if(!this.canvas.width || !this.canvas.height){
+      this.canvas.width = this.width;
+      this.canvas.height = this.height;
+    }
+    return this.canvas;
   }
   
   getImageData(){

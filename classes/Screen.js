@@ -108,7 +108,7 @@ class Screen {
         const cell = row[j];
         const textureId = cell; // In the future the cell will have more data so this will require extracing the data
         const cellHue = HUES[textureId];
-        const cellTexture = this.game.images[cell - 1] && this.game.images[cell - 1].canvas;
+        const cellTexture = this.game.images[cell - 1] && this.game.images[cell - 1].getCanvas();
         // TODO: For simplicity's sake, we'll hard code the placement and size of the minimap for now at the top left.
         const cellLeft = 0 + (rowOffset * mapWidthUnit);
         const cellTop = 0 + (columnOffset * mapHeightUnit);
@@ -167,7 +167,7 @@ class Screen {
       const darknessMultiplier = 0.9;
       const brightness = (((VIEW_DISTANCE - (normalizedDistance * brightnessMultiplier)) / VIEW_DISTANCE) * 40) + 10; // clamps the brightness between 10 and 50.
       // If a texture doesn't exist, use a fallback color
-      const wallTexture = this.game.images[wall - 1] && this.game.images[wall - 1].canvas;
+      const wallTexture = this.game.images[wall - 1] && this.game.images[wall - 1].getCanvas();
       if(wallTexture){
         const textureWidth = wallTexture.width;
         const wallIntersectionOffset = wallIntersection - Math.floor(wallIntersection);
