@@ -6,10 +6,6 @@ class Screen {
   constructor(game, id){
     this.canvas = document.getElementById(id);
     this.ctx = this.canvas.getContext('2d');
-    this.ctx.imageSmoothingEnabled = true;
-    this.ctx.mozImageSmoothingEnabled = true;
-    this.ctx.webkitImageSmoothingEnabled = true;
-    this.ctx.msImageSmoothingEnabled = true;
     this.backgroundColor = 'black';
     this.width = 0;
     this.height = 0;
