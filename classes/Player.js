@@ -4,8 +4,10 @@ class Player {
     this.pos = pos;
     this.dir = dir;
     this.plane = plane;
+    this.elevation = 1;
     this.walkSpeed = .1;
     this.rotationSpeed = .07;
+    this.elevationStep = .02;
     this.rays = [];
     this.cast();
   }
@@ -116,6 +118,26 @@ class Player {
     const nextCellY = this.map.grid[Math.floor(this.pos.x)][cellY];
     if(nextCellY === 0){
       this.pos.y = newPosY;
+    }
+  }
+
+  // Elevation is used as an offset for drawing columns. The smaller the offset, the higher
+  // on the screen it will begin to draw the column.
+  ascend(){
+    // For now we'll set a hard clamp on this.
+    const maxElevationOffset = .3;
+    const newElevation = this.elevation - this.elevationStep;
+    if(newElevation >= maxElevationOffset){
+      this.elevation = newElevation;
+    }
+  }
+  
+  descend(){
+    // For now we'll set a hard clamp on this.
+    const minElevationOffset = 1.7;
+    const newElevation = this.elevation + this.elevationStep;
+    if(newElevation <= minElevationOffset){
+      this.elevation = newElevation;
     }
   }
 

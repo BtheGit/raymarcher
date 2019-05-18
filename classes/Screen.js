@@ -151,7 +151,7 @@ class Screen {
   }
 
   drawPlayerPOV(){
-    const { rays } = this.game.player;
+    const { rays, elevation: playerElevation } = this.game.player;
     if(!rays){
       return;
     }
@@ -161,7 +161,7 @@ class Screen {
       // TODO: Make ray class to abstract and use getters.
       const { normalizedDistance, wall, wallOrientation, wallIntersection, rayDir, activeCell } = ray;
       const columnHeight = screenHeight / normalizedDistance;
-      const top = (screenHeight / 2) - (columnHeight / 2);
+      const top = (screenHeight / 2) - (columnHeight / 2) * playerElevation;
       const VIEW_DISTANCE = 25;
       const brightnessMultiplier = 1.3;
       const darknessMultiplier = 0.9;

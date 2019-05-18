@@ -38,6 +38,14 @@ In the interests of making lists that never get completed, here are some potenti
 
 ### Immediate bug fixes
 - Enable wall slipping. it's impossible to slip along walls when you're right up against them. Perhaps a combination of creating an artifical limit to keep player from directly contacting wall as well as a calculation to move perpendicular at some velocity if you are not directly walking into a wall but at an angle.
+- Using bokeh now causes the whole thing to break on resizes. Might not be possible to workaround without pushing new updates to bokeh (other than a conditional render - so tiles without canvas height will fall back to a default color like fire engine red)
 
-### Random working notes
+### Random working notes / Plan
+
+- Change the tile array into a map
+- Change the grid cells from simple numbers to an object. This gives us a lot more room to innovate. For example:
+  - We can possibly draw multilayered images over wall tiles.
+  - We can create orientations for the tiles, so each cardinal direction has a different tile (this will make the minimap a bit annoying)
+  - We can have varied floor tiles (when I figure out floor casting that is)
+  - We can have sprites specified right on the base grid, rather than a second grid (this wouldn't be an issue if floor tiles aren't a thing.)
 
