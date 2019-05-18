@@ -50,14 +50,14 @@ const MAP2 = [
   [1,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,1],
   [1,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,4,0,0,0,0,4,4,4,4,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,3,3,0,3,3,3,3,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,3,3,0,9,0,3,3,0,0,0,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2],
   [1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,2,0,0,0,2],
-  [1,0,0,0,0,0,0,0,3,3,3,3,3,3,3,3,2,0,0,2,0,2,0,2],
-  [1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,0,0,0,0,2,0,2],
+  [1,0,0,0,0,0,0,0,3,3,0,3,3,3,0,3,2,0,0,2,0,2,0,2],
+  [1,0,0,0,0,0,0,0,1,1,0,1,7,1,0,1,2,0,0,0,0,2,0,2],
   [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,2,0,0,0,2,0,2],
-  [1,0,0,0,0,0,0,0,1,0,1,1,0,1,0,0,0,1,2,2,2,2,0,2],
-  [1,0,0,0,0,0,0,0,0,1,1,1,0,1,0,0,0,0,1,1,1,2,0,2],
+  [1,0,0,0,0,0,0,0,6,0,6,1,0,1,0,0,0,1,2,2,2,2,0,2],
+  [1,0,0,0,0,0,0,0,0,6,1,1,0,1,0,0,0,0,1,1,1,2,0,2],
   [1,0,0,0,0,0,0,0,0,1,1,6,0,6,1,0,0,0,0,0,0,0,0,1],
   [1,1,1,1,1,1,1,1,1,1,1,1,6,1,1,1,1,1,1,1,1,1,1,1]
 ];
@@ -96,35 +96,130 @@ const VIEW_DISTANCE = 1000;
 const FRAMERATE = 1000 / 30;
 const PI2 = Math.PI * 2;
 
-// TODO: Load textures before executing game loop
 // TODO: Loading screen
-const tiles = [
-  './images/tiles/light_brick1.jpg',
-  './images/tiles/marble1.jpg',
-  './images/tiles/concrete1.jpg',
-  './images/tiles/rusted_steel1.jpg',
-  './images/tiles/red_brick1.jpg',
-  './images/tiles/hedge1.jpg',
+const TILES = [
+  {
+    type: 'image',
+    imagePath: './images/tiles/light_brick1.jpg',
+  },
+  {
+    type: 'image',
+    imagePath: './images/tiles/marble1.jpg',
+  },
+  {
+    type: 'image',
+    imagePath: './images/tiles/concrete1.jpg',
+  },
+  {
+    type: 'image',
+    imagePath: './images/tiles/rusted_steel1.jpg',
+  },
+  {
+    type: 'image',
+    imagePath: './images/tiles/red_brick1.jpg',
+  },
+  {
+    type: 'image',
+    imagePath: './images/tiles/hedge1.jpg',
+  },
+  {
+    type: 'image',
+    imagePath: './images/tiles/me1.png',
+  },
+  {
+    type: 'bokeh',
+  },
+  {
+    type: 'bokeh',
+    bokehSettings: {
+      color: 'purple',
+      backgroundColor: '#afa195',
+      dx: 5,
+      dy: 5,
+      density: 20,
+      halfLife: 100,
+      radius: 30,
+      frameRate: 60,
+    }
+  }
 ];
+
+// TEST to create image buffers for optimizing
+class ImageBuffer {
+  constructor(image){
+    this.rawImage = image;
+    this.canvas = document.createElement('canvas');
+    this.width = this.canvas.width = this.rawImage.width;
+    this.height = this.canvas.height = this.rawImage.height;
+    this.ctx = this.canvas.getContext('2d');
+    this.ctx.drawImage(this.rawImage, 0, 0);
+  }
+  
+  getImageData(){
+    return(this.ctx.getImageData(0,0, this.width, this.height));
+  }
+}
+
+// TEST to use bokehfy to create animated walls
+// TODO: Resizing the window breaks this (the canvas size gets reset to 0)
+// TODO: Don't let an opacity be set (no transparency)
+// TODO: If I can add in support of background images for bokehfy, I can use it as
+// an effect over normal game tiles!
+class BokehImage {
+  constructor(bokehSettings = {}, sideLength = 200){
+    this.el = document.createElement('div');
+    this.settings = { ...bokehSettings, parent: this.el}
+    this.field = bokehfy(this.settings);
+    this.canvas = this.field.canvas;
+    this.width = this.canvas.width = sideLength;
+    this.height = this.canvas.height = sideLength;
+    this.ctx = this.canvas.getContext('2d');
+    console.log(this.canvas)
+    // document.addEventListener('resize', () => {
+    //   this.width = this.canvas.width = 512;
+    //   this.height = this.canvas.height = 192;
+    // })
+  }
+  
+  getImageData(){
+    return(this.ctx.getImageData(0,0, this.width, this.height));
+  }
+}
 
 const loadImagePromise = imagePath => {
   return new Promise((resolve, reject) => {
     const img = document.createElement('img');
     img.addEventListener('load', () => {
-      resolve(img);
+      const imageBuffer = new ImageBuffer(img);
+      resolve(imageBuffer);
     })
     img.src = imagePath;
   })
 }
 
-const loadImages = (tiles) => {
-  return Promise.all(tiles.map(loadImagePromise));
+const loadBokeh = bokehSettings => {
+  return new BokehImage(bokehSettings);
+}
+
+const loadTiles = (tiles) => {
+  return Promise.all(tiles.map(tile => {
+    if(tile.type === 'image'){
+      return loadImagePromise(tile.imagePath)
+    }
+    if(tile.type === 'bokeh'){
+      return Promise.resolve(loadBokeh(tile.bokehSettings));
+    }
+  }));
 }
 
 const loadAssets = async () => {
-  const images = await loadImages(tiles);
+  const tiles = await loadTiles(TILES);
+  // If we abstract the API for images, we can use plain images and animated ones
+  // interchangeably.
+  // const imageBuffers = rawImages.map(rawImage => new ImageBuffer(rawImage));
+  // imageBuffers.push(BOKEH_IMAGE); // TEST
   // TODO: Create Texture handling class
-  const game = new Game(images, FRAMERATE);
+  const game = new Game(tiles, FRAMERATE);
   game.start();
 }
 

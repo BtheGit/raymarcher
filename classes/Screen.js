@@ -71,13 +71,13 @@ class Screen {
     const playerSize = 3;
     // Get current world map.
     // This will be a class with useful methods... later
-    const world = MAP;
+    const world = this.game.map.grid;
     const GRID_UNIT = 1;
     const mapWidthUnit = mapXRatio * GRID_UNIT;
     const mapHeightUnit = mapYRatio * GRID_UNIT;
 
     // Render grid lines
-    for (let i = 0; i <= MAP[0].length; i++){
+    for (let i = 0; i <= world[0].length; i++){
       // VERTICAL
       this.ctx.beginPath();
       this.ctx.lineWidth = 1;
@@ -88,7 +88,7 @@ class Screen {
       this.ctx.stroke();
     }
     
-    for(let i = 0; i < MAP.length; i++){
+    for(let i = 0; i < world.length; i++){
       // HORIZONTAL
       this.ctx.beginPath();
       this.ctx.lineWidth = 1;
@@ -98,7 +98,7 @@ class Screen {
       this.ctx.closePath();
       this.ctx.stroke();
     }
-
+    // TODO: Fix the mirrored orientation.
     // Render grid elements, scaled.
     for(let i = 0; i < world.length; i++){
       const rowOffset = i;
@@ -108,7 +108,7 @@ class Screen {
         const cell = row[j];
         const textureId = cell; // In the future the cell will have more data so this will require extracing the data
         const cellHue = HUES[textureId];
-        const cellTexture = this.game.images[cell - 1];
+        const cellTexture = this.game.images[cell - 1] && this.game.images[cell - 1].canvas;
         // TODO: For simplicity's sake, we'll hard code the placement and size of the minimap for now at the top left.
         const cellLeft = 0 + (rowOffset * mapWidthUnit);
         const cellTop = 0 + (columnOffset * mapHeightUnit);
@@ -143,7 +143,7 @@ class Screen {
     this.ctx.fillStyle = skyGradient;
     this.ctx.fillRect(0, 0, this.width, this.height);
     const floorGradient = this.ctx.createLinearGradient(0, this.height / 2 ,0, this.height);
-    floorGradient.addColorStop(0, "#333")
+    floorGradient.addColorStop(0, "#333");
     // floorGradient.addColorStop(0.2, "#14300e")
     // floorGradient.addColorStop(1, "#1c660a")
     this.ctx.fillStyle = floorGradient;
@@ -167,7 +167,7 @@ class Screen {
       const darknessMultiplier = 0.9;
       const brightness = (((VIEW_DISTANCE - (normalizedDistance * brightnessMultiplier)) / VIEW_DISTANCE) * 40) + 10; // clamps the brightness between 10 and 50.
       // If a texture doesn't exist, use a fallback color
-      const wallTexture = this.game.images[wall - 1];
+      const wallTexture = this.game.images[wall - 1] && this.game.images[wall - 1].canvas;
       if(wallTexture){
         const textureWidth = wallTexture.width;
         const wallIntersectionOffset = wallIntersection - Math.floor(wallIntersection);
@@ -179,7 +179,7 @@ class Screen {
         this.ctx.globalAlpha = 1;
       }
       else {
-        const wallHue = HUES[wall];
+        const wallHue = HUES[wall] || 0; // Anything without a fallback hue will be crazy red and obvious.
         const hsl = `hsl(${ wallHue }, 100%, ${ brightness }%)`;
         this.ctx.fillStyle = hsl;
         this.ctx.beginPath();
@@ -189,6 +189,7 @@ class Screen {
       // This creates artificial shading on half the vertices to give them extra three dimensional feel.
       if(wallOrientation === 1){
         this.ctx.globalAlpha = .2;
+        this.ctx.fillStyle = 'black';
         this.ctx.fillRect(i, top, 1, columnHeight);
         this.ctx.globalAlpha = 1;
       }

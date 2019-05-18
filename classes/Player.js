@@ -5,7 +5,7 @@ class Player {
     this.dir = dir;
     this.plane = plane;
     this.walkSpeed = .1;
-    this.rotationSpeed = .1;
+    this.rotationSpeed = .07;
     this.rays = [];
     this.cast();
   }
