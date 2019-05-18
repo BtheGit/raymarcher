@@ -62,7 +62,6 @@ const MAP2 = [
   [1,1,1,1,1,1,1,1,1,1,1,1,6,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
-
 // TODO: World size will be dynamically determined based on the grid unit size and the world map dimensions.
 const MAP_WIDTH = MAP[0].length;
 const MAP_HEIGHT = MAP.length;

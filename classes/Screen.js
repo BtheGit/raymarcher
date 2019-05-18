@@ -105,7 +105,7 @@ class Screen {
       const row = world[i];
       for(let j = 0; j < row.length; j++){
         const columnOffset = j;
-        const cell = row[j];
+        const cell = world.getCell(i, j);
         const textureId = cell; // In the future the cell will have more data so this will require extracing the data
         const cellHue = HUES[textureId];
         const cellTexture = this.game.images[cell - 1] && this.game.images[cell - 1].getCanvas();

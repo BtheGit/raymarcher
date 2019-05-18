@@ -55,5 +55,5 @@ In the interests of making lists that never get completed, here are some potenti
   3. Let them generate the grid as a map on a second screen.
   4. Let them upload their own textures to use as tiles.
   5. Create a permanent link for the map. (QueryParams would be nice, also stored in a backend (but no custom textures would be possible, too heavy.))
-
+- Track viewed cells and use that to draw the mini-map so that the mini-map doesn't immediately reveal the entire level.
 
