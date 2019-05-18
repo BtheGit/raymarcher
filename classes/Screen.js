@@ -6,6 +6,10 @@ class Screen {
   constructor(game, id){
     this.canvas = document.getElementById(id);
     this.ctx = this.canvas.getContext('2d');
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.mozImageSmoothingEnabled = true;
+    this.ctx.webkitImageSmoothingEnabled = true;
+    this.ctx.msImageSmoothingEnabled = true;
     this.backgroundColor = 'black';
     this.width = 0;
     this.height = 0;
@@ -97,24 +101,29 @@ class Screen {
 
     // Render grid elements, scaled.
     for(let i = 0; i < world.length; i++){
-      const columnOffset = i;
+      const rowOffset = i;
       const row = world[i];
       for(let j = 0; j < row.length; j++){
-        const rowOffset = j;
+        const columnOffset = j;
         const cell = row[j];
         const textureId = cell; // In the future the cell will have more data so this will require extracing the data
-        const cellTexture = HUES[textureId];
-        
+        const cellHue = HUES[textureId];
+        const cellTexture = this.game.images[cell - 1];
         // TODO: For simplicity's sake, we'll hard code the placement and size of the minimap for now at the top left.
         const cellLeft = 0 + (rowOffset * mapWidthUnit);
         const cellTop = 0 + (columnOffset * mapHeightUnit);
-        this.ctx.beginPath();
-        this.ctx.fillStyle = cellTexture ? cellTexture : emptyCellColor;
-        this.ctx.fillRect(cellLeft, cellTop, mapWidthUnit, mapHeightUnit);
-        this.ctx.closePath();
+        if (cellTexture){
+          this.ctx.drawImage(cellTexture, 0, 0, cellTexture.width, cellTexture.height, cellLeft, cellTop, mapWidthUnit, mapHeightUnit);
+        }
+        else {
+          this.ctx.beginPath();
+          this.ctx.fillStyle = cellHue ? `hsla(${cellHue}, 100%, 80%, .9)` : emptyCellColor;
+          this.ctx.fillRect(cellLeft, cellTop, mapWidthUnit, mapHeightUnit);
+          this.ctx.closePath();
+        }
       } 
     }
-    // Render player and dir (use arrow or triangle)
+    // Render player dot
     const playerPosXOnMap = playerPos.x * mapXRatio;
     const playerPosYOnMap = playerPos.y * mapYRatio;
     this.ctx.beginPath();
@@ -122,15 +131,6 @@ class Screen {
     this.ctx.arc(playerPosXOnMap, playerPosYOnMap, playerSize, 0, PI2);
     this.ctx.fill();
 
-    const lengthOfPlayerSight = playerSize * 3;
-    const playerViewDirX = (Math.cos(toRadians(playerDir)) * lengthOfPlayerSight) + playerPosXOnMap;
-    const playerViewDirY = (Math.sin(toRadians(playerDir)) * lengthOfPlayerSight) + playerPosYOnMap;
-    this.ctx.beginPath();
-    this.ctx.lineWidth = 2;
-    this.ctx.strokeStyle = 'red';
-    this.ctx.moveTo(playerPosXOnMap, playerPosYOnMap);
-    this.ctx.lineTo(playerViewDirX, playerViewDirY);
-    this.ctx.stroke();
   }
 
   drawPOVBackground(){
@@ -144,8 +144,8 @@ class Screen {
     this.ctx.fillRect(0, 0, this.width, this.height);
     const floorGradient = this.ctx.createLinearGradient(0, this.height / 2 ,0, this.height);
     floorGradient.addColorStop(0, "#333")
-    floorGradient.addColorStop(0.2, "#14300e")
-    floorGradient.addColorStop(1, "#1c660a")
+    // floorGradient.addColorStop(0.2, "#14300e")
+    // floorGradient.addColorStop(1, "#1c660a")
     this.ctx.fillStyle = floorGradient;
     this.ctx.fillRect(0, (this.height / 2), this.width, (this.height / 2));
   }
@@ -159,7 +159,7 @@ class Screen {
     for(let i = 0; i < rays.length; i++){
       const ray = rays[i];
       // TODO: Make ray class to abstract and use getters.
-      const { normalizedDistance, wall, wallOrientation, wallIntersection, rayDir } = ray;
+      const { normalizedDistance, wall, wallOrientation, wallIntersection, rayDir, activeCell } = ray;
       const columnHeight = screenHeight / normalizedDistance;
       const top = (screenHeight / 2) - (columnHeight / 2);
       const VIEW_DISTANCE = 25;
@@ -192,6 +192,59 @@ class Screen {
         this.ctx.fillRect(i, top, 1, columnHeight);
         this.ctx.globalAlpha = 1;
       }
+
+      //FLOOR CASTING
+      let floorXWall;
+      let floorYWall; //x, y position of the floor texel at the bottom of the wall
+
+      //4 different wall directions possible
+      if(wallOrientation === 0 && rayDir.x > 0) {
+        floorXWall = activeCell.x;
+        floorYWall = activeCell.y + wallIntersection.x;
+      }
+      else if(wallOrientation === 0 && rayDir.x < 0) {
+        floorXWall = activeCell.x + 1.0;
+        floorYWall = activeCell.y + wallIntersection.x;
+      }
+      else if(wallOrientation === 1 && rayDir.y > 0) {
+        floorXWall = activeCell.x + wallIntersection.x;
+        floorYWall = activeCell.y;
+      }
+      else {
+        floorXWall = activeCell.x + wallIntersection.x;
+        floorYWall = activeCell.y + 1.0;
+      }
+      let drawEnd = top + columnHeight;
+      let distWall, distPlayer, currentDist;
+
+      distWall = normalizedDistance;
+      distPlayer = 0.0;
+
+      if (drawEnd < 0) {
+        drawEnd = screenHeight; //becomes < 0 when the integer overflows
+      }
+      //draw the floor from drawEnd to the bottom of the screen
+      for(let y = drawEnd + 1; y < screenHeight; y++){
+        currentDist = screenHeight / (2.0 * y - screenHeight); //you could make a small lookup table for this instead
+
+        const weight = currentDist / distWall;
+
+        const currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
+        const currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
+        const floorTexture = this.game.images[0];
+        let floorTexX, floorTexY;
+        floorTexX = Math.floor(currentFloorX * floorTexture.width) % floorTexture.width;
+        floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
+        // this.ctx.fillStyle = 'purple';
+        // this.ctx.fillRect(i,y, 1, 1)
+        // this.ctx.drawImage(floorTexture,floorTexX,floorTexY,floorTexX + 1, floorTexY + 1, i, y, 1, 1);
+        // console.log(currentDist)
+        //floor
+        // buffer[y][i] = (texture[3][texWidth * floorTexY + floorTexX] >> 1) & 8355711;
+        //ceiling (symmetrical!)
+        // buffer[screenHeight - y][i] = texture[6][texWidth * floorTexY + floorTexX];
+      }
+      
     }
   }
 
