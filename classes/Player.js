@@ -1,5 +1,5 @@
 class Player {
-  constructor(map, pos = new Vector(22, 12), dir = new Vector(-1, 0), plane = new Vector(0, 0.66)){
+  constructor(map, pos = new Vector(22, 12.5), dir = new Vector(-1, 0), plane = new Vector(0, 0.66)){
     this.map = map;
     this.pos = pos;
     this.dir = dir;
@@ -72,6 +72,7 @@ class Player {
         wallOrientation,
         wallIntersection,
         rayDir,
+        activeCell,
       }
       rays.push(ray);
     }
