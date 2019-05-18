@@ -8,7 +8,7 @@ class Game {
     // Use one canvas but have display modes (or a map overlay when tabv is pressed).
     this.screen = new Screen(this, 'display-main');
     this.screen.resizeCanvas(SCREEN_WIDTH,SCREEN_HEIGHT);
-    this.map = new Map(MAP);
+    this.map = new Map(MAP2);
     this.player = new Player(this.map);
     this.keyState = {}; // Active store of keypresses
 
