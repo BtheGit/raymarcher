@@ -51,14 +51,14 @@ const MAP2 = [
   [1,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,4,0,0,0,0,4,4,4,4,0,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,3,3,0,9,0,3,3,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2],
+  [1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,3,2,2,2,2,2,2,12,2],
   [1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,2,0,0,0,2],
   [1,0,0,0,0,0,0,0,3,3,0,3,3,3,0,3,2,0,0,2,0,2,0,2],
   [1,0,0,0,0,0,0,0,1,1,0,1,7,1,0,1,2,0,0,0,0,2,0,2],
   [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,2,0,0,0,2,0,2],
   [1,0,0,0,0,0,0,0,6,0,6,1,0,1,0,0,0,1,2,2,2,2,0,2],
-  [1,0,0,0,0,0,0,0,0,6,1,1,0,1,0,0,0,0,1,1,1,2,0,2],
-  [1,0,0,0,0,0,0,0,0,1,1,6,0,6,1,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,10,1,1,0,1,0,0,0,0,1,1,1,2,0,2],
+  [1,0,0,0,0,0,0,0,0,1,1,6,0,6,1,0,0,0,0,0,0,0,0,11],
   [1,1,1,1,1,1,1,1,1,1,1,1,6,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
@@ -141,6 +141,18 @@ const TILES = [
       radius: 30,
       frameRate: 60,
     }
+  },
+  {
+    type: 'image',
+    imagePath: 'https://media.licdn.com/dms/image/C5603AQFDLAcoM7oa0w/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=BbkkYW-9reSYz1TNvDhAjbv7rBfNlN9RN6KIkeLbYKo'
+  },
+  {
+    type: 'image',
+    imagePath: 'https://media.licdn.com/dms/image/C4E03AQF_rnt4a-2N4g/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=gi6fY7WlyY5t71f4KYuRHjEkwurb5gRqA9hKlQ3PC_o',
+  },
+  {
+    type: 'image',
+    imagePath: 'https://scontent-iad3-1.xx.fbcdn.net/v/t31.0-8/11823034_10154226861255620_5773866248861672139_o.jpg?_nc_cat=107&_nc_ht=scontent-iad3-1.xx&oh=5b2423ed7c798b8ab75d39f9bc4353e1&oe=5D56DC9F'
   }
 ];
 
@@ -174,7 +186,6 @@ class BokehImage {
     this.width = this.canvas.width = sideLength;
     this.height = this.canvas.height = sideLength;
     this.ctx = this.canvas.getContext('2d');
-    console.log(this.canvas)
     // document.addEventListener('resize', () => {
     //   this.width = this.canvas.width = 512;
     //   this.height = this.canvas.height = 192;
