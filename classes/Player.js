@@ -7,7 +7,7 @@ class Player {
     this.elevation = 1;
     this.walkSpeed = .1;
     this.rotationSpeed = .07;
-    this.elevationStep = .02;
+    this.elevationStep = .035;
     this.rays = [];
     this.cast();
   }
