@@ -41,7 +41,9 @@ In the interests of making lists that never get completed, here are some potenti
 
 ### Random working notes / Plan
 
+- Floor casting might just be too expensive with the current implementation.
 - Change the tile array into a map
+- Set a maximum drawDistance. Use some kind of shading beyond that.
 - Change the grid cells from simple numbers to an object. This gives us a lot more room to innovate. For example:
   - We can possibly draw multilayered images over wall tiles.
   - We can create orientations for the tiles, so each cardinal direction has a different tile (this will make the minimap a bit annoying)

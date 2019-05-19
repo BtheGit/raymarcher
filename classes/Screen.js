@@ -11,9 +11,11 @@ class Screen {
     this.backgroundColor = 'black';
     this.width = 0;
     this.height = 0;
+    // TODO: Add settings for level by level backgrounds
+    this.staticPOVBackground;
     // Just to make sure the canvas is reset before beginning.
     // Might want to remove this.
-    this.clear();
+    // this.clear();
     // When this is true, draw minimap overlay.
     // Can have all conditional render options set as single object with getters/setters later. (HUD, etc)
     this.isMapActive = false;
@@ -43,17 +45,17 @@ class Screen {
   resizeCanvas(width, height) {
     this.canvas.width = this.canvasBuffer.width = this.width = width;
     this.canvas.height = this.canvasBuffer.height = this.height = height;
-    this.clear();
+    // this.clear();
   }
 
   setBackgroundColor(color) {
     this.backgroundColor = color;
   }
 
-  clear(color = this.backgroundColor) {
-    this.ctxBuffer.fillStyle = color;
-    this.ctxBuffer.fillRect(0,0, this.canvas.width, this.canvas.height);
-  }
+  // clear(color = this.backgroundColor) {
+  //   this.ctxBuffer.fillStyle = color;
+  //   this.ctxBuffer.fillRect(0,0, this.canvas.width, this.canvas.height);
+  // }
 
   // Main draw functions
   drawMapOverlay(){
@@ -132,24 +134,38 @@ class Screen {
     this.ctxBuffer.fillStyle = 'red';
     this.ctxBuffer.arc(playerPosXOnMap, playerPosYOnMap, playerSize, 0, PI2);
     this.ctxBuffer.fill();
-
   }
 
-  drawPOVBackground(){
-    // TODO: Each level should specify it's background colors (TODO: TODO: texture mapping ceilings and floors)
-    // Until then, this can be drawn once on an offscreen canvas and reused instead of redrawn each frame.
-    // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
-    const skyGradient = this.ctxBuffer.createLinearGradient(0,0,0, this.height / 2);
+  // By using a dedicated canvas for the static background image, we effectively only have to 
+  // draw it once to a canvas (expensive) and thereafter just repeatedly copy it over to the buffer (cheap)
+  // TODO: We could in theory also save the step of clearing the screen, since this works much the same way.
+  createStaticPOVBackground(){
+    // TODO: Each level should specify it's background colors 
+    const canvas = document.createElement('canvas');
+    canvas.width = this.width;
+    canvas.height = this.height;
+    const ctx = canvas.getContext('2d');
+    const skyGradient = ctx.createLinearGradient(0,0,0, this.height / 2);
     skyGradient.addColorStop(0, "#68d8f2")
     skyGradient.addColorStop(1, "#0844a5")
-    this.ctxBuffer.fillStyle = skyGradient;
-    this.ctxBuffer.fillRect(0, 0, this.width, this.height);
-    const floorGradient = this.ctxBuffer.createLinearGradient(0, this.height / 2 ,0, this.height);
+    ctx.fillStyle = skyGradient;
+    ctx.fillRect(0, 0, this.width, this.height);
+    const floorGradient = ctx.createLinearGradient(0, this.height / 2 ,0, this.height);
     floorGradient.addColorStop(0, "#333");
     // floorGradient.addColorStop(0.2, "#14300e")
     // floorGradient.addColorStop(1, "#1c660a")
-    this.ctxBuffer.fillStyle = floorGradient;
-    this.ctxBuffer.fillRect(0, (this.height / 2), this.width, (this.height / 2));
+    ctx.fillStyle = floorGradient;
+    ctx.fillRect(0, (this.height / 2), this.width, (this.height / 2));
+    return canvas;
+  }
+
+  drawPOVBackground(){
+    // We need to do this because if we created the background in the constructor it wouldn't
+    // have a width or height until the resize method was called.
+    if(!this.staticPOVBackground){
+      this.staticPOVBackground = this.createStaticPOVBackground();
+    }
+    this.ctxBuffer.drawImage(this.staticPOVBackground, 0, 0);
   }
 
   drawPlayerPOV(){
@@ -261,7 +277,8 @@ class Screen {
   }
 
   draw() {
-    this.clear();
+    // This is being deprecated for now as the static POV Background serves the same purpose.
+    // this.clear();
     this.drawPOVBackground();
     this.drawPlayerPOV();
     if(this.isMapActive){
