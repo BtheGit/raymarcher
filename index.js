@@ -118,6 +118,12 @@ const loadImageBuffer = async ({ path }) => {
   return imageBuffer;
 }
 
+const loadLinkImageBuffer = async ({ href, path }) => {
+  const img = await loadImage(path);
+  const linkImageBuffer = new LinkImageBuffer(href, img);
+  return linkImageBuffer;
+}
+
 // // Again, obviously not dry. But let's see what works best before we optimize.
 // // INCOMPLETE
 // const loadFramedImageBuffer = async ({ imagePath, backgroundImagePath }) => {
@@ -161,6 +167,8 @@ const loadTiles = (tiles) => {
         return Promise.resolve(loadBokeh(tile));
       case 'framed-image':
         return loadFramedImageBuffer(tile);
+      case 'link-image':
+        return loadLinkImageBuffer(tile)
       default:
         break;
     }

@@ -15,4 +15,8 @@ class ImageBuffer {
   getImageData(){
     return(this.ctx.getImageData(0,0, this.width, this.height));
   }
+
+  trigger(){
+    return;
+  }
 }
