@@ -33,3 +33,25 @@ const applyColorStopsToLinearGradient = (linearGradient, stops) => {
     linearGradient.addColorStop(stops[i].stop, stops[i].color)
   }
 }
+const loadStateFromSessionStorage = storageId => {
+  try {
+      const serializedState = sessionStorage.getItem(storageId);
+      if(serializedState === null) {
+          return undefined;
+      }
+      return JSON.parse(serializedState);
+  }
+  catch(err) {
+      return undefined;
+  }
+}
+
+const saveStatetoSessionStorage = (storageId, currentState) => {
+  try {
+      const serializedState = JSON.stringify(currentState);
+      sessionStorage.setItem(storageId, serializedState)
+  }
+  catch(err) {
+      console.log(err);
+  }
+}
