@@ -1,6 +1,7 @@
 class Player {
-  constructor(map, pos = new Vector(22, 12.5), dir = new Vector(-1, 0), plane = new Vector(0, 0.66)){
-    this.map = map;
+  constructor(game, pos = new Vector(12.5, 22), dir = new Vector(0, -1), plane = new Vector(-.66, 0)){
+    this.game = game;
+    this.map = this.game.map;
     this.pos = pos;
     this.dir = dir;
     this.plane = plane;
@@ -22,6 +23,7 @@ class Player {
     // However, the player himself (and sprites later) will be at any valid vector (ie, not in a cell marked as a wall).
     // So, before we start marching our rays up the gridlines, we first need to calculate the player's dx and dy relative to the closest grid 
     // line in the player dir.
+    const screenWidth = this.game.screen.width;
     for(let i = 0; i < screenWidth; i++){
       const cameraX = 2 * i / screenWidth - 1;
       const rayDir = this.plane.scale(cameraX).add(this.dir);

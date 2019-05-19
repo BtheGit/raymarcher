@@ -58,4 +58,4 @@ In the interests of making lists that never get completed, here are some potenti
   4. Let them upload their own textures to use as tiles.
   5. Create a permanent link for the map. (QueryParams would be nice, also stored in a backend (but no custom textures would be possible, too heavy.))
 - Track viewed cells and use that to draw the mini-map so that the mini-map doesn't immediately reveal the entire level.
-
+- In the event that the complexity never grows much more, one fun addition to it as a portfolio site could be creating multiple levels and randomly loading one each time (except if one is already active in session storage and the current player position is not the starting position or if it is determined that the player has reached there from going back and not reloading or some such)

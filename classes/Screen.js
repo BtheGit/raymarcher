@@ -67,21 +67,21 @@ class Screen {
     const mapTop = 0;
     const mapWidth = 200;
     const mapHeight = 200;
-    const mapXRatio = mapWidth / MAP_WIDTH;
-    const mapYRatio = mapHeight / MAP_HEIGHT;
+    const mapXRatio = mapWidth / this.game.map.width;
+    const mapYRatio = mapHeight / this.game.map.height;
     // Get player position and direction
     const playerPos = this.game.player.pos;
     const playerDir = this.game.player.dir;
     const playerSize = 3;
     // Get current world map.
     // This will be a class with useful methods... later
-    const world = this.game.map.grid;
+    const world = this.game.map;
     const GRID_UNIT = 1;
     const mapWidthUnit = mapXRatio * GRID_UNIT;
     const mapHeightUnit = mapYRatio * GRID_UNIT;
 
     // Render grid lines
-    for (let i = 0; i <= world[0].length; i++){
+    for (let i = 0; i <= world.width; i++){
       // VERTICAL
       this.ctxBuffer.beginPath();
       this.ctxBuffer.lineWidth = 1;
@@ -92,7 +92,7 @@ class Screen {
       this.ctxBuffer.stroke();
     }
     
-    for(let i = 0; i < world.length; i++){
+    for(let i = 0; i < world.height; i++){
       // HORIZONTAL
       this.ctxBuffer.beginPath();
       this.ctxBuffer.lineWidth = 1;
@@ -178,8 +178,8 @@ class Screen {
       const ray = rays[i];
       // TODO: Make ray class to abstract and use getters.
       const { normalizedDistance, wall, wallOrientation, wallIntersection, rayDir, activeCell } = ray;
-      const columnHeight = screenHeight / normalizedDistance;
-      const top = (screenHeight / 2) - (columnHeight / 2) * playerElevation;
+      const columnHeight = this.height / normalizedDistance;
+      const top = (this.height / 2) - (columnHeight / 2) * playerElevation;
       const VIEW_DISTANCE = 25;
       const brightnessMultiplier = 1.3;
       const darknessMultiplier = 0.9;

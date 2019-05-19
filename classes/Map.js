@@ -15,11 +15,11 @@ class Map {
     return grid;
   }
 
-  getCell(x, y){
-    if(this.grid[x] == null){
+  getCell(y, x){
+    if(this.grid[x][y] == null){
       return null;
     }
-    if(this.grid[x][y] == null){
+    if(this.grid[x] == null){
       return null;
     }
     return this.grid[x][y];
