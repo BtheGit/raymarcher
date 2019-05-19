@@ -4,17 +4,27 @@ const SCREEN_WIDTH = 1024;
 const SCREEN_HEIGHT = 786;
 
 class Game {
-  constructor(map, images, framerate){
+  constructor(maps, images, framerate){
     this.images = images;
     this.interval = framerate;
     this.animationFrame = null;
-    // Use one canvas but have display modes (or a map overlay when tabv is pressed).
+
+    // Gonna hardcode the first level for now. TODO: REMOVE
+    this.maps = maps;
+    this.currentMap = this.maps[0];
+    this.grid = new Map(this.currentMap.grid);
+
     this.screen = new Screen(this, 'display-main');
     this.screen.resizeCanvas(SCREEN_WIDTH,SCREEN_HEIGHT);
-    this.map = new Map(map);
-    this.player = new Player(this);
-    this.keyState = {}; // Active store of keypresses
 
+    this.player = new Player(
+      this, 
+      new Vector(this.currentMap.playerPos.x, this.currentMap.playerPos.y), 
+      new Vector(this.currentMap.playerDir.x, this.currentMap.playerDir.y),
+      new Vector(this.currentMap.playerPlane.x, this.currentMap.playerPlane.y)
+    );
+
+    this.keyState = {}; // Active store of keypresses
     document.addEventListener('keydown', ({ key }) => {
       this.keyState[key] = true;
     })

@@ -19,3 +19,17 @@ const scaleToScreen = (vector, screen) => {
   const scaledY = vector.y * scaleY;
   return { x: scaledX, y: scaledY };
 }
+const loadImage = path => {
+  return new Promise((resolve, reject) => {
+    const img = document.createElement('img');
+    img.addEventListener('load', () => {
+      resolve(img);
+    })
+    img.src = path;
+  })
+}
+const applyColorStopsToLinearGradient = (linearGradient, stops) => {
+  for(let i = 0; i < stops.length; i++){
+    linearGradient.addColorStop(stops[i].stop, stops[i].color)
+  }
+}

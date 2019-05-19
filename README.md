@@ -29,7 +29,7 @@ In the interests of making lists that never get completed, here are some potenti
 - [ ] Floor and ceiling textures.
 - [ ] Allow for placing textures on walls face by face
 - [ ] Add build system with typescript
-- [ ] WAD packs to instantiate the 'game' with. Including all textures and maps for now. Maps should be bundled with starting player location and direction and plane as well.
+- [x] WAD packs to instantiate the 'game' with. Including all textures and maps for now. Maps should be bundled with starting player location and direction and plane as well.
 
 ### Alternate fun ideas with raycasters:
 

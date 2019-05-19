@@ -1,7 +1,7 @@
 class Player {
-  constructor(game, pos = new Vector(12.5, 22), dir = new Vector(0, -1), plane = new Vector(-.66, 0)){
+  constructor(game, pos, dir, plane){
     this.game = game;
-    this.map = this.game.map;
+    this.grid = this.game.grid;
     this.pos = pos;
     this.dir = dir;
     this.plane = plane;
@@ -55,7 +55,7 @@ class Player {
         }
         // TODO: Walls will be complex objects later to allow for complex textures
         // and interactions.
-        const currentCell = this.map.getCell(activeCell.x, activeCell.y);
+        const currentCell = this.grid.getCell(activeCell.x, activeCell.y);
         if(currentCell == null){
           break;
         }
@@ -97,11 +97,11 @@ class Player {
     const cellY = Math.floor(newPosY);
     
     // We split up moving along the axes to avoid getting stuck on walls
-    const nextCellX = this.map.getCell(cellX, Math.floor(this.pos.y));
+    const nextCellX = this.grid.getCell(cellX, Math.floor(this.pos.y));
     if(nextCellX === 0){
       this.pos.x = newPosX;
     }
-    const nextCellY = this.map.getCell(Math.floor(this.pos.x), cellY);
+    const nextCellY = this.grid.getCell(Math.floor(this.pos.x), cellY);
     if(nextCellY === 0){
       this.pos.y = newPosY;
     }
@@ -116,11 +116,11 @@ class Player {
     const cellY = Math.floor(newPosY);
 
     // We split up moving along the axes to avoid getting stuck on walls
-    const nextCellX = this.map.getCell(cellX, Math.floor(this.pos.y));
+    const nextCellX = this.grid.getCell(cellX, Math.floor(this.pos.y));
     if(nextCellX === 0){
       this.pos.x = newPosX;
     }
-    const nextCellY = this.map.getCell(Math.floor(this.pos.x), cellY);
+    const nextCellY = this.grid.getCell(Math.floor(this.pos.x), cellY);
     if(nextCellY === 0){
       this.pos.y = newPosY;
     }

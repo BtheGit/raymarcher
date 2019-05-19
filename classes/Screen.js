@@ -3,15 +3,17 @@
  * @param {string} id The DOM id of the canvas element this screen instance wraps.
  */
 class Screen {
-  constructor(game, id){
-    this.canvas = document.getElementById(id);
+  constructor(game, mainScreenCanvasId){
+    this.canvas = document.getElementById(mainScreenCanvasId);
     this.ctx = this.canvas.getContext('2d');
     this.canvasBuffer = document.createElement('canvas');
     this.ctxBuffer = this.canvasBuffer.getContext('2d');
     this.backgroundColor = 'black';
     this.width = 0;
     this.height = 0;
-    // TODO: Add settings for level by level backgrounds
+    this.game = game;
+    this.currentMap = this.game.currentMap;
+    // We delay creating the background until after the main canvas size is determined.
     this.staticPOVBackground;
     // Just to make sure the canvas is reset before beginning.
     // Might want to remove this.
@@ -19,7 +21,6 @@ class Screen {
     // When this is true, draw minimap overlay.
     // Can have all conditional render options set as single object with getters/setters later. (HUD, etc)
     this.isMapActive = false;
-    this.game = game;
     this.fov = 60;
     this.drawDistance = 500;
   }
@@ -67,15 +68,15 @@ class Screen {
     const mapTop = 0;
     const mapWidth = 200;
     const mapHeight = 200;
-    const mapXRatio = mapWidth / this.game.map.width;
-    const mapYRatio = mapHeight / this.game.map.height;
+    const mapXRatio = mapWidth / this.game.grid.width;
+    const mapYRatio = mapHeight / this.game.grid.height;
     // Get player position and direction
     const playerPos = this.game.player.pos;
     const playerDir = this.game.player.dir;
     const playerSize = 3;
     // Get current world map.
     // This will be a class with useful methods... later
-    const world = this.game.map;
+    const world = this.game.grid;
     const GRID_UNIT = 1;
     const mapWidthUnit = mapXRatio * GRID_UNIT;
     const mapHeightUnit = mapYRatio * GRID_UNIT;
@@ -140,22 +141,39 @@ class Screen {
   // draw it once to a canvas (expensive) and thereafter just repeatedly copy it over to the buffer (cheap)
   // TODO: We could in theory also save the step of clearing the screen, since this works much the same way.
   createStaticPOVBackground(){
-    // TODO: Each level should specify it's background colors 
+    // Each level should specify it's background colors as an array of objects with color and stops set.
+    const { backgroundSky, backgroundFloor } = this.currentMap;
+    if (!backgroundSky){
+      backgroundSky = [
+        {
+          stop: 0,
+          color: '#222'
+        }
+      ]
+    }
+    if(!backgroundFloor){
+      backgroundFloor = [
+        {
+          stop: 0,
+          color: "#555"
+        }
+      ]
+    }
     const canvas = document.createElement('canvas');
     canvas.width = this.width;
     canvas.height = this.height;
     const ctx = canvas.getContext('2d');
+    
     const skyGradient = ctx.createLinearGradient(0,0,0, this.height / 2);
-    skyGradient.addColorStop(0, "#333")
-    skyGradient.addColorStop(1, "#000")
+    applyColorStopsToLinearGradient(skyGradient, backgroundSky);
     ctx.fillStyle = skyGradient;
     ctx.fillRect(0, 0, this.width, this.height);
+
     const floorGradient = ctx.createLinearGradient(0, this.height / 2 ,0, this.height);
-    floorGradient.addColorStop(0, "#000");
-    floorGradient.addColorStop(0.2, "#333")
-    floorGradient.addColorStop(1, "#555")
+    applyColorStopsToLinearGradient(floorGradient, backgroundFloor)
     ctx.fillStyle = floorGradient;
     ctx.fillRect(0, (this.height / 2), this.width, (this.height / 2));
+
     return canvas;
   }
 
