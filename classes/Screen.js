@@ -6,6 +6,8 @@ class Screen {
   constructor(game, id){
     this.canvas = document.getElementById(id);
     this.ctx = this.canvas.getContext('2d');
+    this.canvasBuffer = document.createElement('canvas');
+    this.ctxBuffer = this.canvasBuffer.getContext('2d');
     this.backgroundColor = 'black';
     this.width = 0;
     this.height = 0;
@@ -18,6 +20,10 @@ class Screen {
     this.game = game;
     this.fov = 60;
     this.drawDistance = 500;
+  }
+
+  updateFromBuffer(){
+    this.ctx.drawImage(this.canvasBuffer, 0,0)
   }
 
   // Getters/Setters
@@ -35,8 +41,8 @@ class Screen {
 
   // Display Helpers
   resizeCanvas(width, height) {
-    this.canvas.width = this.width = width;
-    this.canvas.height = this.height = height;
+    this.canvas.width = this.canvasBuffer.width = this.width = width;
+    this.canvas.height = this.canvasBuffer.height = this.height = height;
     this.clear();
   }
 
@@ -45,8 +51,8 @@ class Screen {
   }
 
   clear(color = this.backgroundColor) {
-    this.ctx.fillStyle = color;
-    this.ctx.fillRect(0,0, this.canvas.width, this.canvas.height);
+    this.ctxBuffer.fillStyle = color;
+    this.ctxBuffer.fillRect(0,0, this.canvas.width, this.canvas.height);
   }
 
   // Main draw functions
@@ -75,24 +81,24 @@ class Screen {
     // Render grid lines
     for (let i = 0; i <= world[0].length; i++){
       // VERTICAL
-      this.ctx.beginPath();
-      this.ctx.lineWidth = 1;
-      this.ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-      this.ctx.moveTo(0 + (i * mapWidthUnit), 0);
-      this.ctx.lineTo(0 + (i * mapWidthUnit), mapHeight);
-      this.ctx.closePath();
-      this.ctx.stroke();
+      this.ctxBuffer.beginPath();
+      this.ctxBuffer.lineWidth = 1;
+      this.ctxBuffer.strokeStyle = 'rgba(255,255,255,0.3)';
+      this.ctxBuffer.moveTo(0 + (i * mapWidthUnit), 0);
+      this.ctxBuffer.lineTo(0 + (i * mapWidthUnit), mapHeight);
+      this.ctxBuffer.closePath();
+      this.ctxBuffer.stroke();
     }
     
     for(let i = 0; i < world.length; i++){
       // HORIZONTAL
-      this.ctx.beginPath();
-      this.ctx.lineWidth = 1;
-      this.ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-      this.ctx.moveTo(0, 0 + (i * mapHeightUnit));
-      this.ctx.lineTo(mapWidth, 0 + (i * mapHeightUnit));
-      this.ctx.closePath();
-      this.ctx.stroke();
+      this.ctxBuffer.beginPath();
+      this.ctxBuffer.lineWidth = 1;
+      this.ctxBuffer.strokeStyle = 'rgba(255,255,255,0.3)';
+      this.ctxBuffer.moveTo(0, 0 + (i * mapHeightUnit));
+      this.ctxBuffer.lineTo(mapWidth, 0 + (i * mapHeightUnit));
+      this.ctxBuffer.closePath();
+      this.ctxBuffer.stroke();
     }
     // TODO: Fix the mirrored orientation.
     // Render grid elements, scaled.
@@ -109,23 +115,23 @@ class Screen {
         const cellLeft = 0 + (rowOffset * mapWidthUnit);
         const cellTop = 0 + (columnOffset * mapHeightUnit);
         if (cellTexture){
-          this.ctx.drawImage(cellTexture, 0, 0, cellTexture.width, cellTexture.height, cellLeft, cellTop, mapWidthUnit, mapHeightUnit);
+          this.ctxBuffer.drawImage(cellTexture, 0, 0, cellTexture.width, cellTexture.height, cellLeft, cellTop, mapWidthUnit, mapHeightUnit);
         }
         else {
-          this.ctx.beginPath();
-          this.ctx.fillStyle = cellHue ? `hsla(${cellHue}, 100%, 80%, .9)` : emptyCellColor;
-          this.ctx.fillRect(cellLeft, cellTop, mapWidthUnit, mapHeightUnit);
-          this.ctx.closePath();
+          this.ctxBuffer.beginPath();
+          this.ctxBuffer.fillStyle = cellHue ? `hsla(${cellHue}, 100%, 80%, .9)` : emptyCellColor;
+          this.ctxBuffer.fillRect(cellLeft, cellTop, mapWidthUnit, mapHeightUnit);
+          this.ctxBuffer.closePath();
         }
       } 
     }
     // Render player dot
     const playerPosXOnMap = playerPos.x * mapXRatio;
     const playerPosYOnMap = playerPos.y * mapYRatio;
-    this.ctx.beginPath();
-    this.ctx.fillStyle = 'red';
-    this.ctx.arc(playerPosXOnMap, playerPosYOnMap, playerSize, 0, PI2);
-    this.ctx.fill();
+    this.ctxBuffer.beginPath();
+    this.ctxBuffer.fillStyle = 'red';
+    this.ctxBuffer.arc(playerPosXOnMap, playerPosYOnMap, playerSize, 0, PI2);
+    this.ctxBuffer.fill();
 
   }
 
@@ -133,17 +139,17 @@ class Screen {
     // TODO: Each level should specify it's background colors (TODO: TODO: texture mapping ceilings and floors)
     // Until then, this can be drawn once on an offscreen canvas and reused instead of redrawn each frame.
     // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
-    const skyGradient = this.ctx.createLinearGradient(0,0,0, this.height / 2);
+    const skyGradient = this.ctxBuffer.createLinearGradient(0,0,0, this.height / 2);
     skyGradient.addColorStop(0, "#68d8f2")
     skyGradient.addColorStop(1, "#0844a5")
-    this.ctx.fillStyle = skyGradient;
-    this.ctx.fillRect(0, 0, this.width, this.height);
-    const floorGradient = this.ctx.createLinearGradient(0, this.height / 2 ,0, this.height);
+    this.ctxBuffer.fillStyle = skyGradient;
+    this.ctxBuffer.fillRect(0, 0, this.width, this.height);
+    const floorGradient = this.ctxBuffer.createLinearGradient(0, this.height / 2 ,0, this.height);
     floorGradient.addColorStop(0, "#333");
     // floorGradient.addColorStop(0.2, "#14300e")
     // floorGradient.addColorStop(1, "#1c660a")
-    this.ctx.fillStyle = floorGradient;
-    this.ctx.fillRect(0, (this.height / 2), this.width, (this.height / 2));
+    this.ctxBuffer.fillStyle = floorGradient;
+    this.ctxBuffer.fillRect(0, (this.height / 2), this.width, (this.height / 2));
   }
 
   drawPlayerPOV(){
@@ -168,26 +174,26 @@ class Screen {
         const textureWidth = wallTexture.width;
         const wallIntersectionOffset = wallIntersection - Math.floor(wallIntersection);
         let textureStripLeft = Math.floor(wallIntersectionOffset * textureWidth);
-        this.ctx.drawImage(wallTexture, textureStripLeft, 0, 1, wallTexture.height, i, top, 1, columnHeight);
-        this.ctx.fillStyle = 'black';
-        this.ctx.globalAlpha = 1 - (VIEW_DISTANCE - (normalizedDistance * darknessMultiplier)) / VIEW_DISTANCE;
-        this.ctx.fillRect(i, top, 1, columnHeight);
-        this.ctx.globalAlpha = 1;
+        this.ctxBuffer.drawImage(wallTexture, textureStripLeft, 0, 1, wallTexture.height, i, top, 1, columnHeight);
+        this.ctxBuffer.fillStyle = 'black';
+        this.ctxBuffer.globalAlpha = 1 - (VIEW_DISTANCE - (normalizedDistance * darknessMultiplier)) / VIEW_DISTANCE;
+        this.ctxBuffer.fillRect(i, top, 1, columnHeight);
+        this.ctxBuffer.globalAlpha = 1;
       }
       else {
         const wallHue = HUES[wall] || 0; // Anything without a fallback hue will be crazy red and obvious.
         const hsl = `hsl(${ wallHue }, 100%, ${ brightness }%)`;
-        this.ctx.fillStyle = hsl;
-        this.ctx.beginPath();
-        this.ctx.fillRect(i,top, 1, columnHeight);
-        this.ctx.closePath();
+        this.ctxBuffer.fillStyle = hsl;
+        this.ctxBuffer.beginPath();
+        this.ctxBuffer.fillRect(i,top, 1, columnHeight);
+        this.ctxBuffer.closePath();
       }
       // This creates artificial shading on half the vertices to give them extra three dimensional feel.
       if(wallOrientation === 1){
-        this.ctx.globalAlpha = .2;
-        this.ctx.fillStyle = 'black';
-        this.ctx.fillRect(i, top, 1, columnHeight);
-        this.ctx.globalAlpha = 1;
+        this.ctxBuffer.globalAlpha = .2;
+        this.ctxBuffer.fillStyle = 'black';
+        this.ctxBuffer.fillRect(i, top, 1, columnHeight);
+        this.ctxBuffer.globalAlpha = 1;
       }
 
       //FLOOR CASTING
@@ -252,5 +258,6 @@ class Screen {
     if(this.isMapActive){
       this.drawMapOverlay();
     }
+    this.updateFromBuffer()
   }
 }
