@@ -16,13 +16,11 @@ class Screen {
     // We delay creating the background until after the main canvas size is determined.
     this.staticPOVBackground;
     // Just to make sure the canvas is reset before beginning.
-    // Might want to remove this.
-    // this.clear();
     // When this is true, draw minimap overlay.
-    // Can have all conditional render options set as single object with getters/setters later. (HUD, etc)
+    // TODO: Can have all conditional render options set as single object with getters/setters later. (HUD, etc)
     this.isMapActive = false;
-    this.fov = 60;
-    this.drawDistance = 500;
+    // this.fov = 60;
+    // this.drawDistance = 500;
   }
 
   updateFromBuffer(){
@@ -53,11 +51,6 @@ class Screen {
     this.backgroundColor = color;
   }
 
-  // clear(color = this.backgroundColor) {
-  //   this.ctxBuffer.fillStyle = color;
-  //   this.ctxBuffer.fillRect(0,0, this.canvas.width, this.canvas.height);
-  // }
-
   // Main draw functions
   drawMapOverlay(){
     // TODO: Lots of hardcoded stuff to make dynamic.
@@ -76,7 +69,8 @@ class Screen {
     const playerSize = 3;
     // Get current world map.
     // This will be a class with useful methods... later
-    const world = this.game.grid;
+    const world = this.game.grid; //WHOOPS
+    const mapGrid = world.grid;
     const GRID_UNIT = 1;
     const mapWidthUnit = mapXRatio * GRID_UNIT;
     const mapHeightUnit = mapYRatio * GRID_UNIT;
@@ -103,14 +97,15 @@ class Screen {
       this.ctxBuffer.closePath();
       this.ctxBuffer.stroke();
     }
-    // TODO: Fix the mirrored orientation.
+    // TODO: Fix the mirrored orientation. FOR NOW WE ARE REVERSING THE CELL DRAW ORDER ON THE X TO COMPENSATE
     // Render grid elements, scaled.
-    for(let i = 0; i < world.length; i++){
+    for(let i = 0; i < mapGrid.length; i++){
       const rowOffset = i;
-      const row = world[i];
+      const row = mapGrid[i];
       for(let j = 0; j < row.length; j++){
         const columnOffset = j;
-        const cell = world.getCell(i, j);
+        const reversedRowOffset = mapGrid.length - 1 - rowOffset;
+        const cell = world.getCell(reversedRowOffset, columnOffset);
         const textureId = cell; // In the future the cell will have more data so this will require extracing the data
         const cellHue = HUES[textureId];
         const cellTexture = this.game.images[cell - 1] && this.game.images[cell - 1].getCanvas();
