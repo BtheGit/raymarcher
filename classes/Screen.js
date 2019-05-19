@@ -188,7 +188,23 @@ class Screen {
       const wallTexture = this.game.images[wall - 1] && this.game.images[wall - 1].getCanvas();
       if(wallTexture){
         const textureWidth = wallTexture.width;
-        const wallIntersectionOffset = wallIntersection - Math.floor(wallIntersection);
+        let wallIntersectionOffset;
+        if(wallOrientation === 1){
+          if(this.game.player.dir.y > 0){
+            wallIntersectionOffset = wallIntersection - Math.floor(wallIntersection);
+          }
+          else {
+            wallIntersectionOffset = 1 - (wallIntersection - Math.floor(wallIntersection));
+          }
+        }
+        else {
+          if(this.game.player.dir.x < 0){
+            wallIntersectionOffset = wallIntersection - Math.floor(wallIntersection);
+          }
+          else {
+            wallIntersectionOffset = 1 - (wallIntersection - Math.floor(wallIntersection));
+          }
+        }
         let textureStripLeft = Math.floor(wallIntersectionOffset * textureWidth);
         this.ctxBuffer.drawImage(wallTexture, textureStripLeft, 0, 1, wallTexture.height, i, top, 1, columnHeight);
         this.ctxBuffer.fillStyle = 'black';
