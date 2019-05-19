@@ -197,57 +197,66 @@ class Screen {
       }
 
       //FLOOR CASTING
-      let floorXWall;
-      let floorYWall; //x, y position of the floor texel at the bottom of the wall
+      // let floorXWall;
+      // let floorYWall; //x, y position of the floor texel at the bottom of the wall
 
-      //4 different wall directions possible
-      if(wallOrientation === 0 && rayDir.x > 0) {
-        floorXWall = activeCell.x;
-        floorYWall = activeCell.y + wallIntersection.x;
-      }
-      else if(wallOrientation === 0 && rayDir.x < 0) {
-        floorXWall = activeCell.x + 1.0;
-        floorYWall = activeCell.y + wallIntersection.x;
-      }
-      else if(wallOrientation === 1 && rayDir.y > 0) {
-        floorXWall = activeCell.x + wallIntersection.x;
-        floorYWall = activeCell.y;
-      }
-      else {
-        floorXWall = activeCell.x + wallIntersection.x;
-        floorYWall = activeCell.y + 1.0;
-      }
-      let drawEnd = top + columnHeight;
-      let distWall, distPlayer, currentDist;
+      // //4 different wall directions possible
+      // if(wallOrientation === 0 && rayDir.x > 0) {
+      //   floorXWall = activeCell.x;
+      //   floorYWall = activeCell.y + wallIntersection;
+      // }
+      // else if(wallOrientation === 0 && rayDir.x < 0) {
+      //   floorXWall = activeCell.x + 1.0;
+      //   floorYWall = activeCell.y + wallIntersection;
+      // }
+      // else if(wallOrientation === 1 && rayDir.y > 0) {
+      //   floorXWall = activeCell.x + wallIntersection;
+      //   floorYWall = activeCell.y;
+      // }
+      // else {
+      //   floorXWall = activeCell.x + wallIntersection;
+      //   floorYWall = activeCell.y + 1.0;
+      // }
+      // let drawEnd = Math.floor(top + columnHeight);
+      // let distWall, distPlayer, currentDist;
 
-      distWall = normalizedDistance;
-      distPlayer = 0.0;
+      // distWall = normalizedDistance;
+      // distPlayer = 0.0;
 
-      if (drawEnd < 0) {
-        drawEnd = screenHeight; //becomes < 0 when the integer overflows
-      }
-      //draw the floor from drawEnd to the bottom of the screen
-      for(let y = drawEnd + 1; y < screenHeight; y++){
-        currentDist = screenHeight / (2.0 * y - screenHeight); //you could make a small lookup table for this instead
-
-        const weight = currentDist / distWall;
-
-        const currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
-        const currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
-        const floorTexture = this.game.images[0];
-        let floorTexX, floorTexY;
-        floorTexX = Math.floor(currentFloorX * floorTexture.width) % floorTexture.width;
-        floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
-        // this.ctx.fillStyle = 'purple';
-        // this.ctx.fillRect(i,y, 1, 1)
-        // this.ctx.drawImage(floorTexture,floorTexX,floorTexY,floorTexX + 1, floorTexY + 1, i, y, 1, 1);
-        // console.log(currentDist)
-        //floor
-        // buffer[y][i] = (texture[3][texWidth * floorTexY + floorTexX] >> 1) & 8355711;
-        //ceiling (symmetrical!)
-        // buffer[screenHeight - y][i] = texture[6][texWidth * floorTexY + floorTexX];
-      }
-      
+      // if (drawEnd < 0) {
+      //   drawEnd = screenHeight; //becomes < 0 when the integer overflows
+      // }
+      // //draw the floor from drawEnd to the bottom of the screen
+      // const floorColumnHeight = screenHeight - drawEnd;
+      // if(floorColumnHeight > 0){
+      //   const columnBuffer = document.createElement('canvas');
+      //   columnBuffer.width = 1;
+      //   columnBuffer.height = floorColumnHeight;
+      //   const columnBufferCtx = columnBuffer.getContext('2d');
+      //   for(let y = 0; y < floorColumnHeight; y++){
+      //     currentDist = screenHeight / (2.0 * y - screenHeight); //you could make a small lookup table for this instead
+  
+      //     const weight = currentDist / distWall;
+  
+      //     const currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
+      //     const currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
+      //     // console.log({weight, floorXWall, currentFloorX, currentFloorY})
+      //     // debugger
+      //     const floorTexture = this.game.images[0].getCanvas();
+      //     let floorTexX, floorTexY;
+      //     floorTexX = Math.floor(currentFloorX * floorTexture.width) % floorTexture.width;
+      //     floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
+      //     // columnBufferCtx.fillStyle = 'purple';
+      //     // columnBufferCtx.fillRect(0, y, 1, 1)
+      //     columnBufferCtx.drawImage(floorTexture,1,10,2, 11, 0, y, 1, 1);
+      //     // console.log(currentDist)
+      //     //floor
+      //     // buffer[y][i] = (texture[3][texWidth * floorTexY + floorTexX] >> 1) & 8355711;
+      //     //ceiling (symmetrical!)
+      //     // buffer[screenHeight - y][i] = texture[6][texWidth * floorTexY + floorTexX];
+      //   }
+      //   this.ctxBuffer.drawImage(columnBuffer, i, drawEnd)
+      // }
     }
   }
 
