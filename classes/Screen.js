@@ -146,14 +146,14 @@ class Screen {
     canvas.height = this.height;
     const ctx = canvas.getContext('2d');
     const skyGradient = ctx.createLinearGradient(0,0,0, this.height / 2);
-    skyGradient.addColorStop(0, "#68d8f2")
-    skyGradient.addColorStop(1, "#0844a5")
+    skyGradient.addColorStop(0, "#333")
+    skyGradient.addColorStop(1, "#000")
     ctx.fillStyle = skyGradient;
     ctx.fillRect(0, 0, this.width, this.height);
     const floorGradient = ctx.createLinearGradient(0, this.height / 2 ,0, this.height);
-    floorGradient.addColorStop(0, "#333");
-    // floorGradient.addColorStop(0.2, "#14300e")
-    // floorGradient.addColorStop(1, "#1c660a")
+    floorGradient.addColorStop(0, "#000");
+    floorGradient.addColorStop(0.2, "#333")
+    floorGradient.addColorStop(1, "#555")
     ctx.fillStyle = floorGradient;
     ctx.fillRect(0, (this.height / 2), this.width, (this.height / 2));
     return canvas;
