@@ -9,5 +9,8 @@ class LinkImageBuffer extends ImageBuffer {
     // a) Store current state in sessionStorage TODO:
     // b) Tell the browser to go to the link
     console.log('You hit me!')
+    window.location.href = this.href;
+    // We should also add in a highlight effect on elements that have a trigger function when in range, indicating they can
+    // be triggered.
   }
 }
