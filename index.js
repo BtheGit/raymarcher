@@ -77,7 +77,7 @@ const PORTFOLIO_MAP1 = [
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,1,0,1,0,19,0,1,0,0,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -107,31 +107,31 @@ const PI2 = Math.PI * 2;
 const TILES = [
   {
     type: 'image',
-    imagePath: './images/tiles/light_brick1.jpg',
+    path: './images/tiles/light_brick1.jpg',
   },
   {
     type: 'image',
-    imagePath: './images/tiles/marble1.jpg',
+    path: './images/tiles/marble1.jpg',
   },
   {
     type: 'image',
-    imagePath: './images/tiles/concrete1.jpg',
+    path: './images/tiles/concrete1.jpg',
   },
   {
     type: 'image',
-    imagePath: './images/tiles/rusted_steel1.jpg',
+    path: './images/tiles/rusted_steel1.jpg',
   },
   {
     type: 'image',
-    imagePath: './images/tiles/red_brick1.jpg',
+    path: './images/tiles/red_brick1.jpg',
   },
   {
     type: 'image',
-    imagePath: './images/tiles/hedge1.jpg',
+    path: './images/tiles/hedge1.jpg',
   },
   {
     type: 'image',
-    imagePath: './images/tiles/me1.png',
+    path: './images/tiles/me1.png',
   },
   {
     type: 'bokeh',
@@ -151,15 +151,46 @@ const TILES = [
   },
   {
     type: 'image',
-    imagePath: 'https://media.licdn.com/dms/image/C5603AQFDLAcoM7oa0w/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=BbkkYW-9reSYz1TNvDhAjbv7rBfNlN9RN6KIkeLbYKo'
+    path: 'https://media.licdn.com/dms/image/C5603AQFDLAcoM7oa0w/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=BbkkYW-9reSYz1TNvDhAjbv7rBfNlN9RN6KIkeLbYKo'
   },
   {
     type: 'image',
-    imagePath: 'https://media.licdn.com/dms/image/C4E03AQF_rnt4a-2N4g/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=gi6fY7WlyY5t71f4KYuRHjEkwurb5gRqA9hKlQ3PC_o',
+    path: 'https://media.licdn.com/dms/image/C4E03AQF_rnt4a-2N4g/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=gi6fY7WlyY5t71f4KYuRHjEkwurb5gRqA9hKlQ3PC_o',
   },
   {
     type: 'image',
-    imagePath: 'https://scontent-iad3-1.xx.fbcdn.net/v/t31.0-8/11823034_10154226861255620_5773866248861672139_o.jpg?_nc_cat=107&_nc_ht=scontent-iad3-1.xx&oh=5b2423ed7c798b8ab75d39f9bc4353e1&oe=5D56DC9F'
+    path: 'https://scontent-iad3-1.xx.fbcdn.net/v/t31.0-8/11823034_10154226861255620_5773866248861672139_o.jpg?_nc_cat=107&_nc_ht=scontent-iad3-1.xx&oh=5b2423ed7c798b8ab75d39f9bc4353e1&oe=5D56DC9F'
+  },
+  {
+    type: 'image',
+    path: './images/projects/bokehfy1.png'
+  },
+  {
+    type: 'image',
+    path: './images/projects/breakout1.png'
+  },
+  {
+    type: 'image',
+    path: './images/projects/doodledetectives1.png'
+  },
+  {
+    type: 'image',
+    path: './images/projects/localplaces1.jpg'
+  },
+  {
+    type: 'image',
+    path: './images/projects/sortabletables1.jpg'
+  },
+  {
+    type: 'image',
+    path: './images/projects/tetris1.png'
+  },
+  {
+    type: 'framed-image',
+    imagePath: './images/tiles/me1.png',
+    backgroundImagePath: './images/tiles/light_brick1.jpg',
+    tilt: null, // This should trigger random,
+    frameColor: 'black',
   }
 ];
 
@@ -183,12 +214,33 @@ class ImageBuffer {
   }
 }
 
+// Yes, at this point it's starting to be pretty obvious that I could stand to use a super class
+// here. But until we know how these image buffers will shake out, I don't want to optimize.
+class FramedImageBuffer {
+  constructor(image){
+    this.rawImage = image;
+    this.canvas = document.createElement('canvas');
+    this.width = this.canvas.width = this.rawImage.width;
+    this.height = this.canvas.height = this.rawImage.height;
+    this.ctx = this.canvas.getContext('2d');
+    this.ctx.drawImage(this.rawImage, 0, 0);
+  }
+
+  getCanvas(){
+    return this.canvas;
+  }
+  
+  getImageData(){
+    return(this.ctx.getImageData(0,0, this.width, this.height));
+  }
+}
+
 // TEST to use bokehfy to create animated walls
 // TODO: Resizing the window breaks this (the canvas size gets reset to 0)
 // TODO: Don't let an opacity be set (no transparency)
 // TODO: If I can add in support of background images for bokehfy, I can use it as
 // an effect over normal game tiles!
-class BokehImage {
+class BokehImageBuffer {
   constructor(bokehSettings = {}, sideLength = 200){
     this.el = document.createElement('div');
     this.settings = { ...bokehSettings, parent: this.el}
@@ -219,36 +271,75 @@ class BokehImage {
   }
 }
 
-const loadImagePromise = imagePath => {
+const loadImage = path => {
   return new Promise((resolve, reject) => {
     const img = document.createElement('img');
     img.addEventListener('load', () => {
-      const imageBuffer = new ImageBuffer(img);
-      resolve(imageBuffer);
+      resolve(img);
     })
-    img.src = imagePath;
+    img.src = path;
   })
 }
 
-const loadBokeh = bokehSettings => {
-  return new BokehImage(bokehSettings);
+const loadImagePromise = async ({ path }) => {
+  const img = await loadImage(path);
+  const imageBuffer = new ImageBuffer(img);
+  return imageBuffer;
+}
+
+// Again, obviously not dry. But let's see what works best before we optimize.
+// INCOMPLETE
+const loadFramedImagePromise = async ({ imagePath, backgroundImagePath }) => {
+  const framedImage = await loadImage(imagePath);
+  const backgroundImage = await loadImage(backgroundImagePath);
+  const baseCanvas = document.createElement('canvas');
+  const baseCtx = baseCanvas.getContext('2d');
+  baseCanvas.width = backgroundImage.width;
+  baseCanvas.height = backgroundImage.height;
+  baseCtx.drawImage(backgroundImage, 0, 0);
+
+  // FAILED ATTEMPT TO FRAME AND ROTATE
+  // const frameCanvas = document.createElement('canvas');
+  // const frameCtx = baseCanvas.getContext('2d');
+  // frameCanvas.width = baseCanvas.width * .5 + 12;
+  // frameCanvas.height = baseCanvas.height * .5 + 6;
+  // frameCtx.fillStyle = 'black';
+  // frameCtx.fillRect(0,0,frameCanvas.width,frameCanvas.height)
+  // frameCtx.drawImage(framedImage, 6, 3, frameCanvas.width - 12, frameCanvas.height - 6)
+  // frameCtx.rotate(30);
+  // baseCtx.drawImage(frameCanvas, 100,100, 100, 100)
+  const frameWidthRatio = Math.floor(baseCanvas.width * .8);
+  const framedImageWidthRatio = Math.floor(baseCanvas.width * .7);
+  const framedImageHeight = (framedImage.width / baseCanvas.width) * framedImage.height;
+  baseCtx.fillStyle = 'black'
+  baseCtx.fillRect( 20, 20, frameWidthRatio, 100)
+
+  return new ImageBuffer(baseCanvas);
+}
+
+const loadBokeh = ({ bokehSettings }) => {
+  return new BokehImageBuffer(bokehSettings);
 }
 
 const loadTiles = (tiles) => {
   return Promise.all(tiles.map(tile => {
-    if(tile.type === 'image'){
-      return loadImagePromise(tile.imagePath)
-    }
-    if(tile.type === 'bokeh'){
-      return Promise.resolve(loadBokeh(tile.bokehSettings));
+    switch(tile.type){
+      case 'image':
+        return loadImagePromise(tile)
+      case 'bokeh':
+        return Promise.resolve(loadBokeh(tile));
+      case 'framed-image':
+        return loadFramedImagePromise(tile);
+      default:
+        break;
     }
   }));
 }
 
 const loadAssets = async () => {
   const tiles = await loadTiles(TILES);
-  // const map = PORTFOLIO_MAP1;
-  const map = MAP2;
+  const map = PORTFOLIO_MAP1;
+  // const map = MAP2;
   // If we abstract the API for images, we can use plain images and animated ones
   // interchangeably.
   // const imageBuffers = rawImages.map(rawImage => new ImageBuffer(rawImage));
