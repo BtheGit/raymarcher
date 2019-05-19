@@ -54,7 +54,10 @@ class Player {
         // TODO: Walls will be complex objects later to allow for complex textures
         // and interactions.
         const currentCell = this.map.getCell(activeCell.x, activeCell.y);
-        if(currentCell){
+        if(currentCell == null){
+          break;
+        }
+        if(currentCell > 0){
           wall = currentCell;
         }
       }
