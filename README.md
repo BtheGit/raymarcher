@@ -29,11 +29,12 @@ In the interests of making lists that never get completed, here are some potenti
 - [ ] Floor and ceiling textures.
 - [ ] Allow for placing textures on walls face by face
 - [ ] Add build system with typescript
+- [ ] WAD packs to instantiate the 'game' with. Including all textures and maps for now. Maps should be bundled with starting player location and direction and plane as well.
 
 ### Alternate fun ideas with raycasters:
 
 - A few dots running around shooting rays that get brighter where they intersect or illuminating bubbles flying around.
-- Try voxel terrain instead
+- Try voxel terrain instead (need height maps)
 
 ### Immediate bug fixes
 - ~~Enable wall slipping. it's impossible to slip along walls when you're right up against them. Perhaps a combination of creating an artifical limit to keep player from directly contacting wall as well as a calculation to move perpendicular at some velocity if you are not directly walking into a wall but at an angle.~~
@@ -57,5 +58,9 @@ In the interests of making lists that never get completed, here are some potenti
   3. Let them generate the grid as a map on a second screen.
   4. Let them upload their own textures to use as tiles.
   5. Create a permanent link for the map. (QueryParams would be nice, also stored in a backend (but no custom textures would be possible, too heavy.))
+- In the same vein, we can have complex tiles and default ones, so the grid could be a mix of 0s or empty objects (for default) and objects with settings.
 - Track viewed cells and use that to draw the mini-map so that the mini-map doesn't immediately reveal the entire level.
 - In the event that the complexity never grows much more, one fun addition to it as a portfolio site could be creating multiple levels and randomly loading one each time (except if one is already active in session storage and the current player position is not the starting position or if it is determined that the player has reached there from going back and not reloading or some such)
+- Create dynamic 'picture frames' that I can use to create hanging pictures on wall tiles (Instead of a simple ImageBuffer, take an image, scale it to a random or given fractional width of the wall tile, give it a several pixel border (could be an image of a picture frame (could be one of several), and 'hang' it by superimposing it at a randomized tilt (minor, between -10 and 10), and randomized elevation on a wall (again, constrained to 60-90% of the wall height)));
+- Can we draw 3d rendered sprites on a webgl canvas and blit that over with any efficiency?
+- Sprites, WADs holding textures and maps, sessionstorage onbeforeunload...
