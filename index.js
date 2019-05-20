@@ -188,6 +188,7 @@ const HUES = {
 const VIEW_DISTANCE = 1000;
 const FRAMERATE = 1000 / 30;
 const PI2 = Math.PI * 2;
+const STORAGE_ID = 'bb_raymarcher'
 
 const wad = PORTFOLIO_WAD;
 
@@ -195,7 +196,10 @@ const wad = PORTFOLIO_WAD;
 const loadAssets = async () => {
   const tiles = await loadTiles(wad.tiles);
   const maps = wad.maps;
-  const game = new Game(maps, tiles, FRAMERATE);
+  // We'll want to add in a check for the history array to make sure this only happens if it's not just a refresh but
+  // an actual back event.
+  const savedState = loadStateFromSessionStorage(STORAGE_ID);
+  const game = new Game(maps, tiles, FRAMERATE, savedState);
   game.start();
 }
 

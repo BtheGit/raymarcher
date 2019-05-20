@@ -4,11 +4,9 @@ class LinkImageBuffer extends ImageBuffer {
     this.href = href;
   }
 
-  trigger(){
-    // If this link has been triggered we want to
-    // a) Store current state in sessionStorage TODO:
-    // b) Tell the browser to go to the link
-    console.log('You hit me!')
+  trigger(game){
+    // Instead of having to pass in the game object like this, we could broadcast events
+    game.saveStateToSessionStorageOnUnload();
     window.location.href = this.href;
     // We should also add in a highlight effect on elements that have a trigger function when in range, indicating they can
     // be triggered.

@@ -4,25 +4,32 @@ const SCREEN_WIDTH = 1024;
 const SCREEN_HEIGHT = 786;
 
 class Game {
-  constructor(maps, images, framerate){
+  constructor(maps, images, framerate, savedState){
     this.images = images;
     this.interval = framerate;
     this.animationFrame = null;
 
     // Gonna hardcode the first level for now. TODO: REMOVE
     this.maps = maps;
-    this.currentMap = this.maps[0];
+    this.currentMap = savedState ? savedState.currentMap : this.maps[0];
     this.grid = new Map(this.currentMap.grid);
 
     this.screen = new Screen(this, 'display-main');
     this.screen.resizeCanvas(SCREEN_WIDTH,SCREEN_HEIGHT);
 
-    this.player = new Player(
-      this, 
-      new Vector(this.currentMap.playerPos.x, this.currentMap.playerPos.y), 
-      new Vector(this.currentMap.playerDir.x, this.currentMap.playerDir.y),
-      new Vector(this.currentMap.playerPlane.x, this.currentMap.playerPlane.y)
-    );
+    this.player = savedState 
+      ? new Player(
+          this,
+          new Vector(savedState.playerPos.x, savedState.playerPos.y), 
+          new Vector(savedState.playerDir.x, savedState.playerDir.y),
+          new Vector(savedState.playerPlane.x, savedState.playerPlane.y)
+        )
+      : new Player(
+          this, 
+          new Vector(this.currentMap.playerPos.x, this.currentMap.playerPos.y), 
+          new Vector(this.currentMap.playerDir.x, this.currentMap.playerDir.y),
+          new Vector(this.currentMap.playerPlane.x, this.currentMap.playerPlane.y)
+        );
 
     this.keyState = {}; // Active store of keypresses
     document.addEventListener('keydown', ({ key }) => {
@@ -91,6 +98,26 @@ class Game {
 
   drawScreen(){
     this.screen.draw();
+  }
+
+  saveStateToSessionStorageOnUnload(){
+    // We need a few things to restore the game (in its current form)
+    const state = {
+      playerPos: {
+        x: this.player.pos.x,
+        y: this.player.pos.y
+      },
+      playerDir: {
+        x: this.player.dir.x,
+        y: this.player.dir.y
+      },
+      playerPlane: {
+        x: this.player.plane.x,
+        y: this.player.plane.y
+      },
+      currentMap: this.currentMap
+    };
+    saveStatetoSessionStorage(STORAGE_ID, state);
   }
 
 }

@@ -171,7 +171,7 @@ class Player {
     const distance = ray.normalizedDistance;
     if(distance < 1.4){
       const wall = this.game.images[ray.wall - 1];
-      wall.trigger()
+      wall.trigger(this.game);
     }
   }
 }
