@@ -97,7 +97,7 @@ class Screen {
       this.ctxBuffer.closePath();
       this.ctxBuffer.stroke();
     }
-    // TODO: Fix the mirrored orientation. FOR NOW WE ARE REVERSING THE CELL DRAW ORDER ON THE X TO COMPENSATE
+    // TODO: Fix the mirrored orientation issues!!!
     // Render grid elements, scaled.
     for(let i = 0; i < mapGrid.length; i++){
       const rowOffset = i;
@@ -105,7 +105,8 @@ class Screen {
       for(let j = 0; j < row.length; j++){
         const columnOffset = j;
         const reversedRowOffset = mapGrid.length - 1 - rowOffset;
-        const cell = world.getCell(reversedRowOffset, columnOffset);
+        const reversedColumnOffset = row.length - 1 - columnOffset;
+        const cell = world.getCell(rowOffset, columnOffset);
         const textureId = cell; // In the future the cell will have more data so this will require extracing the data
         const cellHue = HUES[textureId];
         const cellTexture = this.game.images[cell - 1] && this.game.images[cell - 1].getCanvas();
