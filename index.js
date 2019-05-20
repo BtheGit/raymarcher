@@ -196,10 +196,7 @@ const wad = PORTFOLIO_WAD;
 const loadAssets = async () => {
   const tiles = await loadTiles(wad.tiles);
   const maps = wad.maps;
-  // We'll want to add in a check for the history array to make sure this only happens if it's not just a refresh but
-  // an actual back event.
-  const savedState = loadStateFromSessionStorage(STORAGE_ID);
-  const game = new Game(maps, tiles, FRAMERATE, savedState);
+  const game = new Game(maps, tiles, FRAMERATE);
   game.start();
 }
 

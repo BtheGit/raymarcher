@@ -69,41 +69,108 @@ const tiles = [
   },
   {
     type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/concrete_brick1.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/concrete_brick2.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/concrete_tile1.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/concrete_tile2.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/concrete_tile3.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/concrete2.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/dots1.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/fresco1.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/fur1.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/fur2.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/granite1.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/alien1.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/alien2.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/alien3.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/plaster1.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/rust1.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/rust2.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/stone2.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/stripes_creamsicle1.jpg',
+  },
+  {
+    type: 'image',
+    name: 'hedge1',
+    path: './images/tiles/tile_blue1.jpg',
+  },
+  {
+    type: 'image',
     name: 'brendan_bald1',
     path: './images/tiles/me1.png',
-  },
-  {
-    type: 'bokeh',
-    name: 'bokeh_default',
-  },
-  {
-    type: 'bokeh',
-    name: 'bokeh_purple_on_tan',
-    bokehSettings: {
-      color: 'black',
-      backgroundColor: 'orangered',
-      dx: 5,
-      dy: 5,
-      density: 20,
-      halfLife: 100,
-      radius: 30,
-      frameRate: 60,
-    }
-  },
-  {
-    type: 'image',
-    name: 'robbie_the_geek1',
-    path: 'https://media.licdn.com/dms/image/C5603AQFDLAcoM7oa0w/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=BbkkYW-9reSYz1TNvDhAjbv7rBfNlN9RN6KIkeLbYKo'
-  },
-  {
-    type: 'image',
-    name: 'lindsay1',
-    path: 'https://media.licdn.com/dms/image/C4E03AQF_rnt4a-2N4g/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=gi6fY7WlyY5t71f4KYuRHjEkwurb5gRqA9hKlQ3PC_o',
-  },
-  {
-    type: 'image',
-    name: 'bryan1',
-    path: 'https://scontent-iad3-1.xx.fbcdn.net/v/t31.0-8/11823034_10154226861255620_5773866248861672139_o.jpg?_nc_cat=107&_nc_ht=scontent-iad3-1.xx&oh=5b2423ed7c798b8ab75d39f9bc4353e1&oe=5D56DC9F'
   },
   {
     type: 'image',
@@ -140,7 +207,40 @@ const tiles = [
     name: 'link_github_personal',
     href: 'https://github.com/BtheGit',
     path: './WADs/portfolio/images/github_logo1.png',
-  }
+  },
+  {
+    type: 'bokeh',
+    name: 'bokeh_default',
+  },
+  {
+    type: 'bokeh',
+    name: 'bokeh_purple_on_tan',
+    bokehSettings: {
+      color: 'black',
+      backgroundColor: 'orangered',
+      dx: 5,
+      dy: 5,
+      density: 20,
+      halfLife: 100,
+      radius: 30,
+      frameRate: 60,
+    }
+  },
+  {
+    type: 'image',
+    name: 'robbie_the_geek1',
+    path: 'https://media.licdn.com/dms/image/C5603AQFDLAcoM7oa0w/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=BbkkYW-9reSYz1TNvDhAjbv7rBfNlN9RN6KIkeLbYKo'
+  },
+  {
+    type: 'image',
+    name: 'lindsay1',
+    path: 'https://media.licdn.com/dms/image/C4E03AQF_rnt4a-2N4g/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=gi6fY7WlyY5t71f4KYuRHjEkwurb5gRqA9hKlQ3PC_o',
+  },
+  {
+    type: 'image',
+    name: 'bryan1',
+    path: 'https://scontent-iad3-1.xx.fbcdn.net/v/t31.0-8/11823034_10154226861255620_5773866248861672139_o.jpg?_nc_cat=107&_nc_ht=scontent-iad3-1.xx&oh=5b2423ed7c798b8ab75d39f9bc4353e1&oe=5D56DC9F'
+  },
   // {
   //   type: 'framed-image',
   //   imagePath: './images/tiles/me1.png',

@@ -4,7 +4,8 @@ const SCREEN_WIDTH = 1024;
 const SCREEN_HEIGHT = 786;
 
 class Game {
-  constructor(maps, images, framerate, savedState){
+  constructor(maps, images, framerate){
+    const savedState = loadStateFromSessionStorage(STORAGE_ID);
     this.images = images;
     this.interval = framerate;
     this.animationFrame = null;
