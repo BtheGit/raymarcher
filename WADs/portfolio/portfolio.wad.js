@@ -209,9 +209,24 @@ const tiles = [
     path: './WADs/portfolio/images/github_logo1.png',
   },
   {
-    type: 'bokeh',
-    name: 'bokeh_default',
+    type: 'image',
+    name: 'robbie_the_geek1',
+    path: 'https://media.licdn.com/dms/image/C5603AQFDLAcoM7oa0w/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=BbkkYW-9reSYz1TNvDhAjbv7rBfNlN9RN6KIkeLbYKo'
   },
+  {
+    type: 'image',
+    name: 'lindsay1',
+    path: 'https://media.licdn.com/dms/image/C4E03AQF_rnt4a-2N4g/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=gi6fY7WlyY5t71f4KYuRHjEkwurb5gRqA9hKlQ3PC_o',
+  },
+  {
+    type: 'image',
+    name: 'bryan1',
+    path: 'https://scontent-iad3-1.xx.fbcdn.net/v/t31.0-8/11823034_10154226861255620_5773866248861672139_o.jpg?_nc_cat=107&_nc_ht=scontent-iad3-1.xx&oh=5b2423ed7c798b8ab75d39f9bc4353e1&oe=5D56DC9F'
+  },
+  // {
+  //   type: 'bokeh',
+  //   name: 'bokeh_default',
+  // },
   {
     type: 'bokeh',
     name: 'bokeh_purple_on_tan',
@@ -227,19 +242,32 @@ const tiles = [
     }
   },
   {
-    type: 'image',
-    name: 'robbie_the_geek1',
-    path: 'https://media.licdn.com/dms/image/C5603AQFDLAcoM7oa0w/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=BbkkYW-9reSYz1TNvDhAjbv7rBfNlN9RN6KIkeLbYKo'
+    type: 'bokeh',
+    name: 'bokeh_purple_on_tan',
+    bokehSettings: {
+      color: 'white',
+      backgroundColor: 'orangered',
+      dx: 1,
+      dy: 10,
+      density: 20,
+      halfLife: 50,
+      radius: 30,
+      frameRate: 60,
+    }
   },
   {
-    type: 'image',
-    name: 'lindsay1',
-    path: 'https://media.licdn.com/dms/image/C4E03AQF_rnt4a-2N4g/profile-displayphoto-shrink_800_800/0?e=1563408000&v=beta&t=gi6fY7WlyY5t71f4KYuRHjEkwurb5gRqA9hKlQ3PC_o',
-  },
-  {
-    type: 'image',
-    name: 'bryan1',
-    path: 'https://scontent-iad3-1.xx.fbcdn.net/v/t31.0-8/11823034_10154226861255620_5773866248861672139_o.jpg?_nc_cat=107&_nc_ht=scontent-iad3-1.xx&oh=5b2423ed7c798b8ab75d39f9bc4353e1&oe=5D56DC9F'
+    type: 'bokeh',
+    name: 'bokeh_purple_on_tan',
+    bokehSettings: {
+      color: 'purple',
+      backgroundColor: 'white',
+      dx: 10,
+      dy: 5,
+      density: 10,
+      halfLife: 50,
+      radius: 10,
+      frameRate: 60,
+    }
   },
   // {
   //   type: 'framed-image',
@@ -378,8 +406,79 @@ const MAP2 = {
   ],
 };
 
+const MAP_TILETEST = {
+  grid: [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,39,0,0,0,0,0,0,36,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,38,0,0,0,0,0,0,35,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,19,0,0,0,0,0,0,37,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,18,0,0,0,0,0,0,34,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,17,0,0,0,0,0,0,33,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,16,0,0,0,0,0,0,32,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,15,0,0,0,0,0,0,31,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,14,0,0,0,0,0,0,30,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,13,0,0,0,0,0,0,29,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,0,0,0,0,28,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,11,0,0,0,0,0,0,27,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,0,0,26,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,0,25,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,8,0,0,0,0,0,0,24,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,23,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,0,22,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,34,3,0,0,21,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,20,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,2,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],  
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]  
+  ],
+  playerPos: {
+    x: 18.5,
+    y: 23
+  },
+  playerDir: {
+    x: 0,
+    y: -1
+  },
+  playerPlane: {
+    x: -0.66,
+    Y: 0
+  },
+  backgroundSky: [
+    {
+      stop: 0,
+      color: "#7AA1D2"
+    },
+    {
+      stop: .8,
+      color: "#DBD4B4"
+    },
+    {
+      stop: 1,
+      color: "#CC95C0"
+    }
+  ],
+  backgroundFloor: [
+    {
+      stop: 0,
+      color: "#111"
+    },
+    {
+      stop: 0.2,
+      color: "#403B4A"
+    },
+    {
+      stop: 1,
+      color: "#b0b28b"
+    }
+  ],
+};
+
 
 const maps = [
+  MAP_TILETEST,
   MAP2,
   MAP1,
 ];
