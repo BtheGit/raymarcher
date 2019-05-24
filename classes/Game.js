@@ -1,7 +1,7 @@
 
 
-const SCREEN_WIDTH = 512;
-const SCREEN_HEIGHT = 392;
+const SCREEN_WIDTH = 1024;
+const SCREEN_HEIGHT = 768;
 
 class Game {
   constructor(maps, images, framerate){

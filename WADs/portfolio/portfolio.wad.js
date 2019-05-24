@@ -22,7 +22,7 @@ const BLANK_GRID = [
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,1,1,1,1,1,1,1,1,1,1,1,6,1,1,1,1,1,1,1,1,1,1,1]  
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]  
 ];
 
 // A 'WAD' file will have the list of texture assets, the maps, and the starting parameters for the player.
@@ -74,102 +74,102 @@ const tiles = [
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'concrete_brick1',
     path: './images/tiles/concrete_brick1.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'concrete_brick2',
     path: './images/tiles/concrete_brick2.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'concrete_tile1',
     path: './images/tiles/concrete_tile1.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'concrete_tile2',
     path: './images/tiles/concrete_tile2.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'concrete_tile3',
     path: './images/tiles/concrete_tile3.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'concrete2',
     path: './images/tiles/concrete2.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'dots1',
     path: './images/tiles/dots1.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'fresco1',
     path: './images/tiles/fresco1.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'fur1',
     path: './images/tiles/fur1.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'fur2',
     path: './images/tiles/fur2.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'granite1',
     path: './images/tiles/granite1.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'alien1',
     path: './images/tiles/alien1.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'alien2',
     path: './images/tiles/alien2.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'alien3',
     path: './images/tiles/alien3.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'plaster1',
     path: './images/tiles/plaster1.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'rust1',
     path: './images/tiles/rust1.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'rust2',
     path: './images/tiles/rust2.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'stone2',
     path: './images/tiles/stone2.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'stripes_creamsicle1',
     path: './images/tiles/stripes_creamsicle1.jpg',
   },
   {
     type: 'image',
-    name: 'hedge1',
+    name: 'tile_blue1',
     path: './images/tiles/tile_blue1.jpg',
   },
   {
@@ -483,8 +483,8 @@ const MAP_TILETEST = {
 
 
 const maps = [
-  MAP1,
   MAP_TILETEST,
+  MAP1,
   MAP2,
 ];
 
