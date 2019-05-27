@@ -483,8 +483,8 @@ const MAP_TILETEST = {
 
 
 const maps = [
-  MAP_TILETEST,
   MAP1,
+  MAP_TILETEST,
   MAP2,
 ];
 

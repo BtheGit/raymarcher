@@ -1,3 +1,12 @@
+const tempFloorTextureCanvas = document.createElement('canvas');
+tempFloorTextureCanvas.width = 64;
+tempFloorTextureCanvas.height = 64;
+const tempFloorTexture = tempFloorTextureCanvas.getContext('2d');
+for(let i = 0; i < tempFloorTextureCanvas.width; i += 8){
+  tempFloorTexture.fillStyle = `hsl(${i * 5}, 100%, 80%)`;
+  tempFloorTexture.fillRect(i,0, 8,64);
+}
+
 /**
  * 
  * @param {string} id The DOM id of the canvas element this screen instance wraps.
@@ -8,6 +17,9 @@ class Screen {
     this.ctx = this.canvas.getContext('2d');
     this.canvasBuffer = document.createElement('canvas');
     this.ctxBuffer = this.canvasBuffer.getContext('2d');
+    this.floorBuffer = document.createElement('canvas');
+    this.floorCtxBuffer = this.floorBuffer.getContext('2d');
+    this.offscreenCanvasPixels;
     this.backgroundColor = 'black';
     this.width = 0;
     this.height = 0;
@@ -23,8 +35,20 @@ class Screen {
     // this.drawDistance = 500;
   }
 
+  initializeOffscreenCanvasPixels(){
+    if(!this.offscreenCanvasPixels){
+      this.floorBuffer.width = this.width;
+      this.floorBuffer.height = this.height;
+      this.offscreenCanvasPixels = this.floorCtxBuffer.getImageData(0,0,this.width, this.height);
+    }
+  }
+  
   updateFromBuffer(){
-    this.ctx.drawImage(this.canvasBuffer, 0,0)
+    this.floorCtxBuffer.putImageData(this.offscreenCanvasPixels, 0, 0);
+    this.ctxBuffer.drawImage(this.floorBuffer,0,0);
+    this.floorCtxBuffer.clearRect(0,0, this.floorBuffer.width, this.floorBuffer.height)
+    this.offscreenCanvasPixels = this.floorCtxBuffer.getImageData(0,0,this.width, this.height);
+    this.ctx.drawImage(this.canvasBuffer, 0,0);
   }
 
   // Getters/Setters
@@ -163,12 +187,12 @@ class Screen {
     const skyGradient = ctx.createLinearGradient(0,0,0, this.height / 2);
     applyColorStopsToLinearGradient(skyGradient, backgroundSky);
     ctx.fillStyle = skyGradient;
-    ctx.fillRect(0, 0, this.width, this.height);
+    ctx.fillRect(0, 0, this.width, this.height / 2);
 
-    const floorGradient = ctx.createLinearGradient(0, this.height / 2 ,0, this.height);
-    applyColorStopsToLinearGradient(floorGradient, backgroundFloor)
-    ctx.fillStyle = floorGradient;
-    ctx.fillRect(0, (this.height / 2), this.width, (this.height / 2));
+    // const floorGradient = ctx.createLinearGradient(0, this.height / 2 ,0, this.height);
+    // applyColorStopsToLinearGradient(floorGradient, backgroundFloor)
+    // ctx.fillStyle = floorGradient;
+    // ctx.fillRect(0, (this.height / 2), this.width, (this.height / 2));
 
     return canvas;
   }
@@ -243,66 +267,97 @@ class Screen {
       }
 
       //FLOOR CASTING
-      // let floorXWall;
-      // let floorYWall; //x, y position of the floor texel at the bottom of the wall
+      let floorXWall;
+      let floorYWall; //x, y position of the floor texel at the bottom of the wall
+      if(i === 256){
+        // debugger
+      }
+      //4 different wall directions possible
+      if(wallOrientation === 0 && rayDir.x > 0) {
+        floorXWall = activeCell.x;
+        floorYWall = activeCell.y + wallIntersection;
+      }
+      else if(wallOrientation === 0 && rayDir.x < 0) {
+        floorXWall = activeCell.x;
+        floorYWall = activeCell.y + wallIntersection;
+      }
+      else if(wallOrientation === 1 && rayDir.y > 0) {
+        floorXWall = activeCell.x + wallIntersection;
+        floorYWall = activeCell.y;
+      }
+      else {
+        floorXWall = activeCell.x + wallIntersection;
+        floorYWall = activeCell.y;
+      }
 
-      // //4 different wall directions possible
-      // if(wallOrientation === 0 && rayDir.x > 0) {
-      //   floorXWall = activeCell.x;
-      //   floorYWall = activeCell.y + wallIntersection;
-      // }
-      // else if(wallOrientation === 0 && rayDir.x < 0) {
-      //   floorXWall = activeCell.x + 1.0;
-      //   floorYWall = activeCell.y + wallIntersection;
-      // }
-      // else if(wallOrientation === 1 && rayDir.y > 0) {
-      //   floorXWall = activeCell.x + wallIntersection;
-      //   floorYWall = activeCell.y;
-      // }
-      // else {
-      //   floorXWall = activeCell.x + wallIntersection;
-      //   floorYWall = activeCell.y + 1.0;
-      // }
-      // let drawEnd = Math.floor(top + columnHeight);
-      // let distWall, distPlayer, currentDist;
+      let drawEnd = Math.floor(top + columnHeight);
+      let distWall, distPlayer, currentDist;
 
-      // distWall = normalizedDistance;
-      // distPlayer = 0.0;
+      distWall = normalizedDistance;
+      distPlayer = 0.0;
 
-      // if (drawEnd < 0) {
-      //   drawEnd = screenHeight; //becomes < 0 when the integer overflows
-      // }
-      // //draw the floor from drawEnd to the bottom of the screen
-      // const floorColumnHeight = screenHeight - drawEnd;
-      // if(floorColumnHeight > 0){
-      //   const columnBuffer = document.createElement('canvas');
-      //   columnBuffer.width = 1;
-      //   columnBuffer.height = floorColumnHeight;
-      //   const columnBufferCtx = columnBuffer.getContext('2d');
-      //   for(let y = 0; y < floorColumnHeight; y++){
-      //     currentDist = screenHeight / (2.0 * y - screenHeight); //you could make a small lookup table for this instead
+      if (drawEnd < 0) {
+        drawEnd = this.height; //becomes < 0 when the integer overflows
+      }
+      //draw the floor from drawEnd to the bottom of the screen
+      const floorColumnHeight = this.height - drawEnd;
+      // Deprecated until we solve the CORS issue.
+      // const floorTexture = this.game.images[0];
+      const floorTexture = tempFloorTextureCanvas;
+      const floorTexturePixels = tempFloorTexture.getImageData(0,0,64,64);
+      if(floorColumnHeight > 0){
+        // const columnBuffer = document.createElement('canvas');
+        // columnBuffer.width = 1;
+        // columnBuffer.height = floorColumnHeight;
+        // const columnBufferCtx = columnBuffer.getContext('2d');
+        for(let y = drawEnd + 1; y < this.height; y++){
+          const x = i;
+          currentDist = this.height / (2.0 * y - this.height);
   
-      //     const weight = currentDist / distWall;
-  
-      //     const currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
-      //     const currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
-      //     // console.log({weight, floorXWall, currentFloorX, currentFloorY})
-      //     // debugger
-      //     const floorTexture = this.game.images[0].getCanvas();
-      //     let floorTexX, floorTexY;
-      //     floorTexX = Math.floor(currentFloorX * floorTexture.width) % floorTexture.width;
-      //     floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
-      //     // columnBufferCtx.fillStyle = 'purple';
-      //     // columnBufferCtx.fillRect(0, y, 1, 1)
-      //     columnBufferCtx.drawImage(floorTexture,1,10,2, 11, 0, y, 1, 1);
-      //     // console.log(currentDist)
-      //     //floor
-      //     // buffer[y][i] = (texture[3][texWidth * floorTexY + floorTexX] >> 1) & 8355711;
-      //     //ceiling (symmetrical!)
-      //     // buffer[screenHeight - y][i] = texture[6][texWidth * floorTexY + floorTexX];
-      //   }
-      //   this.ctxBuffer.drawImage(columnBuffer, i, drawEnd)
-      // }
+          const weight = (currentDist - distPlayer) / (distWall - distPlayer);
+          let currentFloorX, currentFloorY;
+          if(wallOrientation === 0){
+            currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
+            currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
+          }
+          else {
+            currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
+            currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
+          }
+          // console.log({weight, floorXWall, currentFloorX, currentFloorY})
+          // debugger
+          // const floorTexture = this.game.images[0];
+          // const floorTexturePixels = floorTexture.getImageData();
+          let floorTexX, floorTexY;
+          floorTexX = Math.floor(currentFloorX * floorTexture.width) % floorTexture.width;
+          floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
+          // const textureIndex = (floorTexY * this.game.images[0].width + floorTexX) * 4;
+          const textureIndex = (floorTexY * floorTexture.width + floorTexX) * 4;
+          const red = floorTexturePixels.data[textureIndex];
+          const green = floorTexturePixels.data[textureIndex + 1];
+          const blue = floorTexturePixels.data[textureIndex + 2];
+          // columnBufferCtx.fillStyle = `hsl(${y},100%, 80%)`;
+          // columnBufferCtx.fillRect(0, y, 1, 1)
+          // columnBufferCtx.drawImage(floorTexture,1,10,2, 11, 0, y, 1, 1);
+
+          //floor
+          // buffer[y][i] = (texture[3][texWidth * floorTexY + floorTexX] >> 1) & 8355711;
+          //ceiling (symmetrical!)
+          // buffer[screenHeight - y][i] = texture[6][texWidth * floorTexY + floorTexX];
+          const index = (y * this.width + x) * 4;
+          // this.offscreenCanvasPixels.data[index] = 200;
+          // this.offscreenCanvasPixels.data[index + 1] = 0;
+          // this.offscreenCanvasPixels.data[index + 2] = 200;
+          // this.offscreenCanvasPixels.data[index + 3] = 255;
+          this.offscreenCanvasPixels.data[index] = red;
+          this.offscreenCanvasPixels.data[index + 1] = green;
+          this.offscreenCanvasPixels.data[index + 2] = blue;
+          this.offscreenCanvasPixels.data[index + 3] = 255;
+          // debugger
+        }
+        // this.ctxBuffer.drawImage(columnBuffer, i, drawEnd)
+        
+      }
     }
   }
 
@@ -310,10 +365,11 @@ class Screen {
     // This is being deprecated for now as the static POV Background serves the same purpose.
     // this.clear();
     this.drawPOVBackground();
+    this.initializeOffscreenCanvasPixels();
     this.drawPlayerPOV();
     if(this.isMapActive){
       this.drawMapOverlay();
     }
-    this.updateFromBuffer()
+    this.updateFromBuffer();
   }
 }
