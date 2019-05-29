@@ -40,6 +40,11 @@ const tiles = [
   {
     type: 'image',
     name: 'floor1',
+    path: './images/tiles/floor_carpet1.jpg',
+  },
+  {
+    type: 'image',
+    name: 'floor2',
     path: './images/tiles/floor1.jpg',
   },
   {

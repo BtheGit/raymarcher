@@ -12,17 +12,17 @@ for(let i = 0; i < tempFloorTextureCanvas.width; i += 8){
  * @param {string} id The DOM id of the canvas element this screen instance wraps.
  */
 class Screen {
-  constructor(game, mainScreenCanvasId){
+  constructor(game, mainScreenCanvasId, width, height){
     this.canvas = document.getElementById(mainScreenCanvasId);
     this.ctx = this.canvas.getContext('2d');
     this.canvasBuffer = document.createElement('canvas');
     this.ctxBuffer = this.canvasBuffer.getContext('2d');
     this.floorBuffer = document.createElement('canvas');
     this.floorCtxBuffer = this.floorBuffer.getContext('2d');
+    this.canvas.width = this.canvasBuffer.width = this.width = width;
+    this.canvas.height = this.canvasBuffer.height = this.height = height;
     this.offscreenCanvasPixels;
     this.backgroundColor = 'black';
-    this.width = 0;
-    this.height = 0;
     this.game = game;
     this.currentMap = this.game.currentMap;
     // We delay creating the background until after the main canvas size is determined.
@@ -33,6 +33,19 @@ class Screen {
     this.isMapActive = false;
     // this.fov = 60;
     // this.drawDistance = 500;
+
+    // Create constants to speed up the casting
+    this.CENTER_Y = this.height / 2;
+    // Create lookup tables to speed up the casting.
+    this.lookupCurrentDist = this.generateCurrentDistLookupTable();
+  }
+
+  generateCurrentDistLookupTable(){
+    const table = {};
+    for(let i = this.CENTER_Y; i < this.height; i++){
+      table[i] = this.height / (2.0 * i - this.height)
+    }
+    return table;
   }
 
   initializeOffscreenCanvasPixels(){
@@ -300,37 +313,36 @@ class Screen {
       //draw the floor from drawEnd to the bottom of the screen
       const floorColumnHeight = this.height - drawEnd;
       // Deprecated until we solve the CORS issue.
-      // const floorTexture = this.game.images[0];
-      const floorTexture = tempFloorTextureCanvas;
-      const floorTexturePixels = tempFloorTexture.getImageData(0,0,64,64);
+      const floorTexture = this.game.images[0];
+      const floorTexturePixels = floorTexture.getImageData();
+
+      // const floorTexture = tempFloorTextureCanvas;
+      // const floorTexturePixels = tempFloorTexture.getImageData(0,0,64,64);
 
       if(floorColumnHeight > 0){
         for(let y = drawEnd + 1; y < this.height; y++){
           const x = i;
-
-          const currentDist = this.height / (2.0 * y - this.height);
+          const currentDist = this.lookupCurrentDist[y];
           const weight = currentDist / distWall;
 
           const currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
           const currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
-          // const floorTexture = this.game.images[0];
-          // const floorTexturePixels = floorTexture.getImageData();
+
           const floorTexX = Math.floor(currentFloorX * floorTexture.width) % floorTexture.width;
           const floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
-          // const textureIndex = (floorTexY * this.game.images[0].width + floorTexX) * 4;
-          const textureIndex = (floorTexY * floorTexture.width + floorTexX) * 4;
+          const textureIndex = (floorTexY * this.game.images[0].width + floorTexX) * 4;
+          // const textureIndex = (floorTexY * floorTexture.width + floorTexX) * 4;
           const red = floorTexturePixels.data[textureIndex];
           const green = floorTexturePixels.data[textureIndex + 1];
           const blue = floorTexturePixels.data[textureIndex + 2];
+          const alpha = floorTexturePixels.data[textureIndex + 3];
 
           const index = (y * this.width + x) * 4;
           this.offscreenCanvasPixels.data[index] = red;
           this.offscreenCanvasPixels.data[index + 1] = green;
           this.offscreenCanvasPixels.data[index + 2] = blue;
-          this.offscreenCanvasPixels.data[index + 3] = 255;
-        }
-        // this.ctxBuffer.drawImage(columnBuffer, i, drawEnd)
-        
+          this.offscreenCanvasPixels.data[index + 3] = alpha;
+        }        
       }
     }
   }

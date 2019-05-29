@@ -15,8 +15,7 @@ class Game {
     this.currentMap = savedState ? savedState.currentMap : this.maps[0];
     this.grid = new Map(this.currentMap.grid);
 
-    this.screen = new Screen(this, 'display-main');
-    this.screen.resizeCanvas(SCREEN_WIDTH,SCREEN_HEIGHT);
+    this.screen = new Screen(this, 'display-main', SCREEN_WIDTH, SCREEN_HEIGHT);
 
     this.player = savedState 
       ? new Player(
