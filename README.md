@@ -27,8 +27,8 @@ In the interests of making lists that never get completed, here are some potenti
 - [ ] Add sprites
 - [ ] Give different sprites different motion types and displays
 - [x] Floor textures.
-- [ ] Floor dimming.
-- [ ] Sky box texture 
+- [/] Floor dimming.
+- [X] Sky box texture 
 - [ ] Variable wall heights.
 - [ ] Allow for placing textures on walls face by face
 - [ ] Add build system with typescript
