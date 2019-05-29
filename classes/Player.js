@@ -136,26 +136,6 @@ class Player {
     }
   }
 
-  // Elevation is used as an offset for drawing columns. The smaller the offset, the higher
-  // on the screen it will begin to draw the column.
-  ascend(){
-    // For now we'll set a hard clamp on this.
-    const maxElevationOffset = .3;
-    const newElevation = this.elevation - this.elevationStep;
-    if(newElevation >= maxElevationOffset){
-      this.elevation = newElevation;
-    }
-  }
-  
-  descend(){
-    // For now we'll set a hard clamp on this.
-    const minElevationOffset = 1.7;
-    const newElevation = this.elevation + this.elevationStep;
-    if(newElevation <= minElevationOffset){
-      this.elevation = newElevation;
-    }
-  }
-
   rotate(rotation){
     const newDirX = this.dir.x * Math.cos(this.rotationSpeed * rotation) - this.dir.y * Math.sin(this.rotationSpeed * rotation);
     const newDirY = this.dir.x * Math.sin(this.rotationSpeed * rotation) + this.dir.y * Math.cos(this.rotationSpeed * rotation);

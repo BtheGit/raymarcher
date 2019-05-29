@@ -279,12 +279,10 @@ class Screen {
         this.ctxBuffer.globalAlpha = 1;
       }
 
-      //FLOOR CASTING
+      // #### FLOOR CASTING
+
       let floorXWall;
-      let floorYWall; //x, y position of the floor texel at the bottom of the wall
-      if(i === 256){
-        // debugger
-      }
+      let floorYWall;
       //4 different wall directions possible
       if(wallOrientation === 0 && rayDir.x > 0) {
         floorXWall = activeCell.x;
@@ -305,7 +303,7 @@ class Screen {
 
       let drawEnd = Math.floor(top + columnHeight);
       
-      const distWall = normalizedDistance;      
+            
       
       if (drawEnd < 0) {
         drawEnd = this.height; //becomes < 0 when the integer overflows
@@ -323,7 +321,7 @@ class Screen {
         for(let y = drawEnd + 1; y < this.height; y++){
           const x = i;
           const currentDist = this.lookupCurrentDist[y];
-          const weight = currentDist / distWall;
+          const weight = currentDist / normalizedDistance;
 
           const currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
           const currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;

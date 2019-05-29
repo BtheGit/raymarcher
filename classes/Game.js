@@ -79,12 +79,6 @@ class Game {
     if(this.keyState.s){
       this.player.moveBack();
     }
-    if(this.keyState.q){
-      this.player.ascend();
-    }
-    if(this.keyState.e){
-      this.player.descend();
-    }
     if(this.keyState[' ']){
       this.keyState[' '] = false;
       this.player.trigger();
