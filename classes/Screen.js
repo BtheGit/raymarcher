@@ -278,7 +278,7 @@ class Screen {
         floorYWall = activeCell.y + wallIntersection;
       }
       else if(wallOrientation === 0 && rayDir.x < 0) {
-        floorXWall = activeCell.x;
+        floorXWall = activeCell.x + 1.0;
         floorYWall = activeCell.y + wallIntersection;
       }
       else if(wallOrientation === 1 && rayDir.y > 0) {
@@ -287,15 +287,13 @@ class Screen {
       }
       else {
         floorXWall = activeCell.x + wallIntersection;
-        floorYWall = activeCell.y;
+        floorYWall = activeCell.y + 1.0;
       }
 
       let drawEnd = Math.floor(top + columnHeight);
-      let distWall, distPlayer, currentDist;
-
-      distWall = normalizedDistance;
-      distPlayer = 0.0;
-
+      
+      const distWall = normalizedDistance;      
+      
       if (drawEnd < 0) {
         drawEnd = this.height; //becomes < 0 when the integer overflows
       }
@@ -305,55 +303,31 @@ class Screen {
       // const floorTexture = this.game.images[0];
       const floorTexture = tempFloorTextureCanvas;
       const floorTexturePixels = tempFloorTexture.getImageData(0,0,64,64);
+
       if(floorColumnHeight > 0){
-        // const columnBuffer = document.createElement('canvas');
-        // columnBuffer.width = 1;
-        // columnBuffer.height = floorColumnHeight;
-        // const columnBufferCtx = columnBuffer.getContext('2d');
         for(let y = drawEnd + 1; y < this.height; y++){
           const x = i;
-          currentDist = this.height / (2.0 * y - this.height);
-  
-          const weight = (currentDist - distPlayer) / (distWall - distPlayer);
-          let currentFloorX, currentFloorY;
-          if(wallOrientation === 0){
-            currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
-            currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
-          }
-          else {
-            currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
-            currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
-          }
-          // console.log({weight, floorXWall, currentFloorX, currentFloorY})
-          // debugger
+
+          const currentDist = this.height / (2.0 * y - this.height);
+          const weight = currentDist / distWall;
+
+          const currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
+          const currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
           // const floorTexture = this.game.images[0];
           // const floorTexturePixels = floorTexture.getImageData();
-          let floorTexX, floorTexY;
-          floorTexX = Math.floor(currentFloorX * floorTexture.width) % floorTexture.width;
-          floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
+          const floorTexX = Math.floor(currentFloorX * floorTexture.width) % floorTexture.width;
+          const floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
           // const textureIndex = (floorTexY * this.game.images[0].width + floorTexX) * 4;
           const textureIndex = (floorTexY * floorTexture.width + floorTexX) * 4;
           const red = floorTexturePixels.data[textureIndex];
           const green = floorTexturePixels.data[textureIndex + 1];
           const blue = floorTexturePixels.data[textureIndex + 2];
-          // columnBufferCtx.fillStyle = `hsl(${y},100%, 80%)`;
-          // columnBufferCtx.fillRect(0, y, 1, 1)
-          // columnBufferCtx.drawImage(floorTexture,1,10,2, 11, 0, y, 1, 1);
 
-          //floor
-          // buffer[y][i] = (texture[3][texWidth * floorTexY + floorTexX] >> 1) & 8355711;
-          //ceiling (symmetrical!)
-          // buffer[screenHeight - y][i] = texture[6][texWidth * floorTexY + floorTexX];
           const index = (y * this.width + x) * 4;
-          // this.offscreenCanvasPixels.data[index] = 200;
-          // this.offscreenCanvasPixels.data[index + 1] = 0;
-          // this.offscreenCanvasPixels.data[index + 2] = 200;
-          // this.offscreenCanvasPixels.data[index + 3] = 255;
           this.offscreenCanvasPixels.data[index] = red;
           this.offscreenCanvasPixels.data[index + 1] = green;
           this.offscreenCanvasPixels.data[index + 2] = blue;
           this.offscreenCanvasPixels.data[index + 3] = 255;
-          // debugger
         }
         // this.ctxBuffer.drawImage(columnBuffer, i, drawEnd)
         
