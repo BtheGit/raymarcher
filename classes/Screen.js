@@ -24,7 +24,6 @@ class Screen {
     this.offscreenCanvasPixels;
     this.backgroundColor = 'black';
     this.game = game;
-    console.log(this.game)
     this.currentMap = this.game.currentMap;
     // We delay creating the background until after the main canvas size is determined.
     this.staticPOVBackground;
@@ -250,12 +249,11 @@ class Screen {
     if(!rays){
       return;
     }
-    // console.log(rays[0])
     for(let i = 0; i < rays.length; i++){
       const ray = rays[i];
       // TODO: Make ray class to abstract and use getters.
       const { normalizedDistance, wall, wallOrientation, wallIntersection, rayDir, activeCell } = ray;
-      const columnHeight = this.height / normalizedDistance;
+      const columnHeight = Math.ceil(this.height / normalizedDistance);
       const top = (this.height / 2) - (columnHeight / 2) * playerElevation;
       const VIEW_DISTANCE = 25;
       const brightnessMultiplier = 1.3;
@@ -328,20 +326,11 @@ class Screen {
       }
 
       let drawEnd = Math.floor(top + columnHeight);
-      
-            
-      
       if (drawEnd < 0) {
         drawEnd = this.height; //becomes < 0 when the integer overflows
       }
       //draw the floor from drawEnd to the bottom of the screen
       const floorColumnHeight = this.height - drawEnd;
-      // Deprecated until we solve the CORS issue.
-      const floorTexture = this.game.images[0];
-      const floorTexturePixels = floorTexture.getImageData();
-
-      // const floorTexture = tempFloorTextureCanvas;
-      // const floorTexturePixels = tempFloorTexture.getImageData(0,0,64,64);
 
       if(floorColumnHeight > 0){
         for(let y = drawEnd + 1; y < this.height; y++){
@@ -351,14 +340,18 @@ class Screen {
 
           const currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
           const currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
+          const gridCell = this.currentMap.grid[Math.floor(currentFloorY)][Math.floor(currentFloorX)];
 
+          const floorTexture = this.game.images[gridCell];
+          const floorTexturePixels = floorTexture.getImageData();
+
+          // console.log(currentFloorX, currentFloorY)
           const floorTexX = Math.floor(currentFloorX * floorTexture.width) % floorTexture.width;
           const floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
-          const textureIndex = (floorTexY * this.game.images[0].width + floorTexX) * 4;
-          // const textureIndex = (floorTexY * floorTexture.width + floorTexX) * 4;
-
+          const textureIndex = (floorTexY * floorTexture.width + floorTexX) * 4;
 
           // Let's dim the floor
+          // TODO: Better dropoff curve.
           const brightnessModifier = this.lookupFloorBrightnessModifier[y];
 
           const red = floorTexturePixels.data[textureIndex] * brightnessModifier;

@@ -71,3 +71,4 @@ In the interests of making lists that never get completed, here are some potenti
 - Sprites, WADs holding textures and maps, sessionstorage onbeforeunload...
 
 - ceiling casting, make complex map where floor and ceiling are defined (ceilings can be seethru), make the textures smaller, use bigger textures for my info stuff but cheaper ones for everywhere else, keep looking for places to precalc everything.
+- Is it straightforward enough to do upsampling? IE, when closer to walls use a higher texture or more scan lines.
