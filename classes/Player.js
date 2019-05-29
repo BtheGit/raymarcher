@@ -47,7 +47,7 @@ class Player {
       if(currentCell == null){
         break;
       }
-      if(currentCell > 0){
+      if(typeof currentCell === 'number' && currentCell > 0){
         wall = currentCell;
       }
     }

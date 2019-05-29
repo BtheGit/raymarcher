@@ -342,7 +342,14 @@ class Screen {
           const currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
           const gridCell = this.currentMap.grid[Math.floor(currentFloorY)][Math.floor(currentFloorX)];
 
-          const floorTexture = this.game.images[gridCell];
+          // Until all textures are complex cells, we need to handle simple integers or objects.
+          let floorTexture;
+          if(typeof gridCell === 'number'){
+            floorTexture = this.game.images[gridCell];
+          }
+          else {
+            floorTexture = this.game.images[gridCell.texture];
+          }
           const floorTexturePixels = floorTexture.getImageData();
 
           // console.log(currentFloorX, currentFloorY)
