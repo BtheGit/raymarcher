@@ -38,12 +38,26 @@ class Screen {
     this.CENTER_Y = this.height / 2;
     // Create lookup tables to speed up the casting.
     this.lookupCurrentDist = this.generateCurrentDistLookupTable();
+    this.lookupFloorBrightnessModifier = this.generateFloorBrightnessModifierLookupTable();
   }
 
   generateCurrentDistLookupTable(){
     const table = {};
     for(let i = this.CENTER_Y; i < this.height; i++){
       table[i] = this.height / (2.0 * i - this.height)
+    }
+    return table;
+  }
+
+  generateFloorBrightnessModifierLookupTable(){
+    const table = {};
+    // Since we know dead center of the screen is the darkest possible and we want a fall off, we can use 
+    // an inverse square law.
+    // Let's say that the maximum drop off is 50% brightness. That means brightness is 1 / dist.
+    for(let i = this.CENTER_Y; i < this.height; i++){
+      const distanceFromPlayer = ((this.height - i) / this.CENTER_Y) * 1.1;
+      const brightnessModifier = 1 / Math.pow(2, distanceFromPlayer);
+      table[i] = brightnessModifier;
     }
     return table;
   }
@@ -202,10 +216,8 @@ class Screen {
     ctx.fillStyle = skyGradient;
     ctx.fillRect(0, 0, this.width, this.height / 2);
 
-    // const floorGradient = ctx.createLinearGradient(0, this.height / 2 ,0, this.height);
-    // applyColorStopsToLinearGradient(floorGradient, backgroundFloor)
-    // ctx.fillStyle = floorGradient;
-    // ctx.fillRect(0, (this.height / 2), this.width, (this.height / 2));
+    ctx.fillStyle = 'blackw';
+    ctx.fillRect(0, (this.height / 2), this.width, (this.height / 2));
 
     return canvas;
   }
@@ -330,9 +342,14 @@ class Screen {
           const floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
           const textureIndex = (floorTexY * this.game.images[0].width + floorTexX) * 4;
           // const textureIndex = (floorTexY * floorTexture.width + floorTexX) * 4;
-          const red = floorTexturePixels.data[textureIndex];
-          const green = floorTexturePixels.data[textureIndex + 1];
-          const blue = floorTexturePixels.data[textureIndex + 2];
+
+
+          // Let's dim the floor
+          const brightnessModifier = this.lookupFloorBrightnessModifier[y];
+
+          const red = floorTexturePixels.data[textureIndex] * brightnessModifier;
+          const green = floorTexturePixels.data[textureIndex + 1] * brightnessModifier;
+          const blue = floorTexturePixels.data[textureIndex + 2] * brightnessModifier;
           const alpha = floorTexturePixels.data[textureIndex + 3];
 
           const index = (y * this.width + x) * 4;
