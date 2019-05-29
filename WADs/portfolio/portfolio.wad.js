@@ -39,7 +39,12 @@ const BLANK_GRID = [
 const tiles = [
   {
     type: 'image',
-    name: 'floor1',
+    name: 'floor_grass1',
+    path: './images/tiles/floor_grass1.jpg',
+  },
+  {
+    type: 'image',
+    name: 'floor_carpet1',
     path: './images/tiles/floor_carpet1.jpg',
   },
   {
