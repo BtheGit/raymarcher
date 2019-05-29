@@ -24,6 +24,7 @@ class Screen {
     this.offscreenCanvasPixels;
     this.backgroundColor = 'black';
     this.game = game;
+    console.log(this.game)
     this.currentMap = this.game.currentMap;
     // We delay creating the background until after the main canvas size is determined.
     this.staticPOVBackground;
@@ -184,6 +185,7 @@ class Screen {
     this.ctxBuffer.fill();
   }
 
+  // THIS IS BEING DEPRECATED IN FAVOR OF BACKGROUNDS OR CASTING TILES
   // By using a dedicated canvas for the static background image, we effectively only have to 
   // draw it once to a canvas (expensive) and thereafter just repeatedly copy it over to the buffer (cheap)
   // TODO: We could in theory also save the step of clearing the screen, since this works much the same way.
@@ -207,28 +209,40 @@ class Screen {
       ]
     }
     const canvas = document.createElement('canvas');
-    canvas.width = this.width;
+    canvas.width = this.width * 7; // FOV 60 * 6 + 1 more for seam overlap
     canvas.height = this.height;
     const ctx = canvas.getContext('2d');
-    
-    const skyGradient = ctx.createLinearGradient(0,0,0, this.height / 2);
-    applyColorStopsToLinearGradient(skyGradient, backgroundSky);
-    ctx.fillStyle = skyGradient;
-    ctx.fillRect(0, 0, this.width, this.height / 2);
-
-    ctx.fillStyle = 'blackw';
-    ctx.fillRect(0, (this.height / 2), this.width, (this.height / 2));
 
     return canvas;
   }
 
   drawPOVBackground(){
-    // We need to do this because if we created the background in the constructor it wouldn't
-    // have a width or height until the resize method was called.
-    if(!this.staticPOVBackground){
-      this.staticPOVBackground = this.createStaticPOVBackground();
+    // Temporarily hardcoded background
+    const backgroundImage = this.game.images[37];
+    // We need to have an origin for the image
+    // We need to find the offset from that origin in the FOV and then sample 1/6 of the image
+    // from that point then draw it to the background. 
+    const { x, y } = this.game.player.dir;
+    const angle = Math.atan2(x, y);
+    let degrees = angle > 0 ? toDegrees(angle) : 360 + toDegrees(angle);
+    // degrees = degrees - 30 >= 0 ? degrees - 30 : 360 + degrees - 30;
+    const sampleWidth = backgroundImage.width / 6;// 1/3 of image because FOV / 180
+    const currentSampleStart = (degrees / 360) * backgroundImage.width;
+    const willOverflow = (backgroundImage.width - currentSampleStart) < sampleWidth;
+    if(willOverflow){
+      const overflowWidth = (currentSampleStart + sampleWidth) - backgroundImage.width;
+      const nonOverflowWidth = sampleWidth - overflowWidth;
+      const overflowRatio = nonOverflowWidth / sampleWidth;
+      const seamPoint = overflowRatio * this.width;
+      // We need to get the two pieces separately and stitch them together on a new canvas.
+      // In the case where we are too close to the edges, we need to sample the overflow from the head or tail
+      // to create the seam.
+      this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, nonOverflowWidth, backgroundImage.height, 0, 0, seamPoint, this.height)
+      this.ctxBuffer.drawImage(backgroundImage.canvas, 0, 0, overflowWidth, backgroundImage.height, seamPoint, 0, this.width - seamPoint, this.height)
     }
-    this.ctxBuffer.drawImage(this.staticPOVBackground, 0, 0);
+    else {
+      this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, sampleWidth, backgroundImage.height, 0, 0, this.width, this.height)
+    }
   }
 
   drawPlayerPOV(){

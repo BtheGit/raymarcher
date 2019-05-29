@@ -5,6 +5,8 @@ const SCREEN_HEIGHT = 768;
 
 class Game {
   constructor(maps, images, framerate){
+    // We want to preserve the player's location when they are returning from an interaction
+    // that caused them to navigate away to a link.
     const savedState = loadStateFromSessionStorage(STORAGE_ID);
     this.images = images;
     this.interval = framerate;

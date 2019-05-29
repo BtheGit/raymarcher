@@ -223,6 +223,11 @@ const tiles = [
     href: 'https://github.com/BtheGit',
     path: './WADs/portfolio/images/github_logo1.png',
   },
+  {
+    type: 'image',
+    name: "background_trees1",
+    path: './images/tiles/background_trees2.jpg',
+  }
   // {
   //   type: 'image',
   //   name: 'robbie_the_geek1',

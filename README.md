@@ -26,7 +26,10 @@ In the interests of making lists that never get completed, here are some potenti
 - [x] Have collision detection
 - [ ] Add sprites
 - [ ] Give different sprites different motion types and displays
-- [ ] Floor and ceiling textures.
+- [x] Floor textures.
+- [ ] Floor dimming.
+- [ ] Sky box texture 
+- [ ] Variable wall heights.
 - [ ] Allow for placing textures on walls face by face
 - [ ] Add build system with typescript
 - [x] WAD packs to instantiate the 'game' with. Including all textures and maps for now. Maps should be bundled with starting player location and direction and plane as well.
@@ -40,6 +43,7 @@ In the interests of making lists that never get completed, here are some potenti
 - ~~Enable wall slipping. it's impossible to slip along walls when you're right up against them. Perhaps a combination of creating an artifical limit to keep player from directly contacting wall as well as a calculation to move perpendicular at some velocity if you are not directly walking into a wall but at an angle.~~
 - ~~Using bokeh now causes the whole thing to break on resizes. Might not be possible to workaround without pushing new updates to bokeh (other than a conditional render - so tiles without canvas height will fall back to a default color like fire engine red). The issue is that on a window resize event the bokeh field canvas is resized to its parent's client sizes. But in this case, the parent doesn't have a client size since it's not attached to the dom~~
 - Minimap does not render correctly when map grid is not square
+- Seams at the bottom of walls showing.
 
 ### Random working notes / Plan
 
@@ -65,3 +69,5 @@ In the interests of making lists that never get completed, here are some potenti
 - Create dynamic 'picture frames' that I can use to create hanging pictures on wall tiles (Instead of a simple ImageBuffer, take an image, scale it to a random or given fractional width of the wall tile, give it a several pixel border (could be an image of a picture frame (could be one of several), and 'hang' it by superimposing it at a randomized tilt (minor, between -10 and 10), and randomized elevation on a wall (again, constrained to 60-90% of the wall height)));
 - Can we draw 3d rendered sprites on a webgl canvas and blit that over with any efficiency?
 - Sprites, WADs holding textures and maps, sessionstorage onbeforeunload...
+
+- ceiling casting, make complex map where floor and ceiling are defined (ceilings can be seethru), make the textures smaller, use bigger textures for my info stuff but cheaper ones for everywhere else, keep looking for places to precalc everything.
