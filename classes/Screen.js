@@ -7,6 +7,17 @@ for(let i = 0; i < tempFloorTextureCanvas.width; i += 8){
   tempFloorTexture.fillRect(i,0, 8,64);
 }
 
+// While the API is unstable around walls and textures, we'll abstract away as much as we can
+// into helpers.
+const getWallCellTextureCode = (cell) => {
+  if(typeof cell === 'number') {
+    return cell;
+  }
+  if(typeof cell === 'object' && cell != null && cell.isWall) {
+    return cell.texture;
+  }
+}
+
 /**
  * 
  * @param {string} id The DOM id of the canvas element this screen instance wraps.
@@ -259,8 +270,11 @@ class Screen {
       const brightnessMultiplier = 1.3;
       const darknessMultiplier = 0.9;
       const brightness = (((VIEW_DISTANCE - (normalizedDistance * brightnessMultiplier)) / VIEW_DISTANCE) * 40) + 10; // clamps the brightness between 10 and 50.
+      
       // If a texture doesn't exist, use a fallback color
-      const wallTexture = this.game.images[wall - 1] && this.game.images[wall - 1].getCanvas();
+      // Must support both types of walls, simple numbers and objects.
+      const wallTextureCode = getWallCellTextureCode(wall);
+      const wallTexture = wallTextureCode && this.game.images[wallTextureCode - 1] && this.game.images[wallTextureCode - 1].getCanvas();
       if(wallTexture){
         const textureWidth = wallTexture.width;
         let wallIntersectionOffset;
@@ -281,7 +295,10 @@ class Screen {
           }
         }
         let textureStripLeft = Math.floor(wallIntersectionOffset * textureWidth);
+        // TODO: HANDLE HEIGHTS IN MULTIPLES OF ONE (FOR NOW)
         this.ctxBuffer.drawImage(wallTexture, textureStripLeft, 0, 1, wallTexture.height, i, top, 1, columnHeight);
+
+        // TODO: Change this to color shift the pixels directly instead of messing with a semi-opaque overlay.
         this.ctxBuffer.fillStyle = 'black';
         this.ctxBuffer.globalAlpha = 1 - (VIEW_DISTANCE - (normalizedDistance * darknessMultiplier)) / VIEW_DISTANCE;
         this.ctxBuffer.fillRect(i, top, 1, columnHeight);
@@ -325,15 +342,12 @@ class Screen {
         floorYWall = activeCell.y + 1.0;
       }
 
-      let drawEnd = Math.floor(top + columnHeight);
-      if (drawEnd < 0) {
-        drawEnd = this.height; //becomes < 0 when the integer overflows
-      }
-      //draw the floor from drawEnd to the bottom of the screen
-      const floorColumnHeight = this.height - drawEnd;
+      // draw the floor from columnBottom to the bottom of the screen
+      const columnBottom = Math.floor(top + columnHeight) >= 0 ? Math.floor(top + columnHeight) : this.height;
+      const floorColumnHeight = this.height - columnBottom;
 
       if(floorColumnHeight > 0){
-        for(let y = drawEnd + 1; y < this.height; y++){
+        for(let y = columnBottom + 1; y < this.height; y++){
           const x = i;
           const currentDist = this.lookupCurrentDist[y];
           const weight = currentDist / normalizedDistance;

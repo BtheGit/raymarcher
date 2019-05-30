@@ -57,7 +57,9 @@ class Player {
       if(currentCell == null){
         break;
       }
-      if(typeof currentCell === 'number' && currentCell > 0){
+      const isBasicWall = typeof currentCell === 'number' && currentCell > 0;
+      const isComplexWall = typeof currentCell === 'object' && currentCell != null && currentCell.isWall;
+      if(isBasicWall || isComplexWall){
         wall = currentCell;
       }
     }
