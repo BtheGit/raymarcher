@@ -1,3 +1,13 @@
+const checkIsFloor = cell => {
+  if(typeof cell === 'number' && cell === 0) {
+    return true;
+  }
+  if(cell.isFloor) {
+    return true;
+  }
+  return false;
+}
+
 class Player {
   constructor(game, pos, dir, plane){
     this.game = game;
@@ -108,11 +118,11 @@ class Player {
     
     // We split up moving along the axes to avoid getting stuck on walls
     const nextCellX = this.grid.getCell(cellX, Math.floor(this.pos.y));
-    if(nextCellX === 0){
+    if(checkIsFloor(nextCellX)){
       this.pos.x = newPosX;
     }
     const nextCellY = this.grid.getCell(Math.floor(this.pos.x), cellY);
-    if(nextCellY === 0){
+    if(checkIsFloor(nextCellY)){
       this.pos.y = newPosY;
     }
 
@@ -127,11 +137,11 @@ class Player {
 
     // We split up moving along the axes to avoid getting stuck on walls
     const nextCellX = this.grid.getCell(cellX, Math.floor(this.pos.y));
-    if(nextCellX === 0){
+    if(checkIsFloor(nextCellX)){
       this.pos.x = newPosX;
     }
     const nextCellY = this.grid.getCell(Math.floor(this.pos.x), cellY);
-    if(nextCellY === 0){
+    if(checkIsFloor(nextCellY)){
       this.pos.y = newPosY;
     }
   }
