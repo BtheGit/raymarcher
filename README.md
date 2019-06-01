@@ -44,6 +44,7 @@ In the interests of making lists that never get completed, here are some potenti
 - ~~Using bokeh now causes the whole thing to break on resizes. Might not be possible to workaround without pushing new updates to bokeh (other than a conditional render - so tiles without canvas height will fall back to a default color like fire engine red). The issue is that on a window resize event the bokeh field canvas is resized to its parent's client sizes. But in this case, the parent doesn't have a client size since it's not attached to the dom~~
 - Minimap does not render correctly when map grid is not square
 - Seams at the bottom of walls showing.
+- Refactor casting algorithm from player class to screen class. At this point the logic is split with walls in the player and floors in the screen. There is some logic in having the player have a cast method (hit scanning and collision detection with NOCs and what not) but for simplicity let's put it all in one place for now.
 
 ### Random working notes / Plan
 
@@ -72,3 +73,13 @@ In the interests of making lists that never get completed, here are some potenti
 
 - ceiling casting, make complex map where floor and ceiling are defined (ceilings can be seethru), make the textures smaller, use bigger textures for my info stuff but cheaper ones for everywhere else, keep looking for places to precalc everything.
 - Is it straightforward enough to do upsampling? IE, when closer to walls use a higher texture or more scan lines.
+- Should be change the rendering to only do alternate scanlines? It would probably make everything a fair bit quicker if I start running into issues with higher quality textures on the floors or ceilings again.
+- SPRITES PLAN:
+  - We need a z buffer for the walls locations. We could just store the columns as an array with their perpDistance. But that might not lend itself well to if there is ever the case of semi-opaque walls or portals with partial obscuring.
+  - I need to decide if I just want static sprites to center in a grid or not. I'm inclined to not include sprites on the map grid simply because then everything is centered. Alternately, we can have them on the grid in complex cells where their location is specified exactly (15.4, 10.9) or relative to the walls (.5, .8). Then when casting through empty space we can build an array of all the sprites encountered and use that to render them later. This means multiple sprites per cell (GOOD!) but means that collision detection is more complicated (BAD!). The collision detection might be an issue if we ever add moving sprites like NPCs anyway.
+  - For the purposes of trial, I'm going to just use an array of sprites with positions.
+  - If I record all grid cells the rays pass to check for renderable sprites, then I can save some processing, but it doesn't work if a sprite is in one cell but overlaps to another. So, for the first pass, let's just do one sprite per tile and centered. We'll use complex grid cells with a sprite key (so that I can use custom floors and ceilings). So:
+    1. Z Buffer of wall perpendicular distances by column
+    2. While casting, if a cell checked is a floor, add it to an array of visible floors along with its coordinates. The same cell will obviously we checked multiple times so this might not be optimal. Instead we can perhaps use a boolean to indicate whether a cell has been traversed. These booleans could be reset after the sprites have been drawn. Alternately we can use a set or a hash to store simple references. Eg { 1: { 1: true }}.
+    3. After rendering the walls and floors and skybox, iterate through the array in reverse drawing the sprites (we might not need to sort by distance since the rays hit cells in a distance pattern as well).
+    4. While drawing the sprites (back to front), draw in columns (we'll deal with pixel by pixel later) and for each column, check if the sprites distance is closer than the matching column in the z buffer.

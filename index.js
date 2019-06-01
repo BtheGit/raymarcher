@@ -195,8 +195,10 @@ const wad = PORTFOLIO_WAD;
 // Instead of wrapping the game, we could wrap each level with a loader so that asset loads are lighter.
 const loadAssets = async () => {
   const tiles = await loadTiles(wad.tiles);
+  // const sprites = await loadSprites(wad.sprites);
+  const sprites = null;
   const maps = wad.maps;
-  const game = new Game(maps, tiles, FRAMERATE);
+  const game = new Game(maps, tiles, sprites, FRAMERATE);
   game.start();
 }
 
