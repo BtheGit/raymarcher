@@ -347,7 +347,7 @@ class Screen {
       const floorColumnHeight = this.height - columnBottom;
 
       if(floorColumnHeight > 0){
-        for(let y = columnBottom + 1; y < this.height; y++){
+        for(let y = columnBottom; y < this.height; y++){
           const x = i;
           const currentDist = this.lookupCurrentDist[y];
           const weight = currentDist / normalizedDistance;
