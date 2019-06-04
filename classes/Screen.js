@@ -82,10 +82,10 @@ class Screen {
   }
   
   updateFromBuffer(){
-    this.floorCtxBuffer.putImageData(this.offscreenCanvasPixels, 0, 0);
-    this.ctxBuffer.drawImage(this.floorBuffer,0,0);
-    this.floorCtxBuffer.clearRect(0,0, this.floorBuffer.width, this.floorBuffer.height)
-    this.offscreenCanvasPixels = this.floorCtxBuffer.getImageData(0,0,this.width, this.height);
+    // this.floorCtxBuffer.putImageData(this.offscreenCanvasPixels, 0, 0);
+    // this.ctxBuffer.drawImage(this.floorBuffer,0,0);
+    // this.floorCtxBuffer.clearRect(0,0, this.floorBuffer.width, this.floorBuffer.height)
+    // this.offscreenCanvasPixels = this.floorCtxBuffer.getImageData(0,0,this.width, this.height);
     this.ctx.drawImage(this.canvasBuffer, 0,0);
   }
 
@@ -257,6 +257,9 @@ class Screen {
 
   drawPlayerPOV(){
     const { rays, elevation: playerElevation } = this.game.player;
+    // We'll need to record the perpendicular distance of each column for sprite clipping later.
+    const zBuffer = [];
+
     if(!rays){
       return;
     }
@@ -264,6 +267,9 @@ class Screen {
       const ray = rays[i];
       // TODO: Make ray class to abstract and use getters.
       const { normalizedDistance, wall, wallOrientation, wallIntersection, rayDir, activeCell } = ray;
+
+      zBuffer.push(normalizedDistance);
+
       const columnHeight = Math.ceil(this.height / normalizedDistance);
       const top = (this.height / 2) - (columnHeight / 2) * playerElevation;
       const VIEW_DISTANCE = 25;
@@ -295,8 +301,15 @@ class Screen {
           }
         }
         let textureStripLeft = Math.floor(wallIntersectionOffset * textureWidth);
-        // TODO: HANDLE HEIGHTS IN MULTIPLES OF ONE (FOR NOW)
         this.ctxBuffer.drawImage(wallTexture, textureStripLeft, 0, 1, wallTexture.height, i, top, 1, columnHeight);
+        // TODO: HANDLE HEIGHTS IN MULTIPLES OF ONE (FOR NOW)
+        // Hardcoding a height of two temporarily.
+        if (typeof wall === 'object' && wall.height > 1) {
+          // This doesn't really work because it only renders correctly face on. 
+          // Getting this to work would require keeping the DDA algorithm going past initial intersections with walls and then using a zBuffer of sorts to
+          // draw with a painters algorithm. I'm starting to rethink the utility of that.
+          this.ctxBuffer.drawImage(wallTexture, textureStripLeft, 0, 1, wallTexture.height, i, top - columnHeight, 1, columnHeight);
+        }
 
         // TODO: Change this to color shift the pixels directly instead of messing with a semi-opaque overlay.
         this.ctxBuffer.fillStyle = 'black';
@@ -388,6 +401,67 @@ class Screen {
         }        
       }
     }
+    this.floorCtxBuffer.putImageData(this.offscreenCanvasPixels, 0, 0);
+    this.ctxBuffer.drawImage(this.floorBuffer,0,0);
+    this.floorCtxBuffer.clearRect(0,0, this.floorBuffer.width, this.floorBuffer.height)
+    this.offscreenCanvasPixels = this.floorCtxBuffer.getImageData(0,0,this.width, this.height);
+
+    // #### SPRITE RENDERING
+    // This pass is a practice on alignment, the sprite is hardcoded and the location will be too.
+    // Later we'll of course used named sprites and decide on the location implementation (ie using the grid or an arbitrary
+    // specifier in a separate array (if I make a map builder, I'm inclined towards this approach)).
+    // We'll also need to sort out the sizing of textures. I'm inclined to say they should all be the same height but variable widths.
+    const sprite = this.game.sprites[0];
+    const spriteLocs = [[7.5, 9.5], [7.5,10.5], [7.5, 11.5], [8, 10], [8, 11]]
+    spriteLocs.forEach(([spriteX, spriteY]) => {
+      const spriteX_relativeToPlayer = spriteX - this.game.player.pos.x;
+      const spriteY_relativeToPlayer = spriteY - this.game.player.pos.y;
+      // This only seems to be needed to be calculated once, unless the FOV changes. Probably can live on the player class at
+      // instantiation, or to be changed if the FOV becomes dynamically alterable.
+      const inverseDeterminate = 1.0 / (this.game.player.plane.x * this.game.player.dir.y - this.game.player.dir.x * this.game.player.plane.y);
+  
+      const transformX = inverseDeterminate * (this.game.player.dir.y * spriteX_relativeToPlayer - this.game.player.dir.x * spriteY_relativeToPlayer);
+      // This provides the depth on screen, much like a z-index in a 3d system.
+      // Depth will of course we used to determine size, height, vertical offset, and wall clipping.
+      const transformY = inverseDeterminate * (-this.game.player.plane.y * spriteX_relativeToPlayer + this.game.player.plane.x * spriteY_relativeToPlayer);
+  
+      const spriteScreenX = Math.floor((this.width / 2) * (1 + transformX / transformY));
+      // using "transformY" instead of the real distance prevents fisheye
+      const spriteHeight = Math.abs(Math.floor(this.height / transformY));
+  
+      // calculate lowest and highest pixel to fill in current stripe
+      const drawStartY = Math.floor(-spriteHeight / 2 + this.height / 2);
+      const drawEndY = spriteHeight + drawStartY;
+  
+      //calculate width of the sprite
+      const spriteWidth = Math.abs(Math.floor(this.height / (transformY)));
+      const drawStartX = Math.floor(-spriteWidth / 2 + spriteScreenX);
+      const drawEndX = spriteWidth / 2 + spriteScreenX;
+  
+      // Draw sprite in vertical strips.
+      for(let stripe = drawStartX; stripe < drawEndX; stripe++){
+        const texX = Math.floor(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * sprite.width / spriteWidth) / 256;
+        //the conditions in the if are:
+        //1) it's in front of camera plane so you don't see things behind you
+        //2) it's on the screen (left)
+        //3) it's on the screen (right) 
+        //4) ZBuffer, with perpendicular distance
+        if(transformY > 0 && stripe > 0 && stripe < this.width && transformY < zBuffer[stripe]) {
+          this.ctxBuffer.drawImage(sprite.canvas, texX, 0, 1, sprite.height, stripe, drawStartY, 1, drawEndY - drawStartY);
+          // for every pixel of the current stripe
+          // for(let y = drawStartY; y < drawEndY; y++) {
+            // const d = y * 256 - this.height * 128 + spriteHeight * 128; //256 and 128 factors to avoid floats
+            // const texY = ((d * sprite.height) / spriteHeight) / 256;
+          //   // const color = texture[sprite[spriteOrder[i]].texture][texWidth * texY + texX]; //get current color from the texture
+          //   // if((color & 0x00FFFFFF) != 0) buffer[y][stripe] = color; //paint pixel if it isn't black, black is the invisible color
+          // }
+        }
+      }
+      
+    })
+
+    // console.table(zBuffer)
+
   }
 
   draw() {

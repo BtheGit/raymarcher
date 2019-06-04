@@ -38,6 +38,16 @@ const BLANK_GRID = [
 // This is a weird way to do it. Having everything processed into a second lookup tree on load, but because of the 
 // nature of having mixed assets, we're going to put off restructuring until a final tally of allowed texture types
 // is created.
+
+const sprites = [
+  {
+    type: 'static',
+    name: 'test',
+    path: './images/sprites/tree2.png',
+  }
+];
+
+
 const tiles = [
   {
     type: 'image',
@@ -249,20 +259,20 @@ const tiles = [
   //   type: 'bokeh',
   //   name: 'bokeh_default',
   // },
-  {
-    type: 'bokeh',
-    name: 'bokeh_purple_on_tan',
-    bokehSettings: {
-      color: 'black',
-      backgroundColor: 'orangered',
-      dx: 5,
-      dy: 5,
-      density: 20,
-      halfLife: 100,
-      radius: 30,
-      frameRate: 60,
-    }
-  },
+  // {
+  //   type: 'bokeh',
+  //   name: 'bokeh_purple_on_tan',
+  //   bokehSettings: {
+  //     color: 'black',
+  //     backgroundColor: 'orangered',
+  //     dx: 5,
+  //     dy: 5,
+  //     density: 20,
+  //     halfLife: 100,
+  //     radius: 30,
+  //     frameRate: 60,
+  //   }
+  // },
   // {
   //   type: 'bokeh',
   //   name: 'bokeh_purple_on_tan',
@@ -501,13 +511,14 @@ const MAP_TILETEST = {
 
 const maps = [
   MAP1,
-  MAP_TILETEST,
   MAP2,
+  MAP_TILETEST,
 ];
 
 // TODO: Exports
 
 const PORTFOLIO_WAD = {
-  tiles,
   maps,
+  tiles,
+  sprites,
 }

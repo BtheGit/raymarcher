@@ -9,6 +9,7 @@ class Game {
     // that caused them to navigate away to a link.
     const savedState = loadStateFromSessionStorage(STORAGE_ID);
     this.images = images;
+    this.sprites = sprites;
     this.interval = framerate;
     this.animationFrame = null;
 
