@@ -238,7 +238,7 @@ const tiles = [
   {
     type: 'image',
     name: "background_trees1",
-    path: './images/tiles/background_trees2.jpg',
+    path: './images/tiles/background_trees3.jpg',
   },
   // {
   //   type: 'image',
