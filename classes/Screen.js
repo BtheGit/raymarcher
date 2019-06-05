@@ -451,7 +451,13 @@ class Screen {
     // We'll also need to sort out the sizing of textures. I'm inclined to say they should all be the same height but variable widths.
     const sprite = this.game.sprites[0];
     const spriteLocs = [[7.5, 9.5], [7.5,10.5], [7.5, 11.5], [8, 10], [8, 11]]
-    spriteLocs.forEach(([spriteX, spriteY]) => {
+    // Sort sprites by dumb distance
+    const sortedSprites = spriteLocs.sort(([sprite1x, sprite1y], [sprite2x, sprite2y]) => {
+      const sprite1distance = Math.pow(this.game.player.pos.x - sprite1x, 2) + Math.pow(this.game.player.pos.y - sprite1y, 2);
+      const sprite2distance = Math.pow(this.game.player.pos.x - sprite2x, 2) + Math.pow(this.game.player.pos.y - sprite2y, 2);
+      return sprite2distance - sprite1distance;
+    })
+    sortedSprites.forEach(([spriteX, spriteY]) => {
       const spriteX_relativeToPlayer = spriteX - this.game.player.pos.x;
       const spriteY_relativeToPlayer = spriteY - this.game.player.pos.y;
       // This only seems to be needed to be calculated once, unless the FOV changes. Probably can live on the player class at
