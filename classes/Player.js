@@ -112,6 +112,12 @@ class Player {
     // For now, the rule will simply be that players can only move through empty cells.
     // In the future when cells become complex objects, we will need a traversable rule.
     // (Things like sprites that are traversable)
+    // In fact, because sprites are likely going to be cell agnostic, until a better system is implemented,
+    // we'll likely have to iterate through all or most of them to check for collisions, regardless of their distance.
+    // Perhaps we can at least sort and filter them (only sprites that are x distance away).
+    // We likely won't use completely separate bounding boxes but instead draw a radius from the center of the sprite. 
+    // So just checking if a sprite is within distancetosprite - spriteboundingboxradius is close to enough (there are of course
+    // issues with various angles of approach.)
 
     const newPosX = this.pos.x + this.dir.x * this.walkSpeed;
     const newPosY = this.pos.y + this.dir.y * this.walkSpeed;
