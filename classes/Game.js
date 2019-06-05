@@ -77,7 +77,12 @@ class Game {
       this.player.rotate(-1);
     }
     if(this.keyState.w){
-      this.player.moveForward();
+      if(this.keyState.Shift){
+        this.player.moveForward(1.5);
+      }
+      else {
+        this.player.moveForward();
+      }
     }
     if(this.keyState.s){
       this.player.moveBack();

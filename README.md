@@ -84,6 +84,7 @@ In the interests of making lists that never get completed, here are some potenti
 - Is it straightforward and cheap enough to do upsampling? IE, when closer to walls use a higher texture or more scan lines.
 - Should we change the rendering to only do alternate scanlines? It would probably make everything a fair bit quicker if I start running into issues with higher quality textures on the floors or ceilings again. I might be able to get alot more fidelity and complexity without anymore efficiency just by doing half the pixel rendering each frame. There's also no reason I couldn't drop the frame rate a bit.
 - How expensive would motion blur be?
+- What other kinds of animated textures can we do? Obviously repeating gifs are cheaper but particle effects are cooler.
 - SPRITES PLAN:
   - ~We need a z buffer for the walls locations. We could just store the columns as an array with their perpDistance. But that might not lend itself well to if there is ever the case of semi-opaque walls or portals with partial obscuring.~
   - I need to decide if I just want static sprites to center in a grid or not. I'm inclined to not include sprites on the map grid simply because then everything is centered. Alternately, we can have them on the grid in complex cells where their location is specified exactly (15.4, 10.9) or relative to the walls (.5, .8). Then when casting through empty space we can build an array of all the sprites encountered and use that to render them later. This means multiple sprites per cell (GOOD!) but means that collision detection is more complicated (BAD!). The collision detection might be an issue if we ever add moving sprites like NPCs anyway.
@@ -96,7 +97,9 @@ In the interests of making lists that never get completed, here are some potenti
     - The nature of the algorithms I've been basing my approach one (or directly using calculations from) has left me in a bit of weird place when it comes to speaking of in-world distances and sizes with a real measurement value. I'd like to change this eventually. It would certainly help with ratios.
 
 PLAN:
-    - Add in ceiling casting. See if it works when only some empty cells have ceilings. That is unlikely but would be an amazing surprise.
+    - ~Add in ceiling casting. See if it works when only some empty cells have ceilings. That is unlikely but would be an amazing surprise.~
+    - Add in sprite sorting.
+    - Add in specified wall faces.
     - Add in sprite collisions.
     - Add in draw distance (so that I can render varying height walls behind other walls)
     - Render all walls in draw distance, back to front (painter's algorithm);

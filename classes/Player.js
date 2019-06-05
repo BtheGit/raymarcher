@@ -108,7 +108,7 @@ class Player {
     this.rays = rays;
   }
 
-  moveForward(){
+  moveForward(modifier = 1){
     // For now, the rule will simply be that players can only move through empty cells.
     // In the future when cells become complex objects, we will need a traversable rule.
     // (Things like sprites that are traversable)
@@ -119,8 +119,8 @@ class Player {
     // So just checking if a sprite is within distancetosprite - spriteboundingboxradius is close to enough (there are of course
     // issues with various angles of approach.)
 
-    const newPosX = this.pos.x + this.dir.x * this.walkSpeed;
-    const newPosY = this.pos.y + this.dir.y * this.walkSpeed;
+    const newPosX = this.pos.x + this.dir.x * (this.walkSpeed * modifier);
+    const newPosY = this.pos.y + this.dir.y * (this.walkSpeed * modifier);
     const cellX = Math.floor(newPosX);
     const cellY = Math.floor(newPosY);
     
