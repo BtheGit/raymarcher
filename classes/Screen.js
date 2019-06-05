@@ -418,9 +418,9 @@ class Screen {
             const ceilTexY = Math.floor((this.height - currentFloorY) * ceilingTexture.height) % ceilingTexture.height;
             const textureIndex = (ceilTexY * ceilingTexture.width + ceilTexX) * 4;
   
-            // Let's dim the floor
+            // Let's dim the ceiling more than the floor.
             // TODO: Better dropoff curve.
-            const brightnessModifier = this.lookupFloorBrightnessModifier[y];
+            const brightnessModifier = this.lookupFloorBrightnessModifier[y] - .2;
   
             const red = ceilingTexturePixels.data[textureIndex] * brightnessModifier;
             const green = ceilingTexturePixels.data[textureIndex + 1] * brightnessModifier;

@@ -37,7 +37,8 @@ In the interests of making lists that never get completed, here are some potenti
 - [ ] Give different sprites different motion types and displays
 - [x] Floor textures.
 - [/] Floor dimming.
-- [X] Sky box texture 
+- [x] Sky box texture 
+- [x] Ceiling textures
 - [ ] Variable wall heights.
 - [ ] Add build system with typescript
 - [x] WAD packs to instantiate the 'game' with. Including all textures and maps for now. Maps should be bundled with starting player location and direction and plane as well.
