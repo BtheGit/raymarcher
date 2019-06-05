@@ -335,7 +335,7 @@ const MAP1 = {
     [1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,3,2,2,2,2,2,2,12,2],
     [1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,2,0,0,0,2],
     [1,0,0,0,0,0,0,0,3,3,0,3,3,3,0,3,2,0,0,2,0,2,0,2],
-    [1,0,0,0,0,0,0,0,1,1,0,1,{ isWall: true, height: 2, texture: 1 },1,0,1,2,0,0,0,0,2,0,2],
+    [1,0,0,0,0,0,0,0,1,14,0,6,{ isWall: true, height: 2, texture: 6 },6,0,1,2,0,0,0,0,2,0,2],
     [1,0,0,0,0,0,0,0,14,{isFloor: true, floorTexture: 13, ceilingTexture: 12 },{isFloor: true, floorTexture: 11, ceilingTexture: 11 },{isFloor: true, floorTexture: 11, ceilingTexture: 11 },{isFloor: true, floorTexture: 11, ceilingTexture: 11 },{isFloor: true, floorTexture: 11, ceilingTexture: 11 },0,0,1,2,0,0,0,2,0,2],
     [1,0,0,0,0,0,0,0,14,{isFloor: true, floorTexture: 13, ceilingTexture: 12 },14,7,{ isFloor: true, floorTexture: 7, ceilingTexture: 7 },7,0,0,0,1,2,2,2,2,0,2],
     [1,0,0,0,0,0,0,0,0,14,1,7,{ isFloor: true, floorTexture: 7, ceilingTexture: 7 },7,0,0,0,0,1,1,1,2,0,2],

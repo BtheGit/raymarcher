@@ -116,7 +116,7 @@ class Screen {
   // Main draw functions
   drawMapOverlay(){
     // TODO: Lots of hardcoded stuff to make dynamic.
-    const emptyCellColor = 'rgba(5,5,5,0.3)';
+    const emptyCellColor = 'rgba(5,5,5,0.7)';
     // TODO: For simplicity's sake, we'll hard code the placement and size of the minimap for now at the top left.
     // Probably would be nicer as a full screen overlay with transparency;
     const mapLeft = 0;
@@ -161,11 +161,9 @@ class Screen {
     }
     // TODO: Fix the mirrored orientation issues!!!
     // Render grid elements, scaled.
-    for(let i = 0; i < mapGrid.length; i++){
-      const rowOffset = i;
-      const row = mapGrid[i];
-      for(let j = 0; j < row.length; j++){
-        const columnOffset = j;
+    for(let rowOffset = 0; rowOffset < mapGrid.length; rowOffset++){
+      const row = mapGrid[rowOffset];
+      for(let columnOffset = 0; columnOffset < row.length; columnOffset++){
         const reversedRowOffset = mapGrid.length - 1 - rowOffset;
         const reversedColumnOffset = row.length - 1 - columnOffset;
         const cell = world.getCell(rowOffset, columnOffset);
@@ -173,8 +171,8 @@ class Screen {
         const cellHue = HUES[textureId];
         const cellTexture = this.game.images[cell - 1] && this.game.images[cell - 1].getCanvas();
         // TODO: For simplicity's sake, we'll hard code the placement and size of the minimap for now at the top left.
-        const cellLeft = 0 + (rowOffset * mapWidthUnit);
-        const cellTop = 0 + (columnOffset * mapHeightUnit);
+        const cellLeft = rowOffset * mapWidthUnit;
+        const cellTop = columnOffset * mapHeightUnit;
         if (cellTexture){
           this.ctxBuffer.drawImage(cellTexture, 0, 0, cellTexture.width, cellTexture.height, cellLeft, cellTop, mapWidthUnit, mapHeightUnit);
         }
