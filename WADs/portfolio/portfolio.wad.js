@@ -165,7 +165,7 @@ const sprites = [
     isAnimated: false,
     isMultifaceted: false,
     isSolid: true,
-    boundingBox: .5,
+    boundingBox: .35,
 
     // Sprite-scaling test
     // height: .5,
