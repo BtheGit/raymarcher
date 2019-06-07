@@ -112,9 +112,15 @@ class Player {
   }
 
   checkSpritesForCollisions(x,y){
-    // TODO: SPRITES ARE TEMPORARILY HARDCODED IN AN INTERMEDIATE STATE
-    const spriteBoundingBox = .17;
-    const collisionDetected = this.game.sprites.some(([spriteX, spriteY]) => {
+    const collisionDetected = this.game.sprites.some(sprite => {
+      if(!sprite.isSolid){
+        return false;
+      }
+
+      // TODO: We should move this calculating to a sprite method with just the player position passed.
+      const spriteX = sprite.pos.x;
+      const spriteY = sprite.pos.y;
+      const spriteBoundingBox = sprite.boundingBox;
       // There will have to be a check for a bounding box, but for now we will assume there is and it is .2
       const distance = Math.sqrt(Math.pow(x - spriteX, 2) + Math.pow(y - spriteY, 2));
       const isColliding = (distance - spriteBoundingBox) < 0;

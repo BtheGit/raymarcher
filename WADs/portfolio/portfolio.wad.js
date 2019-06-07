@@ -39,9 +39,33 @@ const BLANK_GRID = [
 // nature of having mixed assets, we're going to put off restructuring until a final tally of allowed texture types
 // is created.
 
+// Let's have a bare set of files In fact, there's no reason we can't do this with just scooping up all the files in the 
+// directory and creating their names in the hash from there. Tiles too. But for now we'll still name the imports.
+// For simplicity, we'll want all images in a folder to have a unique name even if they are different extensions, to avoid
+// collisions.
+// For that matter, there is no reason, all the texture files can't go in the same hash.
+const textures = [
+  './images/sprite__tree_1.png',
+]
+
 const sprites = [
   {
-    type: 'static',
+    type: 'prop',
+    name: 'tree1',
+    spritesheet: 'sprite__tree_1',
+    pos: {
+      x: 13,
+      y: 10,
+    },
+    isAnimated: false,
+    // If a sprite is multifaceted, it needs to have both a store of the locations of the 
+    // textures for the various faces on the spritesheet and a separate key for direction (to calculate which
+    // face to show based on player position).
+    isMultifaceted: false,
+    isSolid: true,
+    // boundingBox is the radius from the center of the sprite that is impassable by collidable players and NPCs.
+    boundingBox: .2,
+
     // EVERY sprite should have a defaultFace
     // defaultFace: [0,0],
     // The coordinates on the spritesheet image where the face starts.
@@ -56,11 +80,59 @@ const sprites = [
     // // But we still lack an in-world unit of measurement (except grid cells). This needs to be reconsidered.
     // spriteWidth: 1,
     // spriteHeight: 1,
-    // Boundingbox is the radius from the center of the sprite that is impassable by collidable players and NPCs.
+  },
+  {
+    type: 'prop',
+    name: 'tree2',
+    spritesheet: 'sprite__tree_1',
+    pos: {
+      x: 12,
+      y: 10.5,
+    },
+    isAnimated: false,
+    isMultifaceted: false,
+    isSolid: true,
     boundingBox: .2,
-    name: 'test',
-    path: './images/sprites/tree2.png',
-  }
+  },
+  {
+    type: 'prop',
+    name: 'tree2',
+    spritesheet: 'sprite__tree_1',
+    pos: {
+      x: 12.5,
+      y: 10.7,
+    },
+    isAnimated: false,
+    isMultifaceted: false,
+    isSolid: true,
+    boundingBox: .2,
+  },
+  {
+    type: 'prop',
+    name: 'tree2',
+    spritesheet: 'sprite__tree_1',
+    pos: {
+      x: 12.75,
+      y: 11.5,
+    },
+    isAnimated: false,
+    isMultifaceted: false,
+    isSolid: true,
+    boundingBox: .2,
+  },
+  {
+    type: 'prop',
+    name: 'tree2',
+    spritesheet: 'sprite__tree_1',
+    pos: {
+      x: 11.5w,
+      y: 12,
+    },
+    isAnimated: false,
+    isMultifaceted: false,
+    isSolid: true,
+    boundingBox: .2,
+  },
 ];
 
 
@@ -317,13 +389,6 @@ const tiles = [
   //     frameRate: 60,
   //   }
   // },
-  // {
-  //   type: 'framed-image',
-  //   imagePath: './images/tiles/me1.png',
-  //   backgroundImagePath: './images/tiles/light_brick1.jpg',
-  //   tilt: null, // This should trigger random,
-  //   frameColor: 'black',
-  // }
 ];
 
 // A map needs 
@@ -537,4 +602,5 @@ const PORTFOLIO_WAD = {
   maps,
   tiles,
   sprites,
+  textures,
 }

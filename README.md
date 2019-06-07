@@ -95,13 +95,13 @@ In the interests of making lists that never get completed, here are some potenti
     3. After rendering the walls and floors and skybox, iterate through the array in reverse drawing the sprites (we might not need to sort by distance since the rays hit cells in a distance pattern as well).
     4. While drawing the sprites (back to front), draw in columns (we'll deal with pixel by pixel later) and for each column, check if the sprites distance is closer than the matching column in the z buffer.
     - The nature of the algorithms I've been basing my approach one (or directly using calculations from) has left me in a bit of weird place when it comes to speaking of in-world distances and sizes with a real measurement value. I'd like to change this eventually. It would certainly help with ratios.
-
+- Look into using weakmaps where possible instead of hashes. Explore whether there is any tangible memory overhead savings.
 PLAN:
     - ~~Add in ceiling casting. See if it works when only some empty cells have ceilings. That is unlikely but would be an amazing surprise.~~
     - ~~Add in sprite sorting.~~
+    - ~~Add in sprite collisions.~~
     - Add actual sprite class so we can remove hardcoded locations and sprite texture. Use names (tiles will eventually too.)
     - Add in specified wall faces.
-    - Add in sprite collisions.
     <!-- - Add in draw distance (so that I can render varying height walls behind other walls) -->
     <!-- - Render all walls in draw distance, back to front (painter's algorithm); -->
     <!-- - Add back in ascend/descend controls. -->

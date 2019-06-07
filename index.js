@@ -7,29 +7,13 @@
 // TODO: Create a name for any tiles that might not have one. Or is this necessary? Without
 // a name, how can we specify them in the improved map anyway?
 
-// TEST to create image buffers for optimizing
-// Yes, at this point it's starting to be pretty obvious that I could stand to use a super class
-// here. But until we know how these image buffers will shake out, I don't want to optimize.
-// class FramedImageBuffer {
-//   constructor(image){
-//     this.rawImage = image;
-//     this.canvas = document.createElement('canvas');
-//     this.width = this.canvas.width = this.rawImage.width;
-//     this.height = this.canvas.height = this.rawImage.height;
-//     this.ctx = this.canvas.getContext('2d');
-//     this.ctx.drawImage(this.rawImage, 0, 0);
-//   }
-
-//   getCanvas(){
-//     return this.canvas;
-//   }
-  
-//   getImageData(){
-//     return(this.ctx.getImageData(0,0, this.width, this.height));
-//   }
-// }
-
 const loadImageBuffer = async ({ path }) => {
+  const img = await loadImage(path);
+  const imageBuffer = new ImageBuffer(img);
+  return imageBuffer;
+}
+
+const loadImageBuffer2 = async (path) => {
   const img = await loadImage(path);
   const imageBuffer = new ImageBuffer(img);
   return imageBuffer;
@@ -40,36 +24,6 @@ const loadLinkImageBuffer = async ({ href, path }) => {
   const linkImageBuffer = new LinkImageBuffer(href, img);
   return linkImageBuffer;
 }
-
-// // Again, obviously not dry. But let's see what works best before we optimize.
-// // INCOMPLETE
-// const loadFramedImageBuffer = async ({ imagePath, backgroundImagePath }) => {
-//   const framedImage = await loadImage(imagePath);
-//   const backgroundImage = await loadImage(backgroundImagePath);
-//   const baseCanvas = document.createElement('canvas');
-//   const baseCtx = baseCanvas.getContext('2d');
-//   baseCanvas.width = backgroundImage.width;
-//   baseCanvas.height = backgroundImage.height;
-//   baseCtx.drawImage(backgroundImage, 0, 0);
-
-//   // FAILED ATTEMPT TO FRAME AND ROTATE
-//   // const frameCanvas = document.createElement('canvas');
-//   // const frameCtx = baseCanvas.getContext('2d');
-//   // frameCanvas.width = baseCanvas.width * .5 + 12;
-//   // frameCanvas.height = baseCanvas.height * .5 + 6;
-//   // frameCtx.fillStyle = 'black';
-//   // frameCtx.fillRect(0,0,frameCanvas.width,frameCanvas.height)
-//   // frameCtx.drawImage(framedImage, 6, 3, frameCanvas.width - 12, frameCanvas.height - 6)
-//   // frameCtx.rotate(30);
-//   // baseCtx.drawImage(frameCanvas, 100,100, 100, 100)
-//   const frameWidthRatio = Math.floor(baseCanvas.width * .8);
-//   const framedImageWidthRatio = Math.floor(baseCanvas.width * .7);
-//   const framedImageHeight = (framedImage.width / baseCanvas.width) * framedImage.height;
-//   baseCtx.fillStyle = 'black'
-//   baseCtx.fillRect( 20, 20, frameWidthRatio, 100)
-
-//   return new ImageBuffer(baseCanvas);
-// }
 
 const loadBokeh = ({ bokehSettings }) => {
   return new BokehImageBuffer(bokehSettings);
@@ -82,8 +36,6 @@ const loadTiles = tiles => {
         return loadImageBuffer(tile)
       case 'bokeh':
         return Promise.resolve(loadBokeh(tile));
-      case 'framed-image':
-        return loadFramedImageBuffer(tile);
       case 'link-image':
         return loadLinkImageBuffer(tile)
       default:
@@ -92,12 +44,35 @@ const loadTiles = tiles => {
   }));
 }
 
-const loadSprites = sprites => Promise.all(sprites.map(sprite => {
-  // This will change soon of course to support a unique sprite class.
+const loadTextures = async (texturePaths) => {
+  const textureMap = {};
+  for(let i = 0; i < texturePaths.length; i++){
+    const path = texturePaths[i];
+    const pathParts = path.split('/');
+    const fileNameAndExtension = pathParts[pathParts.length - 1];
+    const fileName = fileNameAndExtension.split('.')[0];
+
+    const texture = await loadImageBuffer2(path);
+    
+    textureMap[fileName] = texture;
+  }
+  return textureMap;
+}
+
+// The sprite textures will be stored in a hash for named reference.
+const loadSprites = sprites => Promise.all(sprites.map((sprite) => {
   return loadImageBuffer(sprite);
+  // This will change soon of course to support a unique sprite class.
 }))
 
-// TODO: Create Texture handling class
+// Depending on how things shake out, instead of putting these into a map, we might just want
+// to create a map of several arrays based on the sprite type (object, NPC etc.) since 
+// certain operations will be called on each depending on that. So, solid sprites will be
+// called for collision detection, animated sprites will be called for updating in the game loop, etc.
+const loadSprites2 = textureMap => spriteConfigs => {
+  const sprites = spriteConfigs.map(config => new Sprite(textureMap, config));
+  return sprites;
+}
 
 const HUES = {
   1: '330',
@@ -116,8 +91,9 @@ const wad = PORTFOLIO_WAD;
 
 // Instead of wrapping the game, we could wrap each level with a loader so that asset loads are lighter.
 const loadAssets = async () => {
+  const textureMap = await loadTextures(wad.textures);
+  const sprites = loadSprites2(textureMap)(wad.sprites);
   const tiles = await loadTiles(wad.tiles);
-  const sprites = wad.sprites ? await loadSprites(wad.sprites) : [];
   const maps = wad.maps;
   const game = new Game(maps, tiles, sprites, FRAMERATE);
   game.start();

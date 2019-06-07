@@ -12,9 +12,9 @@ class Game {
     this.interval = framerate;
     this.animationFrame = null;
 
+    this.sprites = sprites;
     // TODO: This is temporary.
-    this.spriteTex = sprites[0];
-    this.sprites = [[7.5, 9.5], [7.5,10.5], [7.5, 11.5], [8, 10], [8, 11], [13.25, 16.5], [13, 15.5]];
+    // this.sprites = [[7.5, 9.5], [7.5,10.5], [7.5, 11.5], [8, 10], [8, 11], [13, 10], [12, 11], [12.5, 11.75], [11.5, 11.75]];
 
     // Gonna hardcode the first level for now. TODO: REMOVE
     this.maps = maps;

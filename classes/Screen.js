@@ -443,24 +443,25 @@ class Screen {
     this.offscreenCanvasPixels = this.floorCtxBuffer.getImageData(0,0,this.width, this.height);
 
     // #### SPRITE RENDERING
-    // This pass is a practice on alignment, the sprite is hardcoded and the location will be too.
-    // Later we'll of course used named sprites and decide on the location implementation (ie using the grid or an arbitrary
-    // specifier in a separate array (if I make a map builder, I'm inclined towards this approach)).
     // We'll also need to sort out the sizing of textures. I'm inclined to say they should all be the same height but variable widths.
-    const sprite = this.game.spriteTex;
     const sprites = this.game.sprites;
+
+    // TODO: In the future we could have a visible property to allow us to persist objects in the world that
+    // might be temporarily hidden.
     if(sprites.length > 0){
-      // Sort sprites by dumb distance
-      const sortedSprites = sprites.sort(([sprite1x, sprite1y], [sprite2x, sprite2y]) => {
-        const sprite1distance = Math.pow(this.game.player.pos.x - sprite1x, 2) + Math.pow(this.game.player.pos.y - sprite1y, 2);
-        const sprite2distance = Math.pow(this.game.player.pos.x - sprite2x, 2) + Math.pow(this.game.player.pos.y - sprite2y, 2);
+
+      // Sort sprites by dumb distance (not normalized).
+      const sortedSprites = sprites.sort((sprite1, sprite2) => {
+        const sprite1distance = Math.pow(this.game.player.pos.x - sprite1.pos.x, 2) + Math.pow(this.game.player.pos.y - sprite1.pos.y, 2);
+        const sprite2distance = Math.pow(this.game.player.pos.x - sprite2.pos.x, 2) + Math.pow(this.game.player.pos.y - sprite2.pos.y, 2);
         return sprite2distance - sprite1distance;
       })
+
       for(let i = 0; i < sortedSprites.length; i++){
         const currentSprite = sortedSprites[i];
         if(currentSprite){
-          const spriteX = currentSprite[0];
-          const spriteY = currentSprite[1];
+          const spriteX = currentSprite.pos.x;
+          const spriteY = currentSprite.pos.y;
           const spriteX_relativeToPlayer = spriteX - this.game.player.pos.x;
           const spriteY_relativeToPlayer = spriteY - this.game.player.pos.y;
           
@@ -486,14 +487,15 @@ class Screen {
           
           // Draw sprite in vertical strips.
           for(let stripe = drawStartX; stripe < drawEndX; stripe++){
-            const texX = Math.floor(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * sprite.width / spriteWidth) / 256;
+            const texX = Math.floor(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * currentSprite.width / spriteWidth) / 256;
             //the conditions in the if are:
             //1) it's in front of camera plane so you don't see things behind you
             //2) it's on the screen (left)
             //3) it's on the screen (right) 
             //4) ZBuffer, with perpendicular distance
             if(transformY > 0 && stripe > 0 && stripe < this.width && transformY < zBuffer[stripe]) {
-              this.ctxBuffer.drawImage(sprite.canvas, texX, 0, 1, sprite.height, stripe, drawStartY, 1, drawEndY - drawStartY);
+              // TODO: When sprites are multifaceted, we'll need to pass in player pos/dir to calcultate the face;
+              this.ctxBuffer.drawImage(currentSprite.getFrame(), texX, 0, 1, currentSprite.height, stripe, drawStartY, 1, drawEndY - drawStartY);
               // for every pixel of the current stripe
               // for(let y = drawStartY; y < drawEndY; y++) {
                 // const d = y * 256 - this.height * 128 + spriteHeight * 128; //256 and 128 factors to avoid floats
@@ -503,13 +505,9 @@ class Screen {
               // }
             }
           }
-  
         }
-
+      }
     }
-    }
-    // console.table(zBuffer)
-
   }
 
   draw() {
