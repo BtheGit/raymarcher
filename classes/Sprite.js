@@ -19,6 +19,8 @@ class Sprite {
     this.height = this.spritesheet.height;
     this.width = this.spritesheet.width;
 
+    this.verticalOffset = spriteConfig.verticalOffset ? spriteConfig.verticalOffset : 1;
+
     // TODO: The dynamic setups should be done more dynamically, natch.
     if(this.isSolid){
       this.boundingBox = spriteConfig.boundingBox;

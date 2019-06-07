@@ -79,6 +79,7 @@ In the interests of making lists that never get completed, here are some potenti
 - Create dynamic 'picture frames' that I can use to create hanging pictures on wall tiles (Instead of a simple ImageBuffer, take an image, scale it to a random or given fractional width of the wall tile, give it a several pixel border (could be an image of a picture frame (could be one of several), and 'hang' it by superimposing it at a randomized tilt (minor, between -10 and 10), and randomized elevation on a wall (again, constrained to 60-90% of the wall height)));
 - Can we draw 3d rendered sprites on a webgl canvas and blit that over with any efficiency?
 - Sprites, WADs holding textures and maps, sessionstorage onbeforeunload...
+- Add biomes. Ie, have the skybox image be dependent on where a player is standing (either a certain number of biome specific blocks near the player (a la Terraria)) or based on an invisible biome map that is hard coded. Would need a transition effect to fade in and out. This would be a great feature for procedurally generated levels.
 
 - ceiling casting, make complex map where floor and ceiling are defined (ceilings can be seethru), make the textures smaller, use bigger textures for my info stuff but cheaper ones for everywhere else, keep looking for places to precalc everything.
 - Is it straightforward and cheap enough to do upsampling? IE, when closer to walls use a higher texture or more scan lines.
@@ -86,21 +87,12 @@ In the interests of making lists that never get completed, here are some potenti
 - How expensive would motion blur be?
 - What other kinds of animated textures can we do? Obviously repeating gifs are cheaper but particle effects are cooler.
 - SPRITES PLAN:
-  - ~We need a z buffer for the walls locations. We could just store the columns as an array with their perpDistance. But that might not lend itself well to if there is ever the case of semi-opaque walls or portals with partial obscuring.~
-  - I need to decide if I just want static sprites to center in a grid or not. I'm inclined to not include sprites on the map grid simply because then everything is centered. Alternately, we can have them on the grid in complex cells where their location is specified exactly (15.4, 10.9) or relative to the walls (.5, .8). Then when casting through empty space we can build an array of all the sprites encountered and use that to render them later. This means multiple sprites per cell (GOOD!) but means that collision detection is more complicated (BAD!). The collision detection might be an issue if we ever add moving sprites like NPCs anyway.
-  - For the purposes of trial, I'm going to just use an array of sprites with positions.
-  - If I record all grid cells the rays pass to check for renderable sprites, then I can save some processing, but it doesn't work if a sprite is in one cell but overlaps to another. So, for the first pass, let's just do one sprite per tile and centered. We'll use complex grid cells with a sprite key (so that I can use custom floors and ceilings). So:
-    1. Z Buffer of wall perpendicular distances by column
-    2. While casting, if a cell checked is a floor, add it to an array of visible floors along with its coordinates. The same cell will obviously we checked multiple times so this might not be optimal. Instead we can perhaps use a boolean to indicate whether a cell has been traversed. These booleans could be reset after the sprites have been drawn. Alternately we can use a set or a hash to store simple references. Eg { 1: { 1: true }}.
-    3. After rendering the walls and floors and skybox, iterate through the array in reverse drawing the sprites (we might not need to sort by distance since the rays hit cells in a distance pattern as well).
-    4. While drawing the sprites (back to front), draw in columns (we'll deal with pixel by pixel later) and for each column, check if the sprites distance is closer than the matching column in the z buffer.
-    - The nature of the algorithms I've been basing my approach one (or directly using calculations from) has left me in a bit of weird place when it comes to speaking of in-world distances and sizes with a real measurement value. I'd like to change this eventually. It would certainly help with ratios.
 - Look into using weakmaps where possible instead of hashes. Explore whether there is any tangible memory overhead savings.
 PLAN:
     - ~~Add in ceiling casting. See if it works when only some empty cells have ceilings. That is unlikely but would be an amazing surprise.~~
     - ~~Add in sprite sorting.~~
     - ~~Add in sprite collisions.~~
-    - Add actual sprite class so we can remove hardcoded locations and sprite texture. Use names (tiles will eventually too.)
+    - ~~Add actual sprite class so we can remove hardcoded locations and sprite texture. Use names (tiles will eventually too.)~~
     - Add in specified wall faces.
     <!-- - Add in draw distance (so that I can render varying height walls behind other walls) -->
     <!-- - Render all walls in draw distance, back to front (painter's algorithm); -->

@@ -46,6 +46,10 @@ const BLANK_GRID = [
 // For that matter, there is no reason, all the texture files can't go in the same hash.
 const textures = [
   './images/sprite__tree_1.png',
+  './images/sprite__tree_2.png',
+  './images/sprite__tree_2_low.png',
+  './images/sprite__palm_tree_1_high.png',
+  './images/sprite__palm_tree_1_low.png',
 ]
 
 const sprites = [
@@ -93,11 +97,12 @@ const sprites = [
     isMultifaceted: false,
     isSolid: true,
     boundingBox: .2,
+    verticalOffset: 1,
   },
   {
     type: 'prop',
-    name: 'tree2',
-    spritesheet: 'sprite__tree_1',
+    name: 'tree3',
+    spritesheet: 'sprite__tree_2_low',
     pos: {
       x: 12.5,
       y: 10.7,
@@ -105,11 +110,11 @@ const sprites = [
     isAnimated: false,
     isMultifaceted: false,
     isSolid: true,
-    boundingBox: .2,
+    boundingBox: .4,
   },
   {
     type: 'prop',
-    name: 'tree2',
+    name: 'tree4',
     spritesheet: 'sprite__tree_1',
     pos: {
       x: 12.75,
@@ -122,7 +127,7 @@ const sprites = [
   },
   {
     type: 'prop',
-    name: 'tree2',
+    name: 'tree5',
     spritesheet: 'sprite__tree_1',
     pos: {
       x: 11.5,
@@ -132,6 +137,20 @@ const sprites = [
     isMultifaceted: false,
     isSolid: true,
     boundingBox: .2,
+  },
+  {
+    type: 'prop',
+    name: 'tree6',
+    spritesheet: 'sprite__palm_tree_1_high',
+    pos: {
+      x: 9.5,
+      y: 10,
+    },
+    isAnimated: false,
+    isMultifaceted: false,
+    isSolid: true,
+    boundingBox: .2,
+    verticalOffset: .95,
   },
 ];
 

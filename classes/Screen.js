@@ -477,7 +477,7 @@ class Screen {
           const spriteHeight = Math.abs(Math.floor(this.height / transformY));
           
           // calculate lowest and highest pixel to fill in current stripe
-          const drawStartY = Math.floor(-spriteHeight / 2 + this.height / 2);
+          const drawStartY = Math.floor((-spriteHeight  * currentSprite.verticalOffset) / 2 + this.height / 2);
           const drawEndY = spriteHeight + drawStartY;
           
           //calculate width of the sprite
