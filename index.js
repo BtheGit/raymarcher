@@ -70,6 +70,7 @@ const loadSprites = sprites => Promise.all(sprites.map((sprite) => {
 // certain operations will be called on each depending on that. So, solid sprites will be
 // called for collision detection, animated sprites will be called for updating in the game loop, etc.
 const loadSprites2 = textureMap => spriteConfigs => {
+  // TODO: Don't build sprites that don't have required properties (esp pos and spritesheet).
   const sprites = spriteConfigs.map(config => new Sprite(textureMap, config));
   return sprites;
 }

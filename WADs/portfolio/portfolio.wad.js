@@ -50,10 +50,12 @@ const textures = [
   './images/sprite__tree_2_low.png',
   './images/sprite__palm_tree_1_high.png',
   './images/sprite__palm_tree_1_low.png',
+  './images/sprite__spider-man_static_1.png',
 ]
 
 const sprites = [
   {
+    // TODO: The type might be useless and ready for deprecation.
     type: 'prop',
     name: 'tree1',
     spritesheet: 'sprite__tree_1',
@@ -152,6 +154,22 @@ const sprites = [
     boundingBox: .2,
     verticalOffset: .95,
   },
+  {
+    type: 'prop',
+    name: 'spider-man1',
+    spritesheet: 'sprite__spider-man_static_1',
+    pos: {
+      x: 11.5,
+      y: 16,
+    },
+    isAnimated: false,
+    isMultifaceted: false,
+    isSolid: true,
+    boundingBox: .5,
+
+    // Sprite-scaling test
+    // height: .5,
+  }
 ];
 
 

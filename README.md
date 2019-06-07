@@ -57,14 +57,13 @@ In the interests of making lists that never get completed, here are some potenti
 
 ### Random working notes / Plan
 
-- Floor casting might just be too expensive with the current implementation.
 - Change the tile array into a map
 - Set a maximum drawDistance. Use some kind of shading beyond that.
-- Change the grid cells from simple numbers to an object. This gives us a lot more room to innovate. For example:
+- ~~Change the grid cells from simple numbers to an object. This gives us a lot more room to innovate. For example:
   - We can possibly draw multilayered images over wall tiles.
   - We can create orientations for the tiles, so each cardinal direction has a different tile (this will make the minimap a bit annoying)
   - We can have varied floor tiles (when I figure out floor casting that is)
-  - We can have sprites specified right on the base grid, rather than a second grid (this wouldn't be an issue if floor tiles aren't a thing.)
+  - We can have sprites specified right on the base grid, rather than a second grid (this wouldn't be an issue if floor tiles aren't a thing.)~~
 - Create this as a drop-in library. All that would be needed were a map grid (in this case it would make sense to constrain it to simple numbers for the grid), and textures to map to the numbers. Also, fallbacks for colors to stand in for textures could be used to make sure it still works without textures. It should work fine whether links to local files or urls for images are used.
 - Add a simple mapbuilder for people.
   0. Build in a fallback for autofilling walls if none are selected
@@ -82,12 +81,14 @@ In the interests of making lists that never get completed, here are some potenti
 - Add biomes. Ie, have the skybox image be dependent on where a player is standing (either a certain number of biome specific blocks near the player (a la Terraria)) or based on an invisible biome map that is hard coded. Would need a transition effect to fade in and out. This would be a great feature for procedurally generated levels.
 
 - ceiling casting, make complex map where floor and ceiling are defined (ceilings can be seethru), make the textures smaller, use bigger textures for my info stuff but cheaper ones for everywhere else, keep looking for places to precalc everything.
-- Is it straightforward and cheap enough to do upsampling? IE, when closer to walls use a higher texture or more scan lines.
+- Is it straightforward and cheap enough to do upsampling? IE, when closer to walls use a higher texture or more scan lines. All we need to do is have multiple versions of a texture (optionally) and select which one based on the distance to player. This would require coordination of course to make sure the various resolutions had the small dimensions and alignment of course. (Could also be auto generated in a map builder.)
 - Should we change the rendering to only do alternate scanlines? It would probably make everything a fair bit quicker if I start running into issues with higher quality textures on the floors or ceilings again. I might be able to get alot more fidelity and complexity without anymore efficiency just by doing half the pixel rendering each frame. There's also no reason I couldn't drop the frame rate a bit.
 - How expensive would motion blur be?
 - What other kinds of animated textures can we do? Obviously repeating gifs are cheaper but particle effects are cooler.
 - SPRITES PLAN:
 - Look into using weakmaps where possible instead of hashes. Explore whether there is any tangible memory overhead savings.
+- We're not going to do dynamic lighting, but if we create a brightness modifier (either cell by cell or face by face), we can approximate a bit more lightmapping. We could even have sprites be affected by the brightness modifier of whatever cell they are standing in.
+
 PLAN:
     - ~~Add in ceiling casting. See if it works when only some empty cells have ceilings. That is unlikely but would be an amazing surprise.~~
     - ~~Add in sprite sorting.~~
