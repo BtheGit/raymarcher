@@ -36,11 +36,10 @@ In the interests of making lists that never get completed, here are some potenti
 - [ ] Add dialogue tree based interactions to NPCs
 - [ ] Give different sprites different motion types and displays
 - [x] Floor textures.
-- [/] Floor dimming.
+- [\] Floor dimming.
 - [x] Sky box texture 
 - [x] Ceiling textures
 - [ ] Variable wall heights.
-- [ ] Add build system with typescript
 - [x] WAD packs to instantiate the 'game' with. Including all textures and maps for now. Maps should be bundled with starting player location and direction and plane as well.
 
 ### Alternate fun ideas with raycasters:
@@ -52,8 +51,9 @@ In the interests of making lists that never get completed, here are some potenti
 - ~~Enable wall slipping. it's impossible to slip along walls when you're right up against them. Perhaps a combination of creating an artifical limit to keep player from directly contacting wall as well as a calculation to move perpendicular at some velocity if you are not directly walking into a wall but at an angle.~~
 - ~~Using bokeh now causes the whole thing to break on resizes. Might not be possible to workaround without pushing new updates to bokeh (other than a conditional render - so tiles without canvas height will fall back to a default color like fire engine red). The issue is that on a window resize event the bokeh field canvas is resized to its parent's client sizes. But in this case, the parent doesn't have a client size since it's not attached to the dom~~
 - Minimap does not render correctly when map grid is not square
-- Seams at the bottom of walls showing.
+- ~~Seams at the bottom of walls showing.~~
 - Refactor casting algorithm from player class to screen class. At this point the logic is split with walls in the player and floors in the screen. There is some logic in having the player have a cast method (hit scanning and collision detection with NOCs and what not) but for simplicity let's put it all in one place for now.
+- It would be great to reverse the calculations that effectively make every grid reversed. That means likely changing the render direction
 
 ### Random working notes / Plan
 
@@ -97,13 +97,14 @@ In the interests of making lists that never get completed, here are some potenti
     - The nature of the algorithms I've been basing my approach one (or directly using calculations from) has left me in a bit of weird place when it comes to speaking of in-world distances and sizes with a real measurement value. I'd like to change this eventually. It would certainly help with ratios.
 
 PLAN:
-    - ~Add in ceiling casting. See if it works when only some empty cells have ceilings. That is unlikely but would be an amazing surprise.~
-    - Add in sprite sorting.
+    - ~~Add in ceiling casting. See if it works when only some empty cells have ceilings. That is unlikely but would be an amazing surprise.~~
+    - ~~Add in sprite sorting.~~
+    - Add actual sprite class so we can remove hardcoded locations and sprite texture. Use names (tiles will eventually too.)
     - Add in specified wall faces.
     - Add in sprite collisions.
-    - Add in draw distance (so that I can render varying height walls behind other walls)
-    - Render all walls in draw distance, back to front (painter's algorithm);
-    - Add back in ascend/descend controls.
+    <!-- - Add in draw distance (so that I can render varying height walls behind other walls) -->
+    <!-- - Render all walls in draw distance, back to front (painter's algorithm); -->
+    <!-- - Add back in ascend/descend controls. -->
     - Add in a text overlay (so that I can have pop-up messages or npcs talking or signs...). Maybe multiple types. But for now just text on the screen that is triggered by an event and a way to dismiss it. (For cheap purposes, we can use a console HUD until we have a more diegetic approach.)
     - Add in fallback gradient if no background sky or sky gradient is specified.
     - Add in interactions with sprites. (Press spacebar and the sprite does something/says something).

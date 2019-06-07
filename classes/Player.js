@@ -19,6 +19,9 @@ class Player {
     this.walkSpeed = .1;
     this.rotationSpeed = .07;
     this.elevationStep = .035;
+    // This only seems to be needed to be calculated once, unless the FOV changes.
+    this.inverseDeterminate = 1.0 / (this.plane.x * this.dir.y - this.dir.x * this.plane.y);
+
     this.rays = [];
     this.cast();
   }
@@ -108,6 +111,18 @@ class Player {
     this.rays = rays;
   }
 
+  checkSpritesForCollisions(x,y){
+    // TODO: SPRITES ARE TEMPORARILY HARDCODED IN AN INTERMEDIATE STATE
+    const spriteBoundingBox = .17;
+    const collisionDetected = this.game.sprites.some(([spriteX, spriteY]) => {
+      // There will have to be a check for a bounding box, but for now we will assume there is and it is .2
+      const distance = Math.sqrt(Math.pow(x - spriteX, 2) + Math.pow(y - spriteY, 2));
+      const isColliding = (distance - spriteBoundingBox) < 0;
+      return isColliding;
+    });
+    return collisionDetected;
+  }
+
   moveForward(modifier = 1){
     // For now, the rule will simply be that players can only move through empty cells.
     // In the future when cells become complex objects, we will need a traversable rule.
@@ -119,6 +134,16 @@ class Player {
     // So just checking if a sprite is within distancetosprite - spriteboundingboxradius is close to enough (there are of course
     // issues with various angles of approach.)
 
+    // We need to check for collisions with sprite bounding boxes.
+    // For now, we are going to do this in a very dumb way.
+    // Per axis to allow sliding as above (though double the work!)
+    // a) For x movement, calculate new position.
+    // 1. Iterate through all sprites 
+    // 2. For all sprites with isSolid: true, calculate distance to player. (non-normalized)
+    // 3. Determine if the distance is less than the sprites bounding box
+    // 4. If not, set new player pos.
+    // 5. Repeat for y.
+    
     const newPosX = this.pos.x + this.dir.x * (this.walkSpeed * modifier);
     const newPosY = this.pos.y + this.dir.y * (this.walkSpeed * modifier);
     const cellX = Math.floor(newPosX);
@@ -127,13 +152,18 @@ class Player {
     // We split up moving along the axes to avoid getting stuck on walls
     const nextCellX = this.grid.getCell(cellX, Math.floor(this.pos.y));
     if(checkIsFloor(nextCellX)){
-      this.pos.x = newPosX;
+      const collisionDetected = this.checkSpritesForCollisions(newPosX, this.pos.y);
+      if(!collisionDetected){
+        this.pos.x = newPosX;
+      }
     }
     const nextCellY = this.grid.getCell(Math.floor(this.pos.x), cellY);
     if(checkIsFloor(nextCellY)){
-      this.pos.y = newPosY;
+      const collisionDetected = this.checkSpritesForCollisions(this.pos.x, newPosY);
+      if(!collisionDetected){
+        this.pos.y = newPosY;
+      }
     }
-
   }
 
   moveBack(){
@@ -146,11 +176,17 @@ class Player {
     // We split up moving along the axes to avoid getting stuck on walls
     const nextCellX = this.grid.getCell(cellX, Math.floor(this.pos.y));
     if(checkIsFloor(nextCellX)){
-      this.pos.x = newPosX;
+      const collisionDetected = this.checkSpritesForCollisions(newPosX, this.pos.y);
+      if(!collisionDetected){
+        this.pos.x = newPosX;
+      }
     }
     const nextCellY = this.grid.getCell(Math.floor(this.pos.x), cellY);
     if(checkIsFloor(nextCellY)){
-      this.pos.y = newPosY;
+      const collisionDetected = this.checkSpritesForCollisions(this.pos.x, newPosY);
+      if(!collisionDetected){
+        this.pos.y = newPosY;
+      }
     }
   }
 
@@ -166,7 +202,6 @@ class Player {
   trigger(){
     // This will be used for commands. For now, we'll have a rudimentary approach that just checks the cell directly
     // in front of the player's direction to a very small maximum distance and call it's trigger function.
-    const screenWidth = this.game.screen.width;
     const cameraX = 0;
     const ray = this.castRay(cameraX);
     const distance = ray.normalizedDistance;

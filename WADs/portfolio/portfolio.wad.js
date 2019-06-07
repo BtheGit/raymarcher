@@ -42,6 +42,22 @@ const BLANK_GRID = [
 const sprites = [
   {
     type: 'static',
+    // EVERY sprite should have a defaultFace
+    // defaultFace: [0,0],
+    // The coordinates on the spritesheet image where the face starts.
+    // On single faceted sprites, the image should be equal to the width and height.
+    // faces: {
+    // },
+    // This is the pixels on the spritesheet to extract
+    // // TODO: For now we are just going to focus on non-relative bounding boxes.
+    // faceWidth: 100,
+    // faceHeight: 100,
+    // // This will be used to control the in-game scaling.
+    // // But we still lack an in-world unit of measurement (except grid cells). This needs to be reconsidered.
+    // spriteWidth: 1,
+    // spriteHeight: 1,
+    // Boundingbox is the radius from the center of the sprite that is impassable by collidable players and NPCs.
+    boundingBox: .2,
     name: 'test',
     path: './images/sprites/tree2.png',
   }
@@ -235,6 +251,20 @@ const tiles = [
     href: 'https://github.com/BtheGit',
     path: './WADs/portfolio/images/github_logo1.png',
   },
+  // {
+  //   type: 'bokeh',
+  //   name: 'bokeh_purple_on_tan',
+  //   bokehSettings: {
+  //     color: 'black',
+  //     backgroundColor: 'orangered',
+  //     dx: 5,
+  //     dy: 5,
+  //     density: 20,
+  //     halfLife: 100,
+  //     radius: 30,
+  //     frameRate: 60,
+  //   }
+  // },
   {
     type: 'image',
     name: "background_trees1",
@@ -258,20 +288,6 @@ const tiles = [
   // {
   //   type: 'bokeh',
   //   name: 'bokeh_default',
-  // },
-  // {
-  //   type: 'bokeh',
-  //   name: 'bokeh_purple_on_tan',
-  //   bokehSettings: {
-  //     color: 'black',
-  //     backgroundColor: 'orangered',
-  //     dx: 5,
-  //     dy: 5,
-  //     density: 20,
-  //     halfLife: 100,
-  //     radius: 30,
-  //     frameRate: 60,
-  //   }
   // },
   // {
   //   type: 'bokeh',
@@ -334,8 +350,8 @@ const MAP1 = {
     [1,0,0,0,0,0,0,0,3,3,0,9,0,3,3,0,0,0,0,0,0,0,0,1],
     [1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,3,2,2,2,2,2,2,12,2],
     [1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,2,0,0,0,2],
-    [1,0,0,0,0,0,0,0,3,3,0,3,3,3,0,3,2,0,0,2,0,2,0,2],
-    [1,0,0,0,0,0,0,0,1,14,0,6,{ isWall: true, height: 2, texture: 6 },6,0,1,2,0,0,0,0,2,0,2],
+    [1,0,0,0,0,0,0,0,3,3,0,3,{isFloor: true, floorTexture: 13, ceilingTexture: 12 },3,0,3,2,0,0,2,0,2,0,2],
+    [1,0,0,0,0,0,0,0,1,14,0,6,{isFloor: true, floorTexture: 13, ceilingTexture: 12 },6,0,1,2,0,0,0,0,2,0,2],
     [1,0,0,0,0,0,0,0,14,{isFloor: true, floorTexture: 13, ceilingTexture: 12 },{isFloor: true, floorTexture: 11, ceilingTexture: 11 },{isFloor: true, floorTexture: 11, ceilingTexture: 11 },{isFloor: true, floorTexture: 11, ceilingTexture: 11 },{isFloor: true, floorTexture: 11, ceilingTexture: 11 },0,0,1,2,0,0,0,2,0,2],
     [1,0,0,0,0,0,0,0,14,{isFloor: true, floorTexture: 13, ceilingTexture: 12 },14,7,{ isFloor: true, floorTexture: 7, ceilingTexture: 7 },7,0,0,0,1,2,2,2,2,0,2],
     [1,0,0,0,0,0,0,0,0,14,1,7,{ isFloor: true, floorTexture: 7, ceilingTexture: 7 },7,0,0,0,0,1,1,1,2,0,2],
@@ -511,8 +527,8 @@ const MAP_TILETEST = {
 
 const maps = [
   MAP1,
-  MAP2,
   MAP_TILETEST,
+  MAP2,
 ];
 
 // TODO: Exports

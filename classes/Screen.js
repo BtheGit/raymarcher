@@ -447,61 +447,67 @@ class Screen {
     // Later we'll of course used named sprites and decide on the location implementation (ie using the grid or an arbitrary
     // specifier in a separate array (if I make a map builder, I'm inclined towards this approach)).
     // We'll also need to sort out the sizing of textures. I'm inclined to say they should all be the same height but variable widths.
-    const sprite = this.game.sprites[0];
-    const spriteLocs = [[7.5, 9.5], [7.5,10.5], [7.5, 11.5], [8, 10], [8, 11]]
-    // Sort sprites by dumb distance
-    const sortedSprites = spriteLocs.sort(([sprite1x, sprite1y], [sprite2x, sprite2y]) => {
-      const sprite1distance = Math.pow(this.game.player.pos.x - sprite1x, 2) + Math.pow(this.game.player.pos.y - sprite1y, 2);
-      const sprite2distance = Math.pow(this.game.player.pos.x - sprite2x, 2) + Math.pow(this.game.player.pos.y - sprite2y, 2);
-      return sprite2distance - sprite1distance;
-    })
-    sortedSprites.forEach(([spriteX, spriteY]) => {
-      const spriteX_relativeToPlayer = spriteX - this.game.player.pos.x;
-      const spriteY_relativeToPlayer = spriteY - this.game.player.pos.y;
-      // This only seems to be needed to be calculated once, unless the FOV changes. Probably can live on the player class at
-      // instantiation, or to be changed if the FOV becomes dynamically alterable.
-      const inverseDeterminate = 1.0 / (this.game.player.plane.x * this.game.player.dir.y - this.game.player.dir.x * this.game.player.plane.y);
+    const sprite = this.game.spriteTex;
+    const sprites = this.game.sprites;
+    if(sprites.length > 0){
+      // Sort sprites by dumb distance
+      const sortedSprites = sprites.sort(([sprite1x, sprite1y], [sprite2x, sprite2y]) => {
+        const sprite1distance = Math.pow(this.game.player.pos.x - sprite1x, 2) + Math.pow(this.game.player.pos.y - sprite1y, 2);
+        const sprite2distance = Math.pow(this.game.player.pos.x - sprite2x, 2) + Math.pow(this.game.player.pos.y - sprite2y, 2);
+        return sprite2distance - sprite1distance;
+      })
+      for(let i = 0; i < sortedSprites.length; i++){
+        const currentSprite = sortedSprites[i];
+        if(currentSprite){
+          const spriteX = currentSprite[0];
+          const spriteY = currentSprite[1];
+          const spriteX_relativeToPlayer = spriteX - this.game.player.pos.x;
+          const spriteY_relativeToPlayer = spriteY - this.game.player.pos.y;
+          
+          const transformX = this.game.player.inverseDeterminate * (this.game.player.dir.y * spriteX_relativeToPlayer - this.game.player.dir.x * spriteY_relativeToPlayer);
+          // This provides the depth on screen, much like a z-index in a 3d system.
+          // Depth will of course we used to determine size, height, vertical offset, and wall clipping.
+          // NOTE TO SELF: The Math.max is used to clamp to zero. For some reason, planck-length level numbers were being created
+          // at a very specific location which caused the program to hang as it looped through insane ranges.
+          const transformY = Math.max(this.game.player.inverseDeterminate * (-this.game.player.plane.y * spriteX_relativeToPlayer + this.game.player.plane.x * spriteY_relativeToPlayer), 0);
+          
+          const spriteScreenX = Math.floor((this.width / 2) * (1 + transformX / transformY));
+          // using "transformY" instead of the real distance prevents fisheye
+          const spriteHeight = Math.abs(Math.floor(this.height / transformY));
+          
+          // calculate lowest and highest pixel to fill in current stripe
+          const drawStartY = Math.floor(-spriteHeight / 2 + this.height / 2);
+          const drawEndY = spriteHeight + drawStartY;
+          
+          //calculate width of the sprite
+          const spriteWidth = Math.abs(Math.floor(this.height / (transformY)));
+          const drawStartX = Math.floor(-spriteWidth / 2 + spriteScreenX);
+          const drawEndX = spriteWidth / 2 + spriteScreenX;
+          
+          // Draw sprite in vertical strips.
+          for(let stripe = drawStartX; stripe < drawEndX; stripe++){
+            const texX = Math.floor(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * sprite.width / spriteWidth) / 256;
+            //the conditions in the if are:
+            //1) it's in front of camera plane so you don't see things behind you
+            //2) it's on the screen (left)
+            //3) it's on the screen (right) 
+            //4) ZBuffer, with perpendicular distance
+            if(transformY > 0 && stripe > 0 && stripe < this.width && transformY < zBuffer[stripe]) {
+              this.ctxBuffer.drawImage(sprite.canvas, texX, 0, 1, sprite.height, stripe, drawStartY, 1, drawEndY - drawStartY);
+              // for every pixel of the current stripe
+              // for(let y = drawStartY; y < drawEndY; y++) {
+                // const d = y * 256 - this.height * 128 + spriteHeight * 128; //256 and 128 factors to avoid floats
+                // const texY = ((d * sprite.height) / spriteHeight) / 256;
+              //   // const color = texture[sprite[spriteOrder[i]].texture][texWidth * texY + texX]; //get current color from the texture
+              //   // if((color & 0x00FFFFFF) != 0) buffer[y][stripe] = color; //paint pixel if it isn't black, black is the invisible color
+              // }
+            }
+          }
   
-      const transformX = inverseDeterminate * (this.game.player.dir.y * spriteX_relativeToPlayer - this.game.player.dir.x * spriteY_relativeToPlayer);
-      // This provides the depth on screen, much like a z-index in a 3d system.
-      // Depth will of course we used to determine size, height, vertical offset, and wall clipping.
-      const transformY = inverseDeterminate * (-this.game.player.plane.y * spriteX_relativeToPlayer + this.game.player.plane.x * spriteY_relativeToPlayer);
-  
-      const spriteScreenX = Math.floor((this.width / 2) * (1 + transformX / transformY));
-      // using "transformY" instead of the real distance prevents fisheye
-      const spriteHeight = Math.abs(Math.floor(this.height / transformY));
-  
-      // calculate lowest and highest pixel to fill in current stripe
-      const drawStartY = Math.floor(-spriteHeight / 2 + this.height / 2);
-      const drawEndY = spriteHeight + drawStartY;
-  
-      //calculate width of the sprite
-      const spriteWidth = Math.abs(Math.floor(this.height / (transformY)));
-      const drawStartX = Math.floor(-spriteWidth / 2 + spriteScreenX);
-      const drawEndX = spriteWidth / 2 + spriteScreenX;
-  
-      // Draw sprite in vertical strips.
-      for(let stripe = drawStartX; stripe < drawEndX; stripe++){
-        const texX = Math.floor(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * sprite.width / spriteWidth) / 256;
-        //the conditions in the if are:
-        //1) it's in front of camera plane so you don't see things behind you
-        //2) it's on the screen (left)
-        //3) it's on the screen (right) 
-        //4) ZBuffer, with perpendicular distance
-        if(transformY > 0 && stripe > 0 && stripe < this.width && transformY < zBuffer[stripe]) {
-          this.ctxBuffer.drawImage(sprite.canvas, texX, 0, 1, sprite.height, stripe, drawStartY, 1, drawEndY - drawStartY);
-          // for every pixel of the current stripe
-          // for(let y = drawStartY; y < drawEndY; y++) {
-            // const d = y * 256 - this.height * 128 + spriteHeight * 128; //256 and 128 factors to avoid floats
-            // const texY = ((d * sprite.height) / spriteHeight) / 256;
-          //   // const color = texture[sprite[spriteOrder[i]].texture][texWidth * texY + texX]; //get current color from the texture
-          //   // if((color & 0x00FFFFFF) != 0) buffer[y][stripe] = color; //paint pixel if it isn't black, black is the invisible color
-          // }
         }
-      }
-      
-    })
 
+    }
+    }
     // console.table(zBuffer)
 
   }

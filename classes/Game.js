@@ -9,9 +9,12 @@ class Game {
     // that caused them to navigate away to a link.
     const savedState = loadStateFromSessionStorage(STORAGE_ID);
     this.images = images;
-    this.sprites = sprites;
     this.interval = framerate;
     this.animationFrame = null;
+
+    // TODO: This is temporary.
+    this.spriteTex = sprites[0];
+    this.sprites = [[7.5, 9.5], [7.5,10.5], [7.5, 11.5], [8, 10], [8, 11], [13.25, 16.5], [13, 15.5]];
 
     // Gonna hardcode the first level for now. TODO: REMOVE
     this.maps = maps;
@@ -77,12 +80,12 @@ class Game {
       this.player.rotate(-1);
     }
     if(this.keyState.w){
-      if(this.keyState.Shift){
-        this.player.moveForward(1.5);
-      }
-      else {
+      // if(this.keyState.Shift){
+      //   this.player.moveForward(1.5);
+      // }
+      // else {
         this.player.moveForward();
-      }
+      // }
     }
     if(this.keyState.s){
       this.player.moveBack();
