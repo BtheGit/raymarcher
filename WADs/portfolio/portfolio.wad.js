@@ -125,7 +125,7 @@ const sprites = [
     name: 'tree2',
     spritesheet: 'sprite__tree_1',
     pos: {
-      x: 11.5w,
+      x: 11.5,
       y: 12,
     },
     isAnimated: false,
