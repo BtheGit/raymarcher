@@ -25,7 +25,7 @@ In the interests of making lists that never get completed, here are some potenti
 - [ ] Allow for procedurally generated maps
 - [x] Have collision detection with walls
 - [x] Add sprites
-- [ ] Add sprite collision detection
+- [x] Add sprite collision detection
 - [ ] Add animated fixed position sprites
 - [ ] Allow for placing textures on walls face by face
 - [ ] Add moving sprites
@@ -54,6 +54,8 @@ In the interests of making lists that never get completed, here are some potenti
 - ~~Seams at the bottom of walls showing.~~
 - Refactor casting algorithm from player class to screen class. At this point the logic is split with walls in the player and floors in the screen. There is some logic in having the player have a cast method (hit scanning and collision detection with NOCs and what not) but for simplicity let's put it all in one place for now.
 - It would be great to reverse the calculations that effectively make every grid reversed. That means likely changing the render direction
+- The skybox renders an extra pixel above ceilings, created a single pixel line.
+- Performance is smooth in Chrome, sluggish in FF and Safari. This will improve once I stop using such big textures, but it does beg a bit more of precalcing and using lookup tables  (which may also entail working harder to avoid floating points, which I've been lazy about so far.)
 
 ### Random working notes / Plan
 
@@ -62,8 +64,6 @@ In the interests of making lists that never get completed, here are some potenti
 - ~~Change the grid cells from simple numbers to an object. This gives us a lot more room to innovate. For example:
   - We can possibly draw multilayered images over wall tiles.
   - We can create orientations for the tiles, so each cardinal direction has a different tile (this will make the minimap a bit annoying)
-  - We can have varied floor tiles (when I figure out floor casting that is)
-  - We can have sprites specified right on the base grid, rather than a second grid (this wouldn't be an issue if floor tiles aren't a thing.)~~
 - Create this as a drop-in library. All that would be needed were a map grid (in this case it would make sense to constrain it to simple numbers for the grid), and textures to map to the numbers. Also, fallbacks for colors to stand in for textures could be used to make sure it still works without textures. It should work fine whether links to local files or urls for images are used.
 - Add a simple mapbuilder for people.
   0. Build in a fallback for autofilling walls if none are selected
@@ -94,11 +94,18 @@ PLAN:
     - ~~Add in sprite sorting.~~
     - ~~Add in sprite collisions.~~
     - ~~Add actual sprite class so we can remove hardcoded locations and sprite texture. Use names (tiles will eventually too.)~~
+    - Add in a mechanism for controlling sprite sizes (can use just the height since ew have a vertical offset and the image ratios are now respected).
+    - Add in a console text display that is toggleable (like the minimap), change the minimap to being switched on or off rather than on when a button is pressed.
+    - Add in a basic text interaction for sprites.
+    - Explore what adding in a dialogue tree would entail.
     - Add in specified wall faces.
     <!-- - Add in draw distance (so that I can render varying height walls behind other walls) -->
     <!-- - Render all walls in draw distance, back to front (painter's algorithm); -->
     <!-- - Add back in ascend/descend controls. -->
     - Add in a text overlay (so that I can have pop-up messages or npcs talking or signs...). Maybe multiple types. But for now just text on the screen that is triggered by an event and a way to dismiss it. (For cheap purposes, we can use a console HUD until we have a more diegetic approach.)
+    - To that effect, let's create a text display overlay that will run on it's own buffer and be drawn last. We'll let events write to is and we'll make it time based (so we don't have to deal with overlapping interactions for now.)
+
+
     - Add in fallback gradient if no background sky or sky gradient is specified.
     - Add in interactions with sprites. (Press spacebar and the sprite does something/says something).
     - Add in signs. (Sprites that draw text or play audio when you interact with them).

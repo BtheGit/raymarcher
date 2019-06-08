@@ -13,15 +13,16 @@ class Game {
     this.animationFrame = null;
 
     this.sprites = sprites;
-    // TODO: This is temporary.
-    // this.sprites = [[7.5, 9.5], [7.5,10.5], [7.5, 11.5], [8, 10], [8, 11], [13, 10], [12, 11], [12.5, 11.75], [11.5, 11.75]];
-
-    // Gonna hardcode the first level for now. TODO: REMOVE
     this.maps = maps;
+    // Gonna hardcode the first level for now. TODO: REMOVE
     this.currentMap = savedState ? savedState.currentMap : this.maps[0];
     this.grid = new Map(this.currentMap.grid);
 
     this.screen = new Screen(this, 'display-main', SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    // TODO: The size is temporarily hardcoded as a square.
+    this.textDisplay = new TextDisplay(Math.floor(SCREEN_WIDTH * .75), Math.floor(SCREEN_HEIGHT * .75))
+    this.textDisplay.write("Welcome!\n\nUse WASD to move and spacebar\nto interact with things.", 2000);
 
     this.player = savedState 
       ? new Player(
@@ -58,6 +59,7 @@ class Game {
         this.updatePlayerPositioning();
         this.player.cast();      
         this.drawScreen();
+        this.textDisplay.draw(this.screen);
         /* END Game Loop */
         then = now - (delta % this.interval)
       }
