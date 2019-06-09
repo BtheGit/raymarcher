@@ -82,14 +82,11 @@ class Screen {
   }
   
   updateFromBuffer(){
-    // this.floorCtxBuffer.putImageData(this.offscreenCanvasPixels, 0, 0);
-    // this.ctxBuffer.drawImage(this.floorBuffer,0,0);
-    // this.floorCtxBuffer.clearRect(0,0, this.floorBuffer.width, this.floorBuffer.height)
-    // this.offscreenCanvasPixels = this.floorCtxBuffer.getImageData(0,0,this.width, this.height);
     this.ctx.drawImage(this.canvasBuffer, 0,0);
   }
 
-  // Getters/Setters
+  // ### Getters/Setters
+
   showMap(){
     this.isMapActive = true;
   }
@@ -102,18 +99,19 @@ class Screen {
     this.isMapActive = !this.isMapActive;
   }
 
-  // Display Helpers
+  // ### Display Helpers
+
   resizeCanvas(width, height) {
     this.canvas.width = this.canvasBuffer.width = this.width = width;
     this.canvas.height = this.canvasBuffer.height = this.height = height;
-    // this.clear();
   }
 
   setBackgroundColor(color) {
     this.backgroundColor = color;
   }
 
-  // Main draw functions
+  // ### Main draw functions
+
   drawMapOverlay(){
     // TODO: Lots of hardcoded stuff to make dynamic.
     const emptyCellColor = 'rgba(5,5,5,0.7)';
@@ -131,7 +129,7 @@ class Screen {
     const playerSize = 3;
     // Get current world map.
     // This will be a class with useful methods... later
-    const world = this.game.grid; //WHOOPS
+    const world = this.game.grid;
     const mapGrid = world.grid;
     const GRID_UNIT = 1;
     const mapWidthUnit = mapXRatio * GRID_UNIT;
@@ -224,35 +222,68 @@ class Screen {
     return canvas;
   }
 
+  /**
+   * Since all levels will have at least a default floor texture we only
+   * need to concern ourselves with the sky/upper half.
+   * 
+   * We want to allow for several levels of fallbacks when it comes to the sky.
+   * 
+   * If a level has a sky texture, use that.
+   * Else if a level has a gradient use that.
+   * Else use a hardcoded default color (or a generated one based on the default floor texture (a darker color perhaps)).
+   */
   drawPOVBackground(){
     // Temporarily hardcoded background
     // TODO: Use specifed image or gradient or fallback to gradient default gradient (can be dynamically created
     // by getting an average sample of the walls or as an opposite of the floor's average color or some such clever
     // thing.)
-    const backgroundImage = this.game.images[37];
-    // We need to have an origin for the image
-    // We need to find the offset from that origin in the FOV and then sample 1/6 of the image
-    // from that point then draw it to the background. 
-    const { x, y } = this.game.player.dir;
-    const angle = Math.atan2(x, y);
-    let degrees = angle > 0 ? toDegrees(angle) : 360 + toDegrees(angle);
-    // degrees = degrees - 30 >= 0 ? degrees - 30 : 360 + degrees - 30;
-    const sampleWidth = backgroundImage.width / 6;// 1/3 of image because FOV / 180
-    const currentSampleStart = (degrees / 360) * backgroundImage.width;
-    const willOverflow = (backgroundImage.width - currentSampleStart) < sampleWidth;
-    if(willOverflow){
-      const overflowWidth = (currentSampleStart + sampleWidth) - backgroundImage.width;
-      const nonOverflowWidth = sampleWidth - overflowWidth;
-      const overflowRatio = nonOverflowWidth / sampleWidth;
-      const seamPoint = overflowRatio * this.width;
-      // We need to get the two pieces separately and stitch them together on a new canvas.
-      // In the case where we are too close to the edges, we need to sample the overflow from the head or tail
-      // to create the seam.
-      this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, nonOverflowWidth, backgroundImage.height, 0, 0, seamPoint, this.height)
-      this.ctxBuffer.drawImage(backgroundImage.canvas, 0, 0, overflowWidth, backgroundImage.height, seamPoint, 0, this.width - seamPoint, this.height)
+    const backgroundImageTextureKey = this.game.currentMap.skyTexture;
+    const backgroundImage = this.game.textureMap[backgroundImageTextureKey];
+    const skyGradientGradientStops = this.game.currentMap.skyGradient;
+    if(backgroundImage){
+      // We need to have an origin for the image
+      // We need to find the offset from that origin in the FOV and then sample 1/6 of the image
+      // from that point then draw it to the background.
+      const { x, y } = this.game.player.dir;
+      const angle = Math.atan2(x, y);
+      let degrees = angle > 0 ? toDegrees(angle) : 360 + toDegrees(angle);
+      // degrees = degrees - 30 >= 0 ? degrees - 30 : 360 + degrees - 30;
+      const sampleWidth = backgroundImage.width / 6;// 1/3 of image because FOV / 180
+      const currentSampleStart = (degrees / 360) * backgroundImage.width;
+      const willOverflow = (backgroundImage.width - currentSampleStart) < sampleWidth;
+      if(willOverflow){
+        const overflowWidth = (currentSampleStart + sampleWidth) - backgroundImage.width;
+        const nonOverflowWidth = sampleWidth - overflowWidth;
+        const overflowRatio = nonOverflowWidth / sampleWidth;
+        const seamPoint = overflowRatio * this.width;
+        // We need to get the two pieces separately and stitch them together on a new canvas.
+        // In the case where we are too close to the edges, we need to sample the overflow from the head or tail
+        // to create the seam.
+        this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, nonOverflowWidth, backgroundImage.height, 0, 0, seamPoint, this.height)
+        this.ctxBuffer.drawImage(backgroundImage.canvas, 0, 0, overflowWidth, backgroundImage.height, seamPoint, 0, this.width - seamPoint, this.height)
+      }
+      else {
+        this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, sampleWidth, backgroundImage.height, 0, 0, this.width, this.height)
+      }
+    }
+    else if(skyGradientGradientStops && skyGradientGradientStops.length > 0){
+      // TODO: We don't want to generate this on every frame. That's crazy. We need to cache this as a class
+      // property and use a singleton pattern to draw it.
+      const gradient = this.ctxBuffer.createLinearGradient(0,0,0, this.height / 2);
+      applyColorStopsToLinearGradient(gradient, skyGradientGradientStops);
+      this.ctxBuffer.fillStyle = gradient;
+      this.ctxBuffer.fillRect(0, 0, this.width, this.height / 2);
+      
+      // ctx.fillStyle = 'black';
+      // ctx.fillRect(0, (this.height / 2), this.width, (this.height / 2));
+      
     }
     else {
-      this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, sampleWidth, backgroundImage.height, 0, 0, this.width, this.height)
+      // TODO: Don't generate on every frame. Cache as class property. Use singleton.
+      const gradient = this.ctxBuffer.createLinearGradient(0,0,0, this.height / 2);
+      applyColorStopsToLinearGradient(gradient, [{ stop: 0, color: '#6190E8'}, { stop: 1, color: '#A7BFE8'}]);
+      this.ctxBuffer.fillStyle = gradient;
+      this.ctxBuffer.fillRect(0, 0, this.width, this.height / 2);
     }
   }
 

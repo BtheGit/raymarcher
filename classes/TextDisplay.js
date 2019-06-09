@@ -32,7 +32,6 @@ class TextDisplay {
   }
 
   clear(){
-    console.log('hey')
     this.isVisible = false;
   }
   

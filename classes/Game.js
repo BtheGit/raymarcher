@@ -4,7 +4,7 @@ const SCREEN_WIDTH = 1024;
 const SCREEN_HEIGHT = 768;
 
 class Game {
-  constructor(maps, images, sprites, framerate){
+  constructor(maps, images, sprites, textureMap, framerate){
     // We want to preserve the player's location when they are returning from an interaction
     // that caused them to navigate away to a link.
     const savedState = loadStateFromSessionStorage(STORAGE_ID);
@@ -12,6 +12,7 @@ class Game {
     this.interval = framerate;
     this.animationFrame = null;
 
+    this.textureMap = textureMap;
     this.sprites = sprites;
     this.maps = maps;
     // Gonna hardcode the first level for now. TODO: REMOVE
@@ -20,9 +21,11 @@ class Game {
 
     this.screen = new Screen(this, 'display-main', SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    // TODO: The size is temporarily hardcoded as a square.
     this.textDisplay = new TextDisplay(Math.floor(SCREEN_WIDTH * .75), Math.floor(SCREEN_HEIGHT * .75))
-    this.textDisplay.write("Welcome!\n\nUse WASD to move and spacebar\nto interact with things.", 2000);
+    this.textDisplay.write(
+      "Welcome!\n\nUse WASD to move and spacebar\nto interact with things.\n\n\nFeel free to walk around and enjoy the sights.\nMake yourself at home.\nJust don't look in the basement, ever.", 
+      3500
+    );
 
     this.player = savedState 
       ? new Player(

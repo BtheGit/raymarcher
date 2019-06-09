@@ -96,7 +96,7 @@ const loadAssets = async () => {
   const sprites = loadSprites2(textureMap)(wad.sprites);
   const tiles = await loadTiles(wad.tiles);
   const maps = wad.maps;
-  const game = new Game(maps, tiles, sprites, FRAMERATE);
+  const game = new Game(maps, tiles, sprites, textureMap, FRAMERATE);
   game.start();
 }
 

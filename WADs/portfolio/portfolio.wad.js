@@ -51,6 +51,7 @@ const textures = [
   './images/sprite__palm_tree_1_high.png',
   './images/sprite__palm_tree_1_low.png',
   './images/sprite__spider-man_static_1.png',
+  './images/tiles/background_trees3.jpg',
 ]
 
 const sprites = [
@@ -472,17 +473,16 @@ const MAP1 = {
     x: -0.66,
     Y: 0
   },
-  backgroundSky: [
+  skyTexture: 'background_trees3',
+  skyGradient: [
     {
       stop: 0,
-      color: "#333"
-    }
-  ],
-  backgroundFloor: [
+      color: "purple"
+    },
     {
-      stop: 0,
-      color: "#abc"
-    }
+      stop: 1,
+      color: "red"
+    },
   ],
 };
 
@@ -526,7 +526,7 @@ const MAP2 = {
     x: -0.66,
     Y: 0
   },
-  backgroundSky: [
+  skyGradient: [
     {
       stop: 0,
       color: "#7AA1D2"
@@ -538,20 +538,6 @@ const MAP2 = {
     {
       stop: 1,
       color: "#CC95C0"
-    }
-  ],
-  backgroundFloor: [
-    {
-      stop: 0,
-      color: "#111"
-    },
-    {
-      stop: 0.2,
-      color: "#403B4A"
-    },
-    {
-      stop: 1,
-      color: "#b0b28b"
     }
   ],
 };
@@ -596,7 +582,7 @@ const MAP_TILETEST = {
     x: -0.66,
     Y: 0
   },
-  backgroundSky: [
+  skyGradient: [
     {
       stop: 0,
       color: "#7AA1D2"
@@ -610,27 +596,13 @@ const MAP_TILETEST = {
       color: "#CC95C0"
     }
   ],
-  backgroundFloor: [
-    {
-      stop: 0,
-      color: "#111"
-    },
-    {
-      stop: 0.2,
-      color: "#403B4A"
-    },
-    {
-      stop: 1,
-      color: "#b0b28b"
-    }
-  ],
 };
 
 
 const maps = [
   MAP1,
-  MAP_TILETEST,
   MAP2,
+  MAP_TILETEST,
 ];
 
 // TODO: Exports
