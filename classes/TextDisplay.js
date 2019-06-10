@@ -43,7 +43,7 @@ class TextDisplay {
     this.timeout = setTimeout(this.clear.bind(this), time);
   }
   
-  _write(text){
+  _write(text = ''){
     this.ctx.clearRect(0,0,this.width, this.height);
     // We want to allow line breaks.
     const lines = text.split('\n');

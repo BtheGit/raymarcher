@@ -160,7 +160,7 @@ const sprites = [
     name: 'spider-man1',
     spritesheet: 'sprite__spider-man_static_1',
     pos: {
-      x: 11.5,
+      x: 12,
       y: 16,
     },
     isAnimated: false,
@@ -168,6 +168,23 @@ const sprites = [
     isSolid: true,
     boundingBox: .35,
 
+    // Sprite-scaling test
+    // height: .5,
+  },
+  {
+    type: 'prop',
+    name: 'spider-man2',
+    spritesheet: 'sprite__spider-man_static_1',
+    pos: {
+      x: 13,
+      y: 16,
+    },
+    isAnimated: false,
+    isMultifaceted: false,
+    isSolid: true,
+    boundingBox: .35,
+    scale: .65,
+    verticalOffset: .35,
     // Sprite-scaling test
     // height: .5,
   }
@@ -450,7 +467,7 @@ const MAP1 = {
     [1,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,1],
     [1,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,1],
     [1,0,0,0,0,0,0,0,4,0,0,0,0,4,4,4,4,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,3,3,0,9,0,3,3,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,3,28,0,28,0,3,3,0,0,0,0,0,0,0,0,1],
     [1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,3,2,2,2,2,2,2,12,2],
     [1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,2,0,0,0,2],
     [1,0,0,0,0,0,0,0,3,3,0,3,{isFloor: true, floorTexture: 13, ceilingTexture: 12 },3,0,3,2,0,0,2,0,2,0,2],
@@ -601,8 +618,8 @@ const MAP_TILETEST = {
 
 const maps = [
   MAP1,
-  MAP2,
   MAP_TILETEST,
+  MAP2,
 ];
 
 // TODO: Exports

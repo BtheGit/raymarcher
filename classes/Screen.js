@@ -505,7 +505,8 @@ class Screen {
           
           const spriteScreenX = Math.floor((this.width / 2) * (1 + transformX / transformY));
           // using "transformY" instead of the real distance prevents fisheye
-          const spriteHeight = Math.abs(Math.floor(this.height / transformY));
+          const scale = currentSprite.scale;
+          const spriteHeight = Math.abs(Math.floor(this.height / transformY) * scale);
           
           // calculate lowest and highest pixel to fill in current stripe
           const drawStartY = Math.floor((-spriteHeight * currentSprite.verticalOffset) / 2 + this.height / 2);
@@ -513,7 +514,7 @@ class Screen {
           
           //calculate width of the sprite
           // The width ratio ensures the sprite is not stretched horizontally.
-          const widthRatio = currentSprite.width / currentSprite.height;
+          const widthRatio = (currentSprite.width / currentSprite.height) * scale;
           const spriteWidth = Math.abs(Math.floor((this.height / transformY * widthRatio )));
           const drawStartX = Math.floor(-spriteWidth / 2 + spriteScreenX);
           const drawEndX = spriteWidth / 2 + spriteScreenX;

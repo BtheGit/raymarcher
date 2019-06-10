@@ -35,6 +35,8 @@ In the interests of making lists that never get completed, here are some potenti
 - [ ] Add basic triggered interactions to NPCs
 - [ ] Add dialogue tree based interactions to NPCs
 - [ ] Give different sprites different motion types and displays
+- [ ] Fog tiles
+- [ ] Rainbow gun
 - [x] Floor textures.
 - [\] Floor dimming.
 - [x] Sky box texture 
@@ -88,13 +90,21 @@ In the interests of making lists that never get completed, here are some potenti
 - SPRITES PLAN:
 - Look into using weakmaps where possible instead of hashes. Explore whether there is any tangible memory overhead savings.
 - We're not going to do dynamic lighting, but if we create a brightness modifier (either cell by cell or face by face), we can approximate a bit more lightmapping. We could even have sprites be affected by the brightness modifier of whatever cell they are standing in.
+- Fog tiles. Can make different types, but ideally can use these to create much more organic space divisions in a single map. The further away from them you are the more opaque. In fact, it might make sense to make it a special wall tile (though it would create issues with sprites - we'd have to start thinking about how to make translucent walls.)
+- A rainbow gun. People keep asking for a gun. I don't plan on making a game. But, it could be an interesting exercise to implement a projectile weapon (maybe just hitscan) if I made it something that recolored tiles and sprites (such as a filter effect that created a rainbow overlay (or simply swapped out the texture with a rainbow)). (Sprites behind sprites would be a bigger challenge that would require pixel sniffing for opacity).
+- Create more particle effects textures (heavy though)
+- Create a way to render gifs to wall textures.
+- I've said it before but it bears repeating, we need to optimize. Move away from floats as much as possible, try lookup tables as much as possible. Move as many calculations out of the render cycles as possible (here's looking at you sky gradient).
+- For sprite sizes, let's use a sprite scale value (default of one) relative to wall height/grid cell size (ie the one unit of measurement in the world). Everything has been done as 1 so far. But perhaps we can start using units of 100 in the future to cheaply cut down on floats.
+- Figure out how to programmatically get correct verticalOffset from scale.
+
 
 PLAN:
     - ~~Add in ceiling casting. See if it works when only some empty cells have ceilings. That is unlikely but would be an amazing surprise.~~
     - ~~Add in sprite sorting.~~
     - ~~Add in sprite collisions.~~
     - ~~Add actual sprite class so we can remove hardcoded locations and sprite texture. Use names (tiles will eventually too.)~~
-    - Add in a mechanism for controlling sprite sizes (can use just the height since ew have a vertical offset and the image ratios are now respected).
+    - ~~Add in a mechanism for controlling sprite sizes (can use just the height since ew have a vertical offset and the image ratios are now respected).~~
     - Add in a basic text interaction for sprites.
     - Add in mobile controls so I can start testing on a mobile phone.
     - Add in a manifest.json so it can technically be a PWA. :)

@@ -16,6 +16,7 @@ class Sprite {
 
     // TODO: The height might need to be calculated dynimcally. For now we'll just
     // use the spritesheet dimensions (since we only have single frame sprites as of now)
+    this.scale = spriteConfig.scale ? spriteConfig.scale : 1;
     this.height = this.spritesheet.height;
     this.width = this.spritesheet.width;
 
@@ -38,5 +39,9 @@ class Sprite {
     // TODO: When we start having multifaceted sprites, there will have to be
     // additional calculations. For now we can just return the full imagebuffer of the spritesheet.
     return this.spritesheet.getCanvas();
+  }
+
+  showText(){
+    console.log('I am a sprite')
   }
 }

@@ -215,5 +215,7 @@ class Player {
       const wall = this.game.images[ray.wall - 1];
       wall.trigger(this.game);
     }
+    // Find closest sprite directly in front of player.
+    // Call it's trigger function.
   }
 }
