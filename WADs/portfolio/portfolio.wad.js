@@ -167,9 +167,6 @@ const sprites = [
     isMultifaceted: false,
     isSolid: true,
     boundingBox: .35,
-
-    // Sprite-scaling test
-    // height: .5,
   },
   {
     type: 'prop',
@@ -185,8 +182,10 @@ const sprites = [
     boundingBox: .35,
     scale: .65,
     verticalOffset: .35,
-    // Sprite-scaling test
-    // height: .5,
+    trigger: {
+      type: 'showText',
+      text: "Hi!\n\nRemember to always respect the hyphen!",
+    }
   }
 ];
 

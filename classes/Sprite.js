@@ -13,6 +13,7 @@ class Sprite {
     this.isSolid = spriteConfig.isSolid;
     this.isMultifaceted = spriteConfig.isMultifaceted;
     this.isAnimated = spriteConfig.isAnimated;
+    this.trigger = spriteConfig.trigger;
 
     // TODO: The height might need to be calculated dynimcally. For now we'll just
     // use the spritesheet dimensions (since we only have single frame sprites as of now)
@@ -41,7 +42,18 @@ class Sprite {
     return this.spritesheet.getCanvas();
   }
 
-  showText(){
-    console.log('I am a sprite')
+  // TODO: We're going to dynamically generate trigger functions using the config trigger object settings.
+  // We'll need to validate later of course to make sure called methods are available.
+  callTrigger(game){
+    const { type: triggerFunction, ...settings } = this.trigger;
+    // TODO: Add in validation method exists beyond just being a function.
+    if(typeof this[triggerFunction] === 'function'){
+      this[triggerFunction](game, settings);
+    }
+  }
+
+  // TODO: We should broadcast messages instead of directly calling the textdisplay instance.
+  showText(game, { text }){
+    game.textDisplay.write(text, 2000);
   }
 }

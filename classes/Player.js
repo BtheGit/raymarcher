@@ -25,7 +25,7 @@ class Player {
     this.rays = [];
     this.cast();
   }
-  // Todo add in an early return for maximum cast distance
+  // TODO: add in an early return for maximum cast distance
   castRay(cameraX, castDistance = Infinity){
     const rayDir = this.plane.scale(cameraX).add(this.dir);
     const activeCell = this.pos.map(Math.floor);
@@ -197,6 +197,8 @@ class Player {
   }
 
   rotate(rotation){
+    // TODO: There's no reason these calls can't be lookup tables. The lookup tables can even be recalculated if the rotation
+    // speed changes.
     const newDirX = this.dir.x * Math.cos(this.rotationSpeed * rotation) - this.dir.y * Math.sin(this.rotationSpeed * rotation);
     const newDirY = this.dir.x * Math.sin(this.rotationSpeed * rotation) + this.dir.y * Math.cos(this.rotationSpeed * rotation);
     const newPlaneX = this.plane.x * Math.cos(this.rotationSpeed * rotation) - this.plane.y * Math.sin(this.rotationSpeed * rotation);
@@ -206,16 +208,74 @@ class Player {
   }
 
   trigger(){
+    const cameraX = 0; // Middle of the screen.w
+    const ray = this.castRay(cameraX);
+    const wallDistance = ray.normalizedDistance;
+    // The following would be to abstract into a separate sprite manager service. In a more-perfect world.
+    // Find closest sprite directly in front of player.
+    // Call it's trigger function.
+    // We'll need to sort for distance and check the zbuffer (just like with rendering and clipping) to get the closest sprite
+    // that is not behind a wall.
+    // Ideally we would check the strip of the sprite at the ceenter column and determine if all the pixels were transparent,
+    // but this is certainly overkill for now.
+    const sprites = this.game.sprites;
+    if(sprites.length > 0){
+      // Sort nearest to farthest, filtering any that are further away than the closest wall ($distance).
+      const closestUnobstructedSpriteWithTrigger = sprites.reduce((acc, sprite) => {
+        const spriteDistance = Math.pow(this.pos.x - sprite.pos.x, 2) + Math.pow(this.pos.y - sprite.pos.y, 2);
+        if(spriteDistance < wallDistance) {
+          const spriteX = sprite.pos.x;
+          const spriteY = sprite.pos.y;
+          const spriteX_relativeToPlayer = spriteX - this.pos.x;
+          const spriteY_relativeToPlayer = spriteY - this.pos.y;
+          
+          const transformX = this.inverseDeterminate * (this.dir.y * spriteX_relativeToPlayer - this.dir.x * spriteY_relativeToPlayer);
+          const transformY = Math.max(this.inverseDeterminate * (-this.plane.y * spriteX_relativeToPlayer + this.plane.x * spriteY_relativeToPlayer), 0);
+          
+          const spriteScreenX = Math.floor((this.game.screen.width / 2) * (1 + transformX / transformY));
+          // spriteScreenX gives us the center of the sprite on screen. But we also need to know the start and end. If the center of the screen is within that range
+          // then we have a potential target.
+          const widthRatio = (sprite.width / sprite.height) * sprite.scale;
+          const spriteWidth = Math.abs(Math.floor((this.game.screen.height / transformY * widthRatio)));
+          const drawStartX = Math.floor(-spriteWidth / 2 + spriteScreenX);
+          const drawEndX = spriteWidth / 2 + spriteScreenX;
+          const centerOfScreen = this.game.screen.width / 2;
+          if (centerOfScreen >= drawStartX && centerOfScreen <= drawEndX){
+            // Finally, we want to only take the closest, so we're going to cache that.
+            if(!acc.spriteDistance ){
+              // First match.
+              acc = {
+                spriteDistance,
+                sprite
+              }
+            }
+            else {
+              if(spriteDistance < acc.spriteDistance){
+                acc = {
+                  spriteDistance,
+                  sprite,
+                }
+              }
+            }
+          }
+        }
+        return acc;
+      }, {});
+
+      if(closestUnobstructedSpriteWithTrigger.sprite && closestUnobstructedSpriteWithTrigger.sprite.trigger != null){
+        // TODO: We can figure out what to pass it later. Possibly dynamically. For now, we'll give it the whole game instance!
+        closestUnobstructedSpriteWithTrigger.sprite.callTrigger(this.game);
+        // We don't want to trigger anything else, so let's hightail it.
+        return
+      }
+    
+    }
+
     // This will be used for commands. For now, we'll have a rudimentary approach that just checks the cell directly
     // in front of the player's direction to a very small maximum distance and call it's trigger function.
-    const cameraX = 0;
-    const ray = this.castRay(cameraX);
-    const distance = ray.normalizedDistance;
-    if(distance < 1.4){
+    if(wallDistance < 1){
       const wall = this.game.images[ray.wall - 1];
       wall.trigger(this.game);
     }
-    // Find closest sprite directly in front of player.
-    // Call it's trigger function.
   }
 }

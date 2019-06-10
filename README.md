@@ -97,7 +97,10 @@ In the interests of making lists that never get completed, here are some potenti
 - I've said it before but it bears repeating, we need to optimize. Move away from floats as much as possible, try lookup tables as much as possible. Move as many calculations out of the render cycles as possible (here's looking at you sky gradient).
 - For sprite sizes, let's use a sprite scale value (default of one) relative to wall height/grid cell size (ie the one unit of measurement in the world). Everything has been done as 1 so far. But perhaps we can start using units of 100 in the future to cheaply cut down on floats.
 - Figure out how to programmatically get correct verticalOffset from scale.
-
+- Create a series of behaviors that can be specified as triggers. Eg, go to a webpage, start/stop animation, display text, start a dialogue tree session, cause something in the world to change (such as turning off all textures)...
+- Create a god mod HUD, with a series of controls that let us dynamically change world settings on the fly. Clipping, textures, shading...
+- It might behoove me to create a sprite manager service class, so that there is a straightforward way to query for sprites outside of a Player or some such method. (Things like triggering).
+- If I really want to go crazy, I could make this a multiplayer world. But I think I'll leave that for a long time, I'd rather have static pages than sockets and a server for the scope of this.
 
 PLAN:
     - ~~Add in ceiling casting. See if it works when only some empty cells have ceilings. That is unlikely but would be an amazing surprise.~~
@@ -106,6 +109,8 @@ PLAN:
     - ~~Add actual sprite class so we can remove hardcoded locations and sprite texture. Use names (tiles will eventually too.)~~
     - ~~Add in a mechanism for controlling sprite sizes (can use just the height since ew have a vertical offset and the image ratios are now respected).~~
     - Add in a basic text interaction for sprites.
+    - Add in logic to highlight closest sprite at x = 0 if it's within trigger distance and it has a trigger.
+    - Refactor to create wall class so it's easier to program unique triggers and handle animated faces. Deprecate LinkImageBuffer and BokehBuffer.
     - Add in mobile controls so I can start testing on a mobile phone.
     - Add in a manifest.json so it can technically be a PWA. :)
     - Add in a console text display that is toggleable (like the minimap), change the minimap to being switched on or off rather than on when a button is pressed.
