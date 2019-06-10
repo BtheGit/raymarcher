@@ -91,7 +91,7 @@ const STORAGE_ID = 'bb_raymarcher'
 const wad = PORTFOLIO_WAD;
 
 // Instead of wrapping the game, we could wrap each level with a loader so that asset loads are lighter.
-const loadAssets = async () => {
+const main = async () => {
   const textureMap = await loadTextures(wad.textures);
   const sprites = loadSprites2(textureMap)(wad.sprites);
   const tiles = await loadTiles(wad.tiles);
@@ -100,4 +100,4 @@ const loadAssets = async () => {
   game.start();
 }
 
-loadAssets();
+main();
