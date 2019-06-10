@@ -37,7 +37,11 @@ class Screen {
     this.game = game;
     this.currentMap = this.game.currentMap;
     // We delay creating the background until after the main canvas size is determined.
-    this.staticPOVBackground;
+    // TODO: We could also generate this only as needed, if it seems like it adds too much memory.
+    this.staticPOVBackgroundCanvasBuffer = document.createElement('canvas');
+    this.staticPOVBackgroundCtxBuffer = this.staticPOVBackgroundCanvasBuffer.getContext('2d');
+    // Use this for a singleton pattern to avoid redrawing the sky gradient on each frame.
+    this.hasDrawnSkyGradient = false;
     // Just to make sure the canvas is reset before beginning.
     // When this is true, draw minimap overlay.
     // TODO: Can have all conditional render options set as single object with getters/setters later. (HUD, etc)
@@ -48,6 +52,14 @@ class Screen {
     // Create lookup tables to speed up the casting.
     this.lookupCurrentDist = this.generateCurrentDistLookupTable();
     this.lookupFloorBrightnessModifier = this.generateFloorBrightnessModifierLookupTable();
+  }
+
+  generateSkyGradient(stops){
+    this.hasDrawnSkyGradient = true;
+    const gradient = this.staticPOVBackgroundCtxBuffer.createLinearGradient(0,0,0, this.height / 2);
+    applyColorStopsToLinearGradient(gradient, stops);
+    this.staticPOVBackgroundCtxBuffer.fillStyle = gradient;
+    this.staticPOVBackgroundCtxBuffer.fillRect(0, 0, this.width, this.height / 2);
   }
 
   generateCurrentDistLookupTable(){
@@ -198,12 +210,11 @@ class Screen {
    * 
    * If a level has a sky texture, use that.
    * Else if a level has a gradient use that.
-   * Else use a hardcoded default color (or a generated one based on the default floor texture (a darker color perhaps)).
+   * Else use a hardcoded default color (or in the future a generated one based on the default floor texture (a darker color perhaps)).
    */
   drawPOVBackground(){
     const backgroundImageTextureKey = this.game.currentMap.skyTexture;
     const backgroundImage = this.game.textureMap[backgroundImageTextureKey];
-    const skyGradientGradientStops = this.game.currentMap.skyGradient;
     if(backgroundImage){
       // We need to have an origin for the image
       // We need to find the offset from that origin in the FOV and then sample 1/6 of the image
@@ -230,21 +241,16 @@ class Screen {
         this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, sampleWidth, backgroundImage.height, 0, 0, this.width, this.height)
       }
     }
-    else if(skyGradientGradientStops && skyGradientGradientStops.length > 0){
-      // TODO: We don't want to generate this on every frame. That's crazy. We need to cache this as a class
-      // property and use a singleton pattern to draw it.
-      const gradient = this.ctxBuffer.createLinearGradient(0,0,0, this.height / 2);
-      applyColorStopsToLinearGradient(gradient, skyGradientGradientStops);
-      this.ctxBuffer.fillStyle = gradient;
-      this.ctxBuffer.fillRect(0, 0, this.width, this.height / 2);
-            
-    }
     else {
-      // TODO: Don't generate on every frame. Cache as class property. Use singleton.
-      const gradient = this.ctxBuffer.createLinearGradient(0,0,0, this.height / 2);
-      applyColorStopsToLinearGradient(gradient, [{ stop: 0, color: '#6190E8'}, { stop: 1, color: '#A7BFE8'}]);
-      this.ctxBuffer.fillStyle = gradient;
-      this.ctxBuffer.fillRect(0, 0, this.width, this.height / 2);
+      const skyGradientGradientStops = this.game.currentMap.skyGradient;
+      const fallbackGradientStops = [{ stop: 0, color: '#6190E8'}, { stop: 1, color: '#A7BFE8'}];
+      const stops = skyGradientGradientStops && skyGradientGradientStops.length > 0 
+                      ? skyGradientGradientStops 
+                      : fallbackGradientStops;
+      if(!this.hasDrawnSkyGradient){
+        this.generateSkyGradient(stops);
+      }
+      this.ctxBuffer.drawImage(this.staticPOVBackgroundCanvasBuffer, 0, 0, this.width, this.height / 2);
     }
   }
 
