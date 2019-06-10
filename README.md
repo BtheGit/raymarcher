@@ -108,9 +108,10 @@ PLAN:
     - ~~Add in sprite collisions.~~
     - ~~Add actual sprite class so we can remove hardcoded locations and sprite texture. Use names (tiles will eventually too.)~~
     - ~~Add in a mechanism for controlling sprite sizes (can use just the height since ew have a vertical offset and the image ratios are now respected).~~
-    - Add in a basic text interaction for sprites.
+    - ~~Add in a basic text interaction for sprites.~~
     - Add in logic to highlight closest sprite at x = 0 if it's within trigger distance and it has a trigger.
     - Refactor to create wall class so it's easier to program unique triggers and handle animated faces. Deprecate LinkImageBuffer and BokehBuffer.
+    - Add in a fall back floor gradient. (This will be useful if I ever want to have a mode without textures.)
     - Add in mobile controls so I can start testing on a mobile phone.
     - Add in a manifest.json so it can technically be a PWA. :)
     - Add in a console text display that is toggleable (like the minimap), change the minimap to being switched on or off rather than on when a button is pressed.

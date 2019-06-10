@@ -42,8 +42,6 @@ class Screen {
     // When this is true, draw minimap overlay.
     // TODO: Can have all conditional render options set as single object with getters/setters later. (HUD, etc)
     this.isMapActive = false;
-    // this.fov = 60;
-    // this.drawDistance = 500;
 
     // Create constants to speed up the casting
     this.CENTER_Y = this.height / 2;
@@ -157,6 +155,7 @@ class Screen {
       this.ctxBuffer.closePath();
       this.ctxBuffer.stroke();
     }
+
     // TODO: Fix the mirrored orientation issues!!!
     // Render grid elements, scaled.
     for(let rowOffset = 0; rowOffset < mapGrid.length; rowOffset++){
@@ -168,7 +167,6 @@ class Screen {
         const textureId = cell; // In the future the cell will have more data so this will require extracing the data
         const cellHue = HUES[textureId];
         const cellTexture = this.game.images[cell - 1] && this.game.images[cell - 1].getCanvas();
-        // TODO: For simplicity's sake, we'll hard code the placement and size of the minimap for now at the top left.
         const cellLeft = rowOffset * mapWidthUnit;
         const cellTop = columnOffset * mapHeightUnit;
         if (cellTexture){
@@ -182,6 +180,7 @@ class Screen {
         }
       } 
     }
+
     // Render player dot
     const playerPosXOnMap = playerPos.x * mapXRatio;
     const playerPosYOnMap = playerPos.y * mapYRatio;
@@ -189,37 +188,6 @@ class Screen {
     this.ctxBuffer.fillStyle = 'red';
     this.ctxBuffer.arc(playerPosXOnMap, playerPosYOnMap, playerSize, 0, PI2);
     this.ctxBuffer.fill();
-  }
-
-  // THIS IS BEING DEPRECATED IN FAVOR OF BACKGROUNDS OR CASTING TILES
-  // By using a dedicated canvas for the static background image, we effectively only have to 
-  // draw it once to a canvas (expensive) and thereafter just repeatedly copy it over to the buffer (cheap)
-  // TODO: We could in theory also save the step of clearing the screen, since this works much the same way.
-  createStaticPOVBackground(){
-    // Each level should specify it's background colors as an array of objects with color and stops set.
-    const { backgroundSky, backgroundFloor } = this.currentMap;
-    if (!backgroundSky){
-      backgroundSky = [
-        {
-          stop: 0,
-          color: '#222'
-        }
-      ]
-    }
-    if(!backgroundFloor){
-      backgroundFloor = [
-        {
-          stop: 0,
-          color: "#555"
-        }
-      ]
-    }
-    const canvas = document.createElement('canvas');
-    canvas.width = this.width * 7; // FOV 60 * 6 + 1 more for seam overlap
-    canvas.height = this.height;
-    const ctx = canvas.getContext('2d');
-
-    return canvas;
   }
 
   /**
@@ -233,10 +201,6 @@ class Screen {
    * Else use a hardcoded default color (or a generated one based on the default floor texture (a darker color perhaps)).
    */
   drawPOVBackground(){
-    // Temporarily hardcoded background
-    // TODO: Use specifed image or gradient or fallback to gradient default gradient (can be dynamically created
-    // by getting an average sample of the walls or as an opposite of the floor's average color or some such clever
-    // thing.)
     const backgroundImageTextureKey = this.game.currentMap.skyTexture;
     const backgroundImage = this.game.textureMap[backgroundImageTextureKey];
     const skyGradientGradientStops = this.game.currentMap.skyGradient;
@@ -273,10 +237,7 @@ class Screen {
       applyColorStopsToLinearGradient(gradient, skyGradientGradientStops);
       this.ctxBuffer.fillStyle = gradient;
       this.ctxBuffer.fillRect(0, 0, this.width, this.height / 2);
-      
-      // ctx.fillStyle = 'black';
-      // ctx.fillRect(0, (this.height / 2), this.width, (this.height / 2));
-      
+            
     }
     else {
       // TODO: Don't generate on every frame. Cache as class property. Use singleton.
@@ -528,15 +489,8 @@ class Screen {
             //3) it's on the screen (right) 
             //4) ZBuffer, with perpendicular distance
             if(transformY > 0 && stripe > 0 && stripe < this.width && transformY < zBuffer[stripe]) {
-              // TODO: When sprites are multifaceted, we'll need to pass in player pos/dir to calcultate the face;
+              // TODO: When sprites are multifaceted, we'll need to pass in player pos/dir to calculate the face;
               this.ctxBuffer.drawImage(currentSprite.getFrame(), texX, 0, 1, currentSprite.height, stripe, drawStartY, 1, drawEndY - drawStartY);
-              // for every pixel of the current stripe
-              // for(let y = drawStartY; y < drawEndY; y++) {
-                // const d = y * 256 - this.height * 128 + spriteHeight * 128; //256 and 128 factors to avoid floats
-                // const texY = ((d * sprite.height) / spriteHeight) / 256;
-              //   // const color = texture[sprite[spriteOrder[i]].texture][texWidth * texY + texX]; //get current color from the texture
-              //   // if((color & 0x00FFFFFF) != 0) buffer[y][stripe] = color; //paint pixel if it isn't black, black is the invisible color
-              // }
             }
           }
         }
@@ -545,8 +499,7 @@ class Screen {
   }
 
   draw() {
-    // This is being deprecated for now as the static POV Background serves the same purpose.
-    // this.clear();
+    // We don't bother with a clrScreen function because, between the sky, floor textures, and walls, it's moot.
     this.drawPOVBackground();
     this.initializeOffscreenCanvasPixels();
     this.drawPlayerPOV();
