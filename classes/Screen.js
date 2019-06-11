@@ -9,12 +9,18 @@ for(let i = 0; i < tempFloorTextureCanvas.width; i += 8){
 
 // While the API is unstable around walls and textures, we'll abstract away as much as we can
 // into helpers.
-const getWallCellTextureCode = (cell) => {
+const getWallCellTextureCode = (cell, wallFace) => {
   if(typeof cell === 'number') {
     return cell;
   }
   if(typeof cell === 'object' && cell != null && cell.isWall) {
-    return cell.texture;
+    if (wallFace && cell.faces != null) {
+      const faceTexture = cell.faces[wallFace];
+      if(Number.isInteger(faceTexture)) {
+        return faceTexture; 
+      }
+    }
+    return cell.defaultTexture;
   }
 }
 
@@ -265,7 +271,7 @@ class Screen {
     for(let i = 0; i < rays.length; i++){
       const ray = rays[i];
       // TODO: Make ray class to abstract and use getters.
-      const { normalizedDistance, wall, wallOrientation, wallIntersection, rayDir, activeCell } = ray;
+      const { normalizedDistance, wall, wallOrientation, wallIntersection, rayDir, activeCell, wallFace } = ray;
 
       zBuffer.push(normalizedDistance);
 
@@ -278,7 +284,7 @@ class Screen {
       
       // If a texture doesn't exist, use a fallback color
       // Must support both types of walls, simple numbers and objects.
-      const wallTextureCode = getWallCellTextureCode(wall);
+      const wallTextureCode = getWallCellTextureCode(wall, wallFace);
       const wallTexture = wallTextureCode && this.game.images[wallTextureCode - 1] && this.game.images[wallTextureCode - 1].getCanvas();
       if(wallTexture){
         const textureWidth = wallTexture.width;

@@ -25,6 +25,7 @@ class Player {
     this.rays = [];
     this.cast();
   }
+  
   // TODO: add in an early return for maximum cast distance
   castRay(cameraX, castDistance = Infinity){
     const rayDir = this.plane.scale(cameraX).add(this.dir);
@@ -42,20 +43,27 @@ class Player {
     // This assumes infinite draw distance and that all spaces will be fully enclosed
     // TODO: Get rid of that assumption.
     let wall = null;
+    // We don't really need the wall orientation since we can derive it from the face, but for now, we'll leave it in.
     let wallOrientation;
+    // Where as for texture rendering, we just need to know if the wall is oriented horizontally
+    // or vertically, in order to do unique faces, we need to specify the wall orientation more granularly. ie cardinal.
+    // The orientation and the step direction should give this to us.
+    // There is no real cardinality to the map, but for now we'll use up === north, left === west. (where 0,0 is top left).
+    let wallFace;
     while(!wall){
       if(sideDistX < sideDistY){
         sideDistX += distanceDelta.x;
         activeCell.x += stepX;
         wallOrientation = 0; // Vertical Wall
+        wallFace = stepX > 0 ? 'west' : 'east';
       }
       else {
         sideDistY += distanceDelta.y;
         activeCell.y += stepY;
         wallOrientation = 1; // Horizontal Wall
+        wallFace = stepY > 0 ? 'north' : 'south';
       }
-      // TODO: Walls will be complex objects later to allow for complex textures
-      // and interactions.
+
       const currentCell = this.grid.getCell(activeCell.x, activeCell.y);
       if(currentCell == null){
         break;
@@ -66,7 +74,7 @@ class Player {
         wall = currentCell;
       }
     }
-    
+
     const normalizedDistance = wallOrientation === 0
       ? (activeCell.x - this.pos.x + (1 - stepX) / 2) / rayDir.x
       : (activeCell.y - this.pos.y + (1 - stepY) / 2) / rayDir.y
@@ -86,6 +94,7 @@ class Player {
       wallIntersection,
       rayDir,
       activeCell,
+      wallFace,
     }
 
     return ray;

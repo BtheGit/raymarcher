@@ -27,7 +27,7 @@ In the interests of making lists that never get completed, here are some potenti
 - [x] Add sprites
 - [x] Add sprite collision detection
 - [ ] Add animated fixed position sprites
-- [ ] Allow for placing textures on walls face by face
+- [x] Allow for placing textures on walls face by face
 - [ ] Add moving sprites
 - [ ] Sprites with multiple vantage points (8 views depending on with player)
 - [ ] Add NPC class with movement logic
@@ -116,7 +116,7 @@ PLAN:
     - Add in a manifest.json so it can technically be a PWA. :)
     - Add in a console text display that is toggleable (like the minimap), change the minimap to being switched on or off rather than on when a button is pressed.
     - Explore what adding in a dialogue tree would entail.
-    - Add in specified wall faces.
+    - ~~Add in specified wall faces.~~
     <!-- - Add in draw distance (so that I can render varying height walls behind other walls) -->
     <!-- - Render all walls in draw distance, back to front (painter's algorithm); -->
     <!-- - Add back in ascend/descend controls. -->
