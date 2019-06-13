@@ -375,7 +375,7 @@ const tiles = [
     type: 'link-image',
     name: 'link_github_personal',
     href: 'https://github.com/BtheGit',
-    path: './WADs/portfolio/images/github_logo1.png',
+    path: './images/tiles/github_logo1.png',
   },
   // {
   //   type: 'bokeh',
@@ -621,7 +621,7 @@ const maps = [
   MAP2,
 ];
 
-export default {
+window.WAD = {
   maps,
   tiles,
   sprites,
