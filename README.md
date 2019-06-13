@@ -82,7 +82,7 @@ In the interests of making lists that never get completed, here are some potenti
 - Sprites, WADs holding textures and maps, sessionstorage onbeforeunload...
 - Add biomes. Ie, have the skybox image be dependent on where a player is standing (either a certain number of biome specific blocks near the player (a la Terraria)) or based on an invisible biome map that is hard coded. Would need a transition effect to fade in and out. This would be a great feature for procedurally generated levels.
 
-- ceiling casting, make complex map where floor and ceiling are defined (ceilings can be seethru), make the textures smaller, use bigger textures for my info stuff but cheaper ones for everywhere else, keep looking for places to precalc everything.
+- ~~ceiling casting, make complex map where floor and ceiling are defined (ceilings can be seethru), make the textures smaller, use bigger textures for my info stuff but cheaper ones for everywhere else, keep looking for places to precalc everything.~~
 - Is it straightforward and cheap enough to do upsampling? IE, when closer to walls use a higher texture or more scan lines. All we need to do is have multiple versions of a texture (optionally) and select which one based on the distance to player. This would require coordination of course to make sure the various resolutions had the small dimensions and alignment of course. (Could also be auto generated in a map builder.)
 - Should we change the rendering to only do alternate scanlines? It would probably make everything a fair bit quicker if I start running into issues with higher quality textures on the floors or ceilings again. I might be able to get alot more fidelity and complexity without anymore efficiency just by doing half the pixel rendering each frame. There's also no reason I couldn't drop the frame rate a bit.
 - How expensive would motion blur be?
@@ -94,7 +94,7 @@ In the interests of making lists that never get completed, here are some potenti
 - A rainbow gun. People keep asking for a gun. I don't plan on making a game. But, it could be an interesting exercise to implement a projectile weapon (maybe just hitscan) if I made it something that recolored tiles and sprites (such as a filter effect that created a rainbow overlay (or simply swapped out the texture with a rainbow)). (Sprites behind sprites would be a bigger challenge that would require pixel sniffing for opacity).
 - Create more particle effects textures (heavy though)
 - Create a way to render gifs to wall textures.
-- I've said it before but it bears repeating, we need to optimize. Move away from floats as much as possible, try lookup tables as much as possible. Move as many calculations out of the render cycles as possible (here's looking at you sky gradient).
+- I've said it before but it bears repeating, we need to optimize. Move away from floats as much as possible, try lookup tables as much as possible. Move as many calculations out of the render cycles as possible ~~(here's looking at you sky gradient)~~.
 - For sprite sizes, let's use a sprite scale value (default of one) relative to wall height/grid cell size (ie the one unit of measurement in the world). Everything has been done as 1 so far. But perhaps we can start using units of 100 in the future to cheaply cut down on floats.
 - Figure out how to programmatically get correct verticalOffset from scale.
 - Create a series of behaviors that can be specified as triggers. Eg, go to a webpage, start/stop animation, display text, start a dialogue tree session, cause something in the world to change (such as turning off all textures)...
@@ -109,11 +109,11 @@ PLAN:
     - ~~Add actual sprite class so we can remove hardcoded locations and sprite texture. Use names (tiles will eventually too.)~~
     - ~~Add in a mechanism for controlling sprite sizes (can use just the height since ew have a vertical offset and the image ratios are now respected).~~
     - ~~Add in a basic text interaction for sprites.~~
+    - The whole program needs to be abstracted to allow for using in the editor. This mainly means separating the instantiation logic from the code. But I'd also like to use this opportunity to finally move the project into a build system.
     - Add in logic to highlight closest sprite at x = 0 if it's within trigger distance and it has a trigger.
     - Refactor to create wall class so it's easier to program unique triggers and handle animated faces. Deprecate LinkImageBuffer and BokehBuffer.
     - Add in a fall back floor gradient. (This will be useful if I ever want to have a mode without textures.)
     - Add in mobile controls so I can start testing on a mobile phone.
-    - Add in a manifest.json so it can technically be a PWA. :)
     - Add in a console text display that is toggleable (like the minimap), change the minimap to being switched on or off rather than on when a button is pressed.
     - Explore what adding in a dialogue tree would entail.
     - ~~Add in specified wall faces.~~
@@ -125,6 +125,15 @@ PLAN:
 
 
     - ~~Add in fallback gradient if no background sky or sky gradient is specified.~~
-    - Add in interactions with sprites. (Press spacebar and the sprite does something/says something).
+    - ~~Add in interactions with sprites. (Press spacebar and the sprite does something/says something).~~
     - Add in signs. (Sprites that draw text or play audio when you interact with them).
     - Make a first pass of a portfolio site!! (Or at least have the initial room point towards the portfolio (links) and the rest of the world be in development - that way I can at least replace my home domain with something new (even if it just links back to the legacy portfolio));
+    - Make map builder. Without one, using texture names for walls will be too annoying, so let's get this done sooner than later.
+    - As soon as we have a map builder, swap out for named textures which are loaded and then assigned to wall class instances. Link-images will need to be refactored.
+
+Map Editor note in map editor repo now.
+
+Server/DB/Backend:
+    Notes:
+        At some point, I'm going to need a backend of some sort. For dev purposes I will have the editor save output just to a file (or just a text display on screen), but eventually that won't be enough if my idea of letting people save WADS and generate permanent URLs.
+        We'll revisit this much later.
