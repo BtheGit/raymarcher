@@ -26,3 +26,5 @@ class ImageBuffer {
     return;
   }
 }
+
+export default ImageBuffer;

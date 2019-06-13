@@ -24,3 +24,5 @@ class Vector {
     return new Vector(callback(this.x), callback(this.y));
   }
 }
+
+export default Vector;

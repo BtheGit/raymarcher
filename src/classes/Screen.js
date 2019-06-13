@@ -1,3 +1,18 @@
+import { 
+  applyColorStopsToLinearGradient,
+  toDegrees,
+} from '../utilities';
+
+const PI2 = Math.PI * 2;
+
+const HUES = {
+  1: '330',
+  2: '160',
+  3: '180',
+  4: '200',
+  5: '220',
+}
+
 const tempFloorTextureCanvas = document.createElement('canvas');
 tempFloorTextureCanvas.width = 64;
 tempFloorTextureCanvas.height = 64;
@@ -521,3 +536,5 @@ class Screen {
     this.updateFromBuffer();
   }
 }
+
+export default Screen;

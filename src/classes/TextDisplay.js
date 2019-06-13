@@ -64,3 +64,5 @@ class TextDisplay {
     }
   }
 }
+
+export default TextDisplay;

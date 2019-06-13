@@ -621,9 +621,7 @@ const maps = [
   MAP2,
 ];
 
-// TODO: Exports
-
-const PORTFOLIO_WAD = {
+export default {
   maps,
   tiles,
   sprites,

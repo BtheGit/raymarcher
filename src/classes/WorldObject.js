@@ -1,3 +1,5 @@
+// CURRENTLY UNUSED
+
 class WorldObject {
   // Sprites are images that have an x and y for location on the game map.
   // In the future they can have:
@@ -16,3 +18,5 @@ class WorldObject {
     // The spritesheet will be an imagebuffer already
   }
 }
+
+export default WorldObject;

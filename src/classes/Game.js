@@ -1,5 +1,16 @@
 
+import Map from './Map';
+import Screen from './Screen';
+import TextDisplay from './TextDisplay';
+import Player from './Player';
+import Vector from './Vector';
+import {
+  loadStateFromSessionStorage,
+  saveStatetoSessionStorage,
+} from '../utilities';
 
+// TODO: Remove hardcoding
+const STORAGE_ID = 'bb_raymarcher';
 const SCREEN_WIDTH = 1024;
 const SCREEN_HEIGHT = 768;
 
@@ -131,3 +142,5 @@ class Game {
   }
 
 }
+
+export default Game;

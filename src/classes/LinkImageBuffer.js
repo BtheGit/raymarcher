@@ -1,3 +1,5 @@
+import ImageBuffer from './ImageBuffer';
+
 class LinkImageBuffer extends ImageBuffer {
   constructor(href, image){
     super(image)
@@ -12,3 +14,5 @@ class LinkImageBuffer extends ImageBuffer {
     // be triggered.
   }
 }
+
+export default LinkImageBuffer;

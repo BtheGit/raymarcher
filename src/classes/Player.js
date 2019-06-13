@@ -1,3 +1,5 @@
+import Vector from './Vector';
+
 const checkIsFloor = cell => {
   if(typeof cell === 'number' && cell === 0) {
     return true;
@@ -288,3 +290,5 @@ class Player {
     }
   }
 }
+
+export default Player;

@@ -32,3 +32,5 @@ class BokehImageBuffer {
     return;
   }
 }
+
+export default BokehImageBuffer;

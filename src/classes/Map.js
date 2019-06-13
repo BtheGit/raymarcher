@@ -25,3 +25,5 @@ class Map {
     return this.grid[x][y];
   }
 }
+
+export default Map;

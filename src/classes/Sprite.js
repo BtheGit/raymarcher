@@ -1,3 +1,5 @@
+import Vector from './Vector';
+
 /**
  * A sprite defines a wrapper around a spritesheet
  * and the wrapping object. To be later separated.
@@ -57,3 +59,5 @@ class Sprite {
     game.textDisplay.write(text, 2000);
   }
 }
+
+export default Sprite;

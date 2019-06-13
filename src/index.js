@@ -1,3 +1,11 @@
+import ImageBuffer from './classes/ImageBuffer';
+import LinkImageBuffer from './classes/LinkImageBuffer';
+import BokehImageBuffer from './classes/BokehImageBuffer';
+import Sprite from './classes/Sprite';
+import Game from './classes/Game';
+import { 
+  loadImage,
+} from './utilities';
 // This approach is going to use a different tack then the last one. Instead of using a direction angle we'll
 // use a direction vector. We can then step along rays in increments of that vector.
 
@@ -75,23 +83,10 @@ const loadSprites2 = textureMap => spriteConfigs => {
   return sprites;
 }
 
-const HUES = {
-  1: '330',
-  2: '160',
-  3: '180',
-  4: '200',
-  5: '220',
-}
-
-const VIEW_DISTANCE = 1000;
 const FRAMERATE = 1000 / 30;
-const PI2 = Math.PI * 2;
-const STORAGE_ID = 'bb_raymarcher'
-
-const wad = PORTFOLIO_WAD;
 
 // Instead of wrapping the game, we could wrap each level with a loader so that asset loads are lighter.
-const main = async () => {
+const main = async (wad) => {
   const textureMap = await loadTextures(wad.textures);
   const sprites = loadSprites2(textureMap)(wad.sprites);
   const tiles = await loadTiles(wad.tiles);
@@ -100,4 +95,4 @@ const main = async () => {
   game.start();
 }
 
-main();
+export default main;
