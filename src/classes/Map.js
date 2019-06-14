@@ -16,10 +16,10 @@ class Map {
   }
 
   getCell(y, x){
-    if(this.grid[x][y] == null){
+    if(this.grid[x] == null){
       return null;
     }
-    if(this.grid[x] == null){
+    if(this.grid[x][y] == null){
       return null;
     }
     return this.grid[x][y];

@@ -61,6 +61,7 @@ class Screen {
     this.backgroundColor = 'black';
     this.game = game;
     this.currentMap = this.game.currentMap;
+    this.currentMapGrid = this.game.grid;
     // We delay creating the background until after the main canvas size is determined.
     // TODO: We could also generate this only as needed, if it seems like it adds too much memory.
     this.staticPOVBackgroundCanvasBuffer = document.createElement('canvas');
@@ -389,9 +390,11 @@ class Screen {
           const currentDist = this.lookupCurrentDist[y];
           const weight = currentDist / normalizedDistance;
 
+          
           const currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
           const currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
-          const gridCell = this.currentMap.grid[Math.floor(currentFloorY)][Math.floor(currentFloorX)];
+
+          const gridCell = this.currentMapGrid.getCell(Math.floor(currentFloorX), Math.floor(currentFloorY));
           if(gridCell !== null && gridCell !== undefined){
             // TODO: DEBUG ASAP! Was this error always here or is there something missing in the defaults?
             // Until all textures are complex cells, we need to handle simple integers or objects.

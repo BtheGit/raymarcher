@@ -58,6 +58,7 @@ In the interests of making lists that never get completed, here are some potenti
 - It would be great to reverse the calculations that effectively make every grid reversed. That means likely changing the render direction
 - The skybox renders an extra pixel above ceilings, created a single pixel line.
 - Performance is smooth in Chrome, sluggish in FF and Safari. This will improve once I stop using such big textures, but it does beg a bit more of precalcing and using lookup tables  (which may also entail working harder to avoid floating points, which I've been lazy about so far.)
+- Refactor all calls for grid cells to use correct getter.
 
 ### Random working notes / Plan
 
