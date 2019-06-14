@@ -45,13 +45,13 @@ const BLANK_GRID = [
 // collisions.
 // For that matter, there is no reason, all the texture files can't go in the same hash.
 const textures = [
-  './images/sprite__tree_1.png',
-  './images/sprite__tree_2.png',
-  './images/sprite__tree_2_low.png',
-  './images/sprite__palm_tree_1_high.png',
-  './images/sprite__palm_tree_1_low.png',
-  './images/sprite__spider-man_static_1.png',
-  './images/tiles/background_trees3.jpg',
+  './example/images/sprite__tree_1.png',
+  './example/images/sprite__tree_2.png',
+  './example/images/sprite__tree_2_low.png',
+  './example/images/sprite__palm_tree_1_high.png',
+  './example/images/sprite__palm_tree_1_low.png',
+  './example/images/sprite__spider-man_static_1.png',
+  './example/images/tiles/background_trees3.jpg',
 ]
 
 const sprites = [
@@ -194,193 +194,193 @@ const tiles = [
   {
     type: 'image',
     name: 'floor_grass1',
-    path: './images/tiles/floor_grass1.jpg',
+    path: './example/images/tiles/floor_grass1.jpg',
   },
   {
     type: 'image',
     name: 'floor_carpet1',
-    path: './images/tiles/floor_carpet1.jpg',
+    path: './example/images/tiles/floor_carpet1.jpg',
   },
   {
     type: 'image',
     name: 'floor2',
-    path: './images/tiles/floor1.jpg',
+    path: './example/images/tiles/floor1.jpg',
   },
   {
     type: 'image',
     name: 'light_brick1',
-    path: './images/tiles/light_brick1.jpg',
+    path: './example/images/tiles/light_brick1.jpg',
   },
   {
     type: 'image',
     name: 'marble1',
-    path: './images/tiles/marble1.jpg',
+    path: './example/images/tiles/marble1.jpg',
   },
   {
     type: 'image',
     name: 'concrete1',
-    path: './images/tiles/concrete1.jpg',
+    path: './example/images/tiles/concrete1.jpg',
   },
   {
     type: 'image',
     name: 'rusted_steel1',
-    path: './images/tiles/rusted_steel1.jpg',
+    path: './example/images/tiles/rusted_steel1.jpg',
   },
   {
     type: 'image',
     name: 'cliff1',
-    path: './images/tiles/cliff1.jpg',
+    path: './example/images/tiles/cliff1.jpg',
   },
   {
     type: 'image',
     name: 'hedge1',
-    path: './images/tiles/hedge1.jpg',
+    path: './example/images/tiles/hedge1.jpg',
   },
   {
     type: 'image',
     name: 'concrete_brick1',
-    path: './images/tiles/concrete_brick1.jpg',
+    path: './example/images/tiles/concrete_brick1.jpg',
   },
   {
     type: 'image',
     name: 'concrete_brick2',
-    path: './images/tiles/concrete_brick2.jpg',
+    path: './example/images/tiles/concrete_brick2.jpg',
   },
   {
     type: 'image',
     name: 'concrete_tile1',
-    path: './images/tiles/concrete_tile1.jpg',
+    path: './example/images/tiles/concrete_tile1.jpg',
   },
   {
     type: 'image',
     name: 'concrete_tile2',
-    path: './images/tiles/concrete_tile2.jpg',
+    path: './example/images/tiles/concrete_tile2.jpg',
   },
   {
     type: 'image',
     name: 'concrete_tile3',
-    path: './images/tiles/concrete_tile3.jpg',
+    path: './example/images/tiles/concrete_tile3.jpg',
   },
   {
     type: 'image',
     name: 'concrete2',
-    path: './images/tiles/concrete2.jpg',
+    path: './example/images/tiles/concrete2.jpg',
   },
   {
     type: 'image',
     name: 'dots1',
-    path: './images/tiles/dots1.jpg',
+    path: './example/images/tiles/dots1.jpg',
   },
   {
     type: 'image',
     name: 'fresco1',
-    path: './images/tiles/fresco1.jpg',
+    path: './example/images/tiles/fresco1.jpg',
   },
   {
     type: 'image',
     name: 'fur1',
-    path: './images/tiles/fur1.jpg',
+    path: './example/images/tiles/fur1.jpg',
   },
   {
     type: 'image',
     name: 'fur2',
-    path: './images/tiles/fur2.jpg',
+    path: './example/images/tiles/fur2.jpg',
   },
   {
     type: 'image',
     name: 'granite1',
-    path: './images/tiles/granite1.jpg',
+    path: './example/images/tiles/granite1.jpg',
   },
   {
     type: 'image',
     name: 'alien1',
-    path: './images/tiles/alien1.jpg',
+    path: './example/images/tiles/alien1.jpg',
   },
   {
     type: 'image',
     name: 'alien2',
-    path: './images/tiles/alien2.jpg',
+    path: './example/images/tiles/alien2.jpg',
   },
   {
     type: 'image',
     name: 'alien3',
-    path: './images/tiles/alien3.jpg',
+    path: './example/images/tiles/alien3.jpg',
   },
   {
     type: 'image',
     name: 'plaster1',
-    path: './images/tiles/plaster1.jpg',
+    path: './example/images/tiles/plaster1.jpg',
   },
   {
     type: 'image',
     name: 'rust1',
-    path: './images/tiles/rust1.jpg',
+    path: './example/images/tiles/rust1.jpg',
   },
   {
     type: 'image',
     name: 'rust2',
-    path: './images/tiles/rust2.jpg',
+    path: './example/images/tiles/rust2.jpg',
   },
   {
     type: 'image',
     name: 'stone2',
-    path: './images/tiles/stone2.jpg',
+    path: './example/images/tiles/stone2.jpg',
   },
   {
     type: 'image',
     name: 'stripes_creamsicle1',
-    path: './images/tiles/stripes_creamsicle1.jpg',
+    path: './example/images/tiles/stripes_creamsicle1.jpg',
   },
   {
     type: 'image',
     name: 'tile_blue1',
-    path: './images/tiles/tile_blue1.jpg',
+    path: './example/images/tiles/tile_blue1.jpg',
   },
   {
     type: 'image',
     name: 'brendan_bald1',
-    path: './images/tiles/me1.png',
+    path: './example/images/tiles/me1.png',
   },
   {
     type: 'image',
     name: 'bokehfy1',
-    path: './images/projects/bokehfy1.png'
+    path: './example/images/projects/bokehfy1.png'
   },
   {
     type: 'image',
     name: 'breakout1',
-    path: './images/projects/breakout1.png'
+    path: './example/images/projects/breakout1.png'
   },
   {
     type: 'image',
     name: 'dd1',
-    path: './images/projects/doodledetectives1.png'
+    path: './example/images/projects/doodledetectives1.png'
   },
   {
     type: 'image',
     name: 'local_places1',
-    path: './images/projects/localplaces1.jpg'
+    path: './example/images/projects/localplaces1.jpg'
   },
   {
     type: 'image',
     name: 'sortable_tables1',
-    path: './images/projects/sortabletables1.jpg'
+    path: './example/images/projects/sortabletables1.jpg'
   },
   {
     type: 'image',
     name: "tetris1",
-    path: './images/projects/tetris1.png'
+    path: './example/images/projects/tetris1.png'
   },
   {
     type: 'link-image',
     name: 'link_github_personal',
     href: 'https://github.com/BtheGit',
-    path: './images/tiles/github_logo1.png',
+    path: './example/images/tiles/github_logo1.png',
   },
   {
     type: 'image',
     name: "background_trees1",
-    path: './images/tiles/background_trees3.jpg',
+    path: './example/images/tiles/background_trees3.jpg',
   },
   // {
   //   type: 'bokeh',
