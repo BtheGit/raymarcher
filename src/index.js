@@ -83,16 +83,93 @@ const loadSprites2 = textureMap => spriteConfigs => {
   return sprites;
 }
 
-const FRAMERATE = 1000 / 30;
+const DEFAULT_SETTINGS = {
+  displayId: 'display-main',
+  width: 1024,
+  height: 768,
+  storageId: 'bb-raymarcher',
+  framerate: (1000 / 30),
+}
+const DEFAULT_WAD = {
+  textures: [],
+  sprites: [],
+  tiles: [],
+  maps: [
+    {
+      grid: [
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],    
+      ],
+      playerPos: {
+        x: 5,
+        y: 5
+      },
+      playerDir: {
+        x: 0,
+        y: -1
+      },
+      playerPlane: {
+        x: -0.66,
+        Y: 0
+      },
+      skyGradient: [
+        {
+          stop: 0,
+          color: "purple"
+        },
+        {
+          stop: 1,
+          color: "red"
+        },
+      ],
+    
+    }
+  ],
+}
 
 // Instead of wrapping the game, we could wrap each level with a loader so that asset loads are lighter.
-const main = async (wad) => {
+const main = settings => async (wad = DEFAULT_WAD) => {
   const textureMap = await loadTextures(wad.textures);
   const sprites = loadSprites2(textureMap)(wad.sprites);
   const tiles = await loadTiles(wad.tiles);
   const maps = wad.maps;
-  const game = new Game(maps, tiles, sprites, textureMap, FRAMERATE);
+
+  const game = new Game(settings, maps, tiles, sprites, textureMap);
+  // I should probably return the game before calling start. And wrap the init into this same function (composed perhaps).
   game.start();
+  return game;
 }
 
-export default main;
+
+// Get base settings and return pre-instantiated game.
+const init = (settings = {}) => {
+  const mergedSettings = {
+    ...DEFAULT_SETTINGS,
+    ...settings,
+  }
+  return main(mergedSettings);
+}
+
+export default init;

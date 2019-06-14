@@ -110,6 +110,7 @@ PLAN:
     - ~~Add in a mechanism for controlling sprite sizes (can use just the height since ew have a vertical offset and the image ratios are now respected).~~
     - ~~Add in a basic text interaction for sprites.~~
     - The whole program needs to be abstracted to allow for using in the editor. This mainly means separating the instantiation logic from the code. But I'd also like to use this opportunity to finally move the project into a build system.
+    - Calculate font sizes dynamically.
     - Refactor to only one map per WAD.
     - Add in logic to highlight closest sprite at x = 0 if it's within trigger distance and it has a trigger.
     - Refactor to create wall class so it's easier to program unique triggers and handle animated faces. Deprecate LinkImageBuffer and BokehBuffer.

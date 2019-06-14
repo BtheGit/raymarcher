@@ -2,6 +2,7 @@ import {
   applyColorStopsToLinearGradient,
   toDegrees,
 } from '../utilities';
+import ImageBuffer from './ImageBuffer';
 
 const PI2 = Math.PI * 2;
 
@@ -13,14 +14,17 @@ const HUES = {
   5: '220',
 }
 
-const tempFloorTextureCanvas = document.createElement('canvas');
-tempFloorTextureCanvas.width = 64;
-tempFloorTextureCanvas.height = 64;
-const tempFloorTexture = tempFloorTextureCanvas.getContext('2d');
-for(let i = 0; i < tempFloorTextureCanvas.width; i += 8){
-  tempFloorTexture.fillStyle = `hsl(${i * 5}, 100%, 80%)`;
-  tempFloorTexture.fillRect(i,0, 8,64);
-}
+const fallBackTexture_Rainbow = (function(){
+  const fallBackTextureCanvas_Rainbow = document.createElement('canvas');
+  fallBackTextureCanvas_Rainbow.width = 64;
+  fallBackTextureCanvas_Rainbow.height = 64;
+  const fallbackTexture_Rainbow = fallBackTextureCanvas_Rainbow.getContext('2d');
+  for(let i = 0; i < fallBackTextureCanvas_Rainbow.width; i += 8){
+    fallbackTexture_Rainbow.fillStyle = `hsl(${i * 5}, 100%, 80%)`;
+    fallbackTexture_Rainbow.fillRect(i,0, 8,64);
+  }
+  return new ImageBuffer(fallBackTextureCanvas_Rainbow);
+})()
 
 // While the API is unstable around walls and textures, we'll abstract away as much as we can
 // into helpers.
@@ -388,70 +392,77 @@ class Screen {
           const currentFloorX = weight * floorXWall + (1.0 - weight) * this.game.player.pos.x;
           const currentFloorY = weight * floorYWall + (1.0 - weight) * this.game.player.pos.y;
           const gridCell = this.currentMap.grid[Math.floor(currentFloorY)][Math.floor(currentFloorX)];
-
-          // Until all textures are complex cells, we need to handle simple integers or objects.
-          let floorTexture, ceilingTexture = null;
-          if(typeof gridCell === 'number'){
-            floorTexture = this.game.images[gridCell];
-          }
-          else {
-            if (gridCell.floorTexture != null) {
-              floorTexture = this.game.images[gridCell.floorTexture - 1];
+          if(gridCell !== null && gridCell !== undefined){
+            // TODO: DEBUG ASAP! Was this error always here or is there something missing in the defaults?
+            // Until all textures are complex cells, we need to handle simple integers or objects.
+            let floorTexture, ceilingTexture = null;
+            if(typeof gridCell === 'number'){
+              floorTexture = this.game.images[gridCell];
             }
-            if (gridCell.ceilingTexture != null) {
-              ceilingTexture = this.game.images[gridCell.ceilingTexture - 1];
+            else {
+              if (gridCell.floorTexture != null) {
+                floorTexture = this.game.images[gridCell.floorTexture - 1];
+              }
+              if (gridCell.ceilingTexture != null) {
+                ceilingTexture = this.game.images[gridCell.ceilingTexture - 1];
+              }
             }
-          }
 
-          // ### DRAW FLOOR
-          if (floorTexture != null){
-            const floorTexturePixels = floorTexture.getImageData();
+            // Temp, to have a floor.
+            if(floorTexture == null){
+              floorTexture = fallBackTexture_Rainbow;
+            }
   
-            const floorTexX = Math.floor(currentFloorX * floorTexture.width) % floorTexture.width;
-            const floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
-            const textureIndex = (floorTexY * floorTexture.width + floorTexX) * 4;
+            // ### DRAW FLOOR
+            if (floorTexture != null){
+              const floorTexturePixels = floorTexture.getImageData();
+    
+              const floorTexX = Math.floor(currentFloorX * floorTexture.width) % floorTexture.width;
+              const floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
+              const textureIndex = (floorTexY * floorTexture.width + floorTexX) * 4;
+    
+              // Let's dim the floor
+              // TODO: Better dropoff curve.
+              const brightnessModifier = this.lookupFloorBrightnessModifier[y];
+    
+              const red = floorTexturePixels.data[textureIndex] * brightnessModifier;
+              const green = floorTexturePixels.data[textureIndex + 1] * brightnessModifier;
+              const blue = floorTexturePixels.data[textureIndex + 2] * brightnessModifier;
+              const alpha = floorTexturePixels.data[textureIndex + 3];
+    
+              const index = (y * this.width + x) * 4;
+              this.offscreenCanvasPixels.data[index] = red;
+              this.offscreenCanvasPixels.data[index + 1] = green;
+              this.offscreenCanvasPixels.data[index + 2] = blue;
+              this.offscreenCanvasPixels.data[index + 3] = alpha;
+            }
   
-            // Let's dim the floor
-            // TODO: Better dropoff curve.
-            const brightnessModifier = this.lookupFloorBrightnessModifier[y];
+            // ### DRAW CEILING
+            if (ceilingTexture) {
+              const ceilingTexturePixels = ceilingTexture.getImageData();
   
-            const red = floorTexturePixels.data[textureIndex] * brightnessModifier;
-            const green = floorTexturePixels.data[textureIndex + 1] * brightnessModifier;
-            const blue = floorTexturePixels.data[textureIndex + 2] * brightnessModifier;
-            const alpha = floorTexturePixels.data[textureIndex + 3];
-  
-            const index = (y * this.width + x) * 4;
-            this.offscreenCanvasPixels.data[index] = red;
-            this.offscreenCanvasPixels.data[index + 1] = green;
-            this.offscreenCanvasPixels.data[index + 2] = blue;
-            this.offscreenCanvasPixels.data[index + 3] = alpha;
-          }
-
-          // ### DRAW CEILING
-          if (ceilingTexture) {
-            const ceilingTexturePixels = ceilingTexture.getImageData();
-
-            const ceilTexX = Math.floor(currentFloorX * ceilingTexture.width) % ceilingTexture.width;
-            const ceilTexY = Math.floor((this.height - currentFloorY) * ceilingTexture.height) % ceilingTexture.height;
-            const textureIndex = (ceilTexY * ceilingTexture.width + ceilTexX) * 4;
-  
-            // Let's dim the ceiling more than the floor.
-            // TODO: Better dropoff curve.
-            const brightnessModifier = this.lookupFloorBrightnessModifier[y] - .2;
-  
-            const red = ceilingTexturePixels.data[textureIndex] * brightnessModifier;
-            const green = ceilingTexturePixels.data[textureIndex + 1] * brightnessModifier;
-            const blue = ceilingTexturePixels.data[textureIndex + 2] * brightnessModifier;
-            const alpha = ceilingTexturePixels.data[textureIndex + 3];
-  
-            const index = ((this.height - y) * this.width + x) * 4;
-            this.offscreenCanvasPixels.data[index] = red;
-            this.offscreenCanvasPixels.data[index + 1] = green;
-            this.offscreenCanvasPixels.data[index + 2] = blue;
-            this.offscreenCanvasPixels.data[index + 3] = alpha;
-  
-          }
-        }        
+              const ceilTexX = Math.floor(currentFloorX * ceilingTexture.width) % ceilingTexture.width;
+              const ceilTexY = Math.floor((this.height - currentFloorY) * ceilingTexture.height) % ceilingTexture.height;
+              const textureIndex = (ceilTexY * ceilingTexture.width + ceilTexX) * 4;
+    
+              // Let's dim the ceiling more than the floor.
+              // TODO: Better dropoff curve.
+              const brightnessModifier = this.lookupFloorBrightnessModifier[y] - .2;
+    
+              const red = ceilingTexturePixels.data[textureIndex] * brightnessModifier;
+              const green = ceilingTexturePixels.data[textureIndex + 1] * brightnessModifier;
+              const blue = ceilingTexturePixels.data[textureIndex + 2] * brightnessModifier;
+              const alpha = ceilingTexturePixels.data[textureIndex + 3];
+    
+              const index = ((this.height - y) * this.width + x) * 4;
+              this.offscreenCanvasPixels.data[index] = red;
+              this.offscreenCanvasPixels.data[index + 1] = green;
+              this.offscreenCanvasPixels.data[index + 2] = blue;
+              this.offscreenCanvasPixels.data[index + 3] = alpha;
+    
+            }
+          }        
+        }
       }
     }
     // Because of the mix of direct pixel manipulation and drawImage calls, we have dangling bits of render

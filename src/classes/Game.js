@@ -9,18 +9,14 @@ import {
   saveStatetoSessionStorage,
 } from '../utilities';
 
-// TODO: Remove hardcoding
-const STORAGE_ID = 'bb_raymarcher';
-const SCREEN_WIDTH = 1024;
-const SCREEN_HEIGHT = 768;
-
 class Game {
-  constructor(maps, images, sprites, textureMap, framerate){
+  constructor(settings, maps, images, sprites, textureMap){
+    this.storageId = settings.storageId;
     // We want to preserve the player's location when they are returning from an interaction
     // that caused them to navigate away to a link.
-    const savedState = loadStateFromSessionStorage(STORAGE_ID);
+    const savedState = loadStateFromSessionStorage(this.storageId);
     this.images = images;
-    this.interval = framerate;
+    this.interval = settings.framerate;
     this.animationFrame = null;
 
     this.textureMap = textureMap;
@@ -30,9 +26,9 @@ class Game {
     this.currentMap = savedState ? savedState.currentMap : this.maps[0];
     this.grid = new Map(this.currentMap.grid);
 
-    this.screen = new Screen(this, 'display-main', SCREEN_WIDTH, SCREEN_HEIGHT);
+    this.screen = new Screen(this, settings.displayId, settings.width, settings.height);
 
-    this.textDisplay = new TextDisplay(Math.floor(SCREEN_WIDTH * .75), Math.floor(SCREEN_HEIGHT * .75))
+    this.textDisplay = new TextDisplay(Math.floor(settings.width * .75), Math.floor(settings.height * .75))
     this.textDisplay.write(
       "Welcome!\n\nUse WASD to move and spacebar\nto interact with things.\n\n\nFeel free to walk around and enjoy the sights.\nMake yourself at home.\nJust don't look in the basement, ever.", 
       3500
@@ -138,7 +134,7 @@ class Game {
       },
       currentMap: this.currentMap
     };
-    saveStatetoSessionStorage(STORAGE_ID, state);
+    saveStatetoSessionStorage(this.storageId, state);
   }
 
 }
