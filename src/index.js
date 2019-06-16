@@ -67,17 +67,11 @@ const loadTextures = async (texturePaths) => {
   return textureMap;
 }
 
-// The sprite textures will be stored in a hash for named reference.
-const loadSprites = sprites => Promise.all(sprites.map((sprite) => {
-  return loadImageBuffer(sprite);
-  // This will change soon of course to support a unique sprite class.
-}))
-
 // Depending on how things shake out, instead of putting these into a map, we might just want
 // to create a map of several arrays based on the sprite type (object, NPC etc.) since 
 // certain operations will be called on each depending on that. So, solid sprites will be
 // called for collision detection, animated sprites will be called for updating in the game loop, etc.
-const loadSprites2 = textureMap => spriteConfigs => {
+const loadSprites = textureMap => spriteConfigs => {
   // TODO: Don't build sprites that don't have required properties (esp pos and spritesheet).
   const sprites = spriteConfigs.map(config => new Sprite(textureMap, config));
   return sprites;
@@ -153,7 +147,7 @@ const DEFAULT_WAD = {
 // Instead of wrapping the game, we could wrap each level with a loader so that asset loads are lighter.
 const main = settings => async (wad = DEFAULT_WAD) => {
   const textureMap = await loadTextures(wad.textures);
-  const sprites = loadSprites2(textureMap)(wad.sprites);
+  const sprites = loadSprites(textureMap)(wad.sprites);
   const tiles = await loadTiles(wad.tiles);
   const maps = wad.maps;
 
