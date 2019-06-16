@@ -48,14 +48,15 @@ class Game {
           new Vector(this.currentMap.playerDir.x, this.currentMap.playerDir.y),
           new Vector(this.currentMap.playerPlane.x, this.currentMap.playerPlane.y)
         );
-
+    
+    this.canvas = document.getElementById(settings.displayId);
     this.keyState = {}; // Active store of keypresses
     document.addEventListener('keydown', ({ key }) => {
       this.keyState[key] = true;
-    })
+    });
     document.addEventListener('keyup', ({ key }) => {
       this.keyState[key] = false;
-    })
+    });
   }
 
   start() {
@@ -80,32 +81,34 @@ class Game {
   }
 
   updatePlayerPositioning(){
-    if(this.keyState['`']){
-      this.screen.showMap();
-    }
-    else {
-      this.screen.hideMap();
-    }
-    if(this.keyState.a){
-      this.player.rotate(1);
-    }
-    if(this.keyState.d){
-      this.player.rotate(-1);
-    }
-    if(this.keyState.w){
-      // if(this.keyState.Shift){
-      //   this.player.moveForward(1.5);
-      // }
-      // else {
-        this.player.moveForward();
-      // }
-    }
-    if(this.keyState.s){
-      this.player.moveBack();
-    }
-    if(this.keyState[' ']){
-      this.keyState[' '] = false;
-      this.player.trigger();
+    if(!this.editorMode || (this.editorMode && document.activeElement === this.canvas)){
+      if(this.keyState['`']){
+        this.screen.showMap();
+      }
+      else {
+        this.screen.hideMap();
+      }
+      if(this.keyState.a){
+        this.player.rotate(1);
+      }
+      if(this.keyState.d){
+        this.player.rotate(-1);
+      }
+      if(this.keyState.w){
+        // if(this.keyState.Shift){
+        //   this.player.moveForward(1.5);
+        // }
+        // else {
+          this.player.moveForward();
+        // }
+      }
+      if(this.keyState.s){
+        this.player.moveBack();
+      }
+      if(this.keyState[' ']){
+        this.keyState[' '] = false;
+        this.player.trigger();
+      }
     }
   }
 
