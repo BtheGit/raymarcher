@@ -590,14 +590,14 @@ const MAP_TILETEST = {
 };
 
 
-const maps = [
+const map = [
   MAP1,
   MAP_TILETEST,
   MAP2,
-];
+][0];
 
 window.WAD = {
-  maps,
+  map,
   tiles,
   sprites,
   textures,

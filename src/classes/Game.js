@@ -10,7 +10,7 @@ import {
 } from '../utilities';
 
 class Game {
-  constructor(settings, maps, images, sprites, textureMap){
+  constructor(settings, map, images, sprites, textureMap){
     this.storageId = settings.storageId;
     this.editorMode = settings.editorMode;
     // We want to preserve the player's location when they are returning from an interaction
@@ -22,9 +22,9 @@ class Game {
 
     this.textureMap = textureMap;
     this.sprites = sprites;
-    this.maps = maps;
+    this.map = map;
     // Gonna hardcode the first level for now. TODO: REMOVE
-    this.currentMap = savedState ? savedState.currentMap : this.maps[0];
+    this.currentMap = savedState ? savedState.currentMap : this.map;
     this.grid = new Map(this.currentMap.grid);
 
     this.screen = new Screen(this, settings.displayId, settings.width, settings.height);
