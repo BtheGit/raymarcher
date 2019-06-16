@@ -120,6 +120,7 @@ PLAN:
     - Add in mobile controls so I can start testing on a mobile phone.
     - Add in a console text display that is toggleable (like the minimap), change the minimap to being switched on or off rather than on when a button is pressed.
     - Explore what adding in a dialogue tree would entail.
+    - Validation: Grid cells.
     - ~~Add in specified wall faces.~~
     <!-- - Add in draw distance (so that I can render varying height walls behind other walls) -->
     <!-- - Render all walls in draw distance, back to front (painter's algorithm); -->

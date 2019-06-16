@@ -25,6 +25,8 @@ class Game {
     this.map = map;
     // Gonna hardcode the first level for now. TODO: REMOVE
     this.currentMap = savedState ? savedState.currentMap : this.map;
+
+    // Ugh I need to find all the places I call this and rename it to map!!
     this.grid = new Map(this.currentMap.grid);
 
     this.screen = new Screen(this, settings.displayId, settings.width, settings.height);
@@ -139,6 +141,11 @@ class Game {
       currentMap: this.currentMap
     };
     saveStatetoSessionStorage(this.storageId, state);
+  }
+
+  // Methods for hot updating game assets.
+  updateGrid(newGrid){
+    this.grid.updateGrid(newGrid);
   }
 
 }

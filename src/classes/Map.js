@@ -24,6 +24,11 @@ class Map {
     }
     return this.grid[x][y];
   }
+
+  updateGrid(newGrid){
+    this.rawGrid = newGrid;
+    this.grid = this.temporaryCreateComplexGridObjects(this.rawGrid);
+  }
 }
 
 export default Map;
