@@ -471,6 +471,10 @@ const MAP1 = {
       color: "red"
     },
   ],
+  introText: {
+    text: "Welcome!\n\nUse WASD to move and spacebar\nto interact with things.\n\n\nFeel free to walk around and enjoy the sights.\nMake yourself at home.\nJust don't look in the basement, ever.",
+    displayLength: 3500,
+  }
 };
 
 const MAP2 = {

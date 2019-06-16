@@ -59,6 +59,7 @@ In the interests of making lists that never get completed, here are some potenti
 - The skybox renders an extra pixel above ceilings, created a single pixel line.
 - Performance is smooth in Chrome, sluggish in FF and Safari. This will improve once I stop using such big textures, but it does beg a bit more of precalcing and using lookup tables  (which may also entail working harder to avoid floating points, which I've been lazy about so far.)
 - Refactor all calls for grid cells to use correct getter.
+- Prevent errors triggered from walking to the edge of a world with no walls.
 
 ### Random working notes / Plan
 

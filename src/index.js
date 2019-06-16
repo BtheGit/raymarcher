@@ -89,6 +89,7 @@ const DEFAULT_SETTINGS = {
   height: 768,
   storageId: 'bb-raymarcher',
   framerate: (1000 / 30),
+  editorMode: false,
 }
 const DEFAULT_WAD = {
   textures: [],

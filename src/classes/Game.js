@@ -12,6 +12,7 @@ import {
 class Game {
   constructor(settings, maps, images, sprites, textureMap){
     this.storageId = settings.storageId;
+    this.editorMode = settings.editorMode;
     // We want to preserve the player's location when they are returning from an interaction
     // that caused them to navigate away to a link.
     const savedState = loadStateFromSessionStorage(this.storageId);
@@ -29,10 +30,10 @@ class Game {
     this.screen = new Screen(this, settings.displayId, settings.width, settings.height);
 
     this.textDisplay = new TextDisplay(Math.floor(settings.width * .75), Math.floor(settings.height * .75))
-    this.textDisplay.write(
-      "Welcome!\n\nUse WASD to move and spacebar\nto interact with things.\n\n\nFeel free to walk around and enjoy the sights.\nMake yourself at home.\nJust don't look in the basement, ever.", 
-      3500
-    );
+    const introText = this.currentMap.introText;
+    if(introText){
+      this.textDisplay.write(introText.text, introText.displayLength);
+    }
 
     this.player = savedState 
       ? new Player(
