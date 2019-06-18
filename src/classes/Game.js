@@ -4,6 +4,7 @@ import Screen from './Screen';
 import TextDisplay from './TextDisplay';
 import Player from './Player';
 import Vector from './Vector';
+import TouchScreen from './TouchScreen';
 import {
   loadStateFromSessionStorage,
   saveStatetoSessionStorage,
@@ -30,6 +31,8 @@ class Game {
     this.grid = new Map(this.currentMap.grid);
 
     this.screen = new Screen(this, settings.displayId, settings.width, settings.height);
+
+    this.touchScreen = new TouchScreen(settings.width, settings.height);
 
     this.textDisplay = new TextDisplay(Math.floor(settings.width * .75), Math.floor(settings.height * .75))
     const introText = this.currentMap.introText;
@@ -59,6 +62,21 @@ class Game {
     document.addEventListener('keyup', ({ key }) => {
       this.keyState[key] = false;
     });
+    // We want to add the listeners here rather than in the touchscreen itself so that
+    // we can share logic with the keypress events.
+    this.canvas.addEventListener('touchstart', e => {
+      const newKeyState = this.touchScreen.handleTouchStart(e, this.keyState);
+      this.keyState = newKeyState;
+    })
+    // TODO: For multi-touch support
+    // this.canvas.addEventListener('touchmove', e => {
+    //   const newKeyState = this.touchScreen.handleTouchMove(e, this.keyState);
+    //   this.keyState = newKeyState;
+    // })
+    this.canvas.addEventListener('touchend', e => {
+      const newKeyState = this.touchScreen.handleTouchEnd(e, this.keyState);
+      this.keyState = newKeyState;
+    })
   }
 
   start() {
@@ -73,6 +91,7 @@ class Game {
         this.updatePlayerPositioning();
         this.player.cast();      
         this.drawScreen();
+        this.touchScreen.draw(this.screen);
         this.textDisplay.draw(this.screen);
         /* END Game Loop */
         then = now - (delta % this.interval)

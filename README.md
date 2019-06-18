@@ -136,6 +136,18 @@ PLAN:
     - Make map builder. Without one, using texture names for walls will be too annoying, so let's get this done sooner than later.
     - As soon as we have a map builder, swap out for named textures which are loaded and then assigned to wall class instances. Link-images will need to be refactored.
 
+    - IMPORTANT: We need to move away from numbers for cells. Even just colors should be specified explicitly. To that end we also need to move away from using 0 to denote a floor. Now that we have a map builder, every cell should be complex. To that effect, we should have a cell type rather than booleans that may or may not exist. We should really do this as soon as outputting from the editor becomes tenable because it is going to break everything until fully refactored. 
+
+    - Touch controls:
+        - set up a media query listener. We will use this to conditionally display the touch control (or even render it at all)
+        - create touch handler class
+        - have touch handler class conditionally render at media query
+        - add canvas to class ? Or should we just blit to the main display?
+        - draw touch circles on canvas
+        - set up touch listeners on the canvas (or the main canvas depending on previous step)
+        - Need to have set areas for up down left right (left thumb) and interact (right thumb) on the screen
+        - listeners use areas to flag 'keypresses'.
+
 Map Editor note in map editor repo now.
 
 Server/DB/Backend:
