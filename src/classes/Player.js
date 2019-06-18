@@ -286,7 +286,9 @@ class Player {
     // in front of the player's direction to a very small maximum distance and call it's trigger function.
     if(wallDistance < 1){
       const wall = this.game.images[ray.wall - 1];
-      wall.trigger(this.game);
+      if(wall){
+        wall.trigger(this.game);
+      }
     }
   }
 }
