@@ -32,14 +32,14 @@ const getWallCellTextureCode = (cell, wallFace) => {
   if(typeof cell === 'number') {
     return cell;
   }
-  if(typeof cell === 'object' && cell != null && cell.isWall) {
+  if(typeof cell === 'object' && cell != null && cell.type === 'wall') {
     if (wallFace && cell.faces != null) {
       const faceTexture = cell.faces[wallFace];
       if(Number.isInteger(faceTexture)) {
         return faceTexture; 
       }
     }
-    return cell.defaultTexture;
+    return cell.wallTexture;
   }
 }
 

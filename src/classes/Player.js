@@ -4,7 +4,7 @@ const checkIsFloor = cell => {
   if(typeof cell === 'number' && cell === 0) {
     return true;
   }
-  if(cell.isFloor) {
+  if(cell.type === 'floor') {
     return true;
   }
   return false;
@@ -71,7 +71,7 @@ class Player {
         break;
       }
       const isBasicWall = typeof currentCell === 'number' && currentCell > 0;
-      const isComplexWall = typeof currentCell === 'object' && currentCell != null && currentCell.isWall;
+      const isComplexWall = typeof currentCell === 'object' && currentCell != null && currentCell.type === 'wall';
       if(isBasicWall || isComplexWall){
         wall = currentCell;
       }
