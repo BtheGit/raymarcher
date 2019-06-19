@@ -2,15 +2,11 @@ const PI2 = Math.PI * 2;
 
 class TouchScreen {
   constructor(width, height){
-    // For visibility (TODO: For listeners as well (will need to self-destruct on resize))
-    this.isVisible = false;
     // This needs to manually be in sync with the CSS for now. Not great.
     this.mediaQuery = window.matchMedia('screen and (max-width: 768px)');
+    // For visibility (TODO: For listeners as well (will need to self-destruct on resize))
     // TODO: resample on resize. For now this only runs once.
-    // There is a problem with the first instantiation. But enough will change in pass 2, it's ok for now.
-    this.mediaQuery.addListener(e => {
-      this.isVisible = true;
-    });
+    this.isVisible = this.mediaQuery.matches;
     // We'll need to either listen for resize events or have them passed in to rebuild the
     // canvas buffer on changes.
     this.width = width;
