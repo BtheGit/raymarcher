@@ -39,7 +39,7 @@ const getWallCellTextureCode = (cell, wallFace) => {
         return faceTexture; 
       }
     }
-    return cell.wallTexture;
+    return cell.texture;
   }
 }
 
@@ -403,11 +403,11 @@ class Screen {
               floorTexture = this.game.images[gridCell];
             }
             else {
-              if (gridCell.floorTexture != null) {
-                floorTexture = this.game.images[gridCell.floorTexture - 1];
+              if (gridCell.texture != null) {
+                floorTexture = this.game.images[gridCell.texture - 1];
               }
-              if (gridCell.ceilingTexture != null) {
-                ceilingTexture = this.game.images[gridCell.ceilingTexture - 1];
+              if (gridCell.ceiling != null && typeof gridCell.ceiling === 'object' && gridCell.ceiling.texture != null) {
+                ceilingTexture = this.game.images[gridCell.ceiling.texture - 1];
               }
             }
 
