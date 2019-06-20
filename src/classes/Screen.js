@@ -343,8 +343,7 @@ class Screen {
         this.ctxBuffer.globalAlpha = 1;
       }
       else {
-        const wallHueCode = typeof wall === 'number' ? wall : wall.texture;
-        const wallHue = HUES[wallHueCode] || 0; // Anything without a fallback hue will be crazy red and obvious.
+        const wallHue = HUES[wallTextureCode] || 0; // Anything without a fallback hue will be crazy red and obvious.
         const hsl = `hsl(${ wallHue }, 100%, ${ brightness }%)`;
         this.ctxBuffer.fillStyle = hsl;
         this.ctxBuffer.beginPath();
