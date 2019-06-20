@@ -405,16 +405,20 @@ class Screen {
             }
             else {
               if (gridCell.texture != null) {
-                floorTexture = this.game.images[gridCell.texture - 1];
+                floorTexture = this.game.images[gridCell.texture];
               }
               if (gridCell.ceiling != null && typeof gridCell.ceiling === 'object' && gridCell.ceiling.texture != null) {
-                ceilingTexture = this.game.images[gridCell.ceiling.texture - 1];
+                ceilingTexture = this.game.images[gridCell.ceiling.texture];
               }
             }
 
             // Temp, to have a floor.
             if(floorTexture == null){
               floorTexture = fallBackTexture_Rainbow;
+            }
+            // Temp, to have a ceiling
+            if(gridCell.ceiling != null && typeof gridCell.ceiling === 'object' && gridCell.ceiling.texture != null && this.game.images[gridCell.ceiling.texture] == null) {
+              ceilingTexture = fallBackTexture_Rainbow;
             }
   
             // ### DRAW FLOOR
@@ -442,7 +446,7 @@ class Screen {
             }
   
             // ### DRAW CEILING
-            if (ceilingTexture) {
+            if (ceilingTexture != null) {
               const ceilingTexturePixels = ceilingTexture.getImageData();
   
               const ceilTexX = Math.floor(currentFloorX * ceilingTexture.width) % ceilingTexture.width;
@@ -463,7 +467,6 @@ class Screen {
               this.offscreenCanvasPixels.data[index + 1] = green;
               this.offscreenCanvasPixels.data[index + 2] = blue;
               this.offscreenCanvasPixels.data[index + 3] = alpha;
-    
             }
           }        
         }
