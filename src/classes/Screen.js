@@ -26,23 +26,13 @@ const fallBackTexture_Rainbow = (function(){
   return new ImageBuffer(fallBackTextureCanvas_Rainbow);
 })()
 
-// While the API is unstable around walls and textures, we'll abstract away as much as we can
-// into helpers.
+// Do we want to return the texture name or the actual texture buffer?
 const getWallCellTextureCode = (cell, wallFace) => {
-  // TODO: Deprecate
-  if(typeof cell === 'number') {
-    return cell;
+  if(wallFace && typeof cell.faces === 'object' && cell.faces[wallFace] != null && typeof cell.faces[wallFace] === 'object') {
+    // This is problematic, multifaceted walls only support textures if this is done like so.
+    return cell.faces[wallFace].textureConfig.name;
   }
-
-  if(typeof cell === 'object' && cell != null && cell.type === 'wall') {
-    if (wallFace && cell.faces != null) {
-      const faceTexture = cell.faces[wallFace];
-      if(Number.isInteger(faceTexture)) {
-        return faceTexture; 
-      }
-    }
-    return cell.texture;
-  }
+  return cell.textureConfig.name;
 }
 
 const getFaceSpecificWallConfig = (cell, wallFace) => {
@@ -86,7 +76,7 @@ const validateWallTextureConfig = (textureType, textureConfig) => {
     // Primarily whether the specified image exists.
     // For now, we have a problem because the image texture buffers are not being kept as keys in a store/hash for reference/retrieval
     // We have to refactor out the array before we continue.
-    return false;
+    return true;
   }
   else if(textureType === 'gradient'){
     // TODO:
@@ -368,7 +358,7 @@ class Screen {
       // should be rendered with the fallback color.
       if(isValidTextureConfig){
         // If it's a color, it's a completely different thing. We can just draw a rect for the texture strip. 
-        // TODO: We should combine this with the fallback color drawing later.
+        // TODO: We should combine this with the fallback color drawing later if possible.
         if(wallTextureType === 'color'){
           const colorType = wallTextureConfig.colorType;
           let color;
@@ -401,49 +391,58 @@ class Screen {
         else {
           // TODO: Support gradients.
 
-          // If a texture doesn't exist, use a fallback color
-          // Must support both types of walls, simple numbers and objects.
+          // #### RENDER 'image' texture type ####
+          // If a texture doesn't exist, use a fallback color 
+          // (We could reuse the default texture but then it would be harder to spot missing textures)
           const wallTextureCode = getWallCellTextureCode(wall, wallFace);
-
-          // This line operates under the assumption that 0 is a floor tile and we need to deprecate it post haste!
-          const wallTexture = wallTextureCode && this.game.images[wallTextureCode - 1] && this.game.images[wallTextureCode - 1].getCanvas();
-
-          const textureWidth = wallTexture.width;
-          let wallIntersectionOffset;
-          if(wallOrientation === 1){
-            if(this.game.player.dir.y > 0){
-              wallIntersectionOffset = wallIntersection - Math.floor(wallIntersection);
+          const wallTextureImageBuffer = wallTextureCode === 'default' ? fallBackTexture_Rainbow : this.game.textureMap[wallTextureCode];
+          if(wallTextureImageBuffer instanceof ImageBuffer) {
+            const wallTexture = wallTextureImageBuffer.getCanvas();
+            const textureWidth = wallTexture.width;
+            let wallIntersectionOffset;
+            if(wallOrientation === 1){
+              if(this.game.player.dir.y > 0){
+                wallIntersectionOffset = wallIntersection - Math.floor(wallIntersection);
+              }
+              else {
+                wallIntersectionOffset = 1 - (wallIntersection - Math.floor(wallIntersection));
+              }
             }
             else {
-              wallIntersectionOffset = 1 - (wallIntersection - Math.floor(wallIntersection));
+              if(this.game.player.dir.x < 0){
+                wallIntersectionOffset = wallIntersection - Math.floor(wallIntersection);
+              }
+              else {
+                wallIntersectionOffset = 1 - (wallIntersection - Math.floor(wallIntersection));
+              }
             }
+            let textureStripLeft = Math.floor(wallIntersectionOffset * textureWidth);
+            this.ctxBuffer.drawImage(wallTexture, textureStripLeft, 0, 1, wallTexture.height, i, top, 1, columnHeight);
+
+
+            // TODO: Change this to color shift the pixels directly instead of messing with a semi-opaque overlay.
+            this.ctxBuffer.fillStyle = 'black';
+            this.ctxBuffer.globalAlpha = 1 - (VIEW_DISTANCE - (normalizedDistance * darknessMultiplier)) / VIEW_DISTANCE;
+            this.ctxBuffer.fillRect(i, top, 1, columnHeight);
+            this.ctxBuffer.globalAlpha = 1;
+            
+            // UNFINISHED: VARIABLE HEIGHT WALLS
+            // TODO: HANDLE HEIGHTS IN MULTIPLES OF ONE (FOR NOW)
+            // Hardcoding a height of two temporarily.
+            // if (typeof wall === 'object' && wall.height > 1) {
+            //   // This doesn't really work because it only renders correctly face on. 
+            //   // Getting this to work would require keeping the DDA algorithm going past initial intersections with walls and then using a zBuffer of sorts to
+            //   // draw with a painters algorithm. I'm starting to rethink the utility of that.
+            //   this.ctxBuffer.drawImage(wallTexture, textureStripLeft, 0, 1, wallTexture.height, i, top - columnHeight, 1, columnHeight);
+            // }
           }
           else {
-            if(this.game.player.dir.x < 0){
-              wallIntersectionOffset = wallIntersection - Math.floor(wallIntersection);
-            }
-            else {
-              wallIntersectionOffset = 1 - (wallIntersection - Math.floor(wallIntersection));
-            }
+            // Valid texture not available. Use warning color.
+            this.ctxBuffer.fillStyle = 'orangered';
+            this.ctxBuffer.beginPath();
+            this.ctxBuffer.fillRect(i,top, 1, columnHeight);
+            this.ctxBuffer.closePath();
           }
-          let textureStripLeft = Math.floor(wallIntersectionOffset * textureWidth);
-          this.ctxBuffer.drawImage(wallTexture, textureStripLeft, 0, 1, wallTexture.height, i, top, 1, columnHeight);
-
-          // UNFINISHED: VARIABLE HEIGHT WALLS
-          // TODO: HANDLE HEIGHTS IN MULTIPLES OF ONE (FOR NOW)
-          // Hardcoding a height of two temporarily.
-          // if (typeof wall === 'object' && wall.height > 1) {
-          //   // This doesn't really work because it only renders correctly face on. 
-          //   // Getting this to work would require keeping the DDA algorithm going past initial intersections with walls and then using a zBuffer of sorts to
-          //   // draw with a painters algorithm. I'm starting to rethink the utility of that.
-          //   this.ctxBuffer.drawImage(wallTexture, textureStripLeft, 0, 1, wallTexture.height, i, top - columnHeight, 1, columnHeight);
-          // }
-  
-          // TODO: Change this to color shift the pixels directly instead of messing with a semi-opaque overlay.
-          this.ctxBuffer.fillStyle = 'black';
-          this.ctxBuffer.globalAlpha = 1 - (VIEW_DISTANCE - (normalizedDistance * darknessMultiplier)) / VIEW_DISTANCE;
-          this.ctxBuffer.fillRect(i, top, 1, columnHeight);
-          this.ctxBuffer.globalAlpha = 1;
         }
       }
       else {

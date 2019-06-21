@@ -52,6 +52,7 @@ const textures = [
   './images/sprite__palm_tree_1_low.png',
   './images/sprite__spider-man_static_1.png',
   './images/tiles/background_trees3.jpg',
+  './images/tiles/hedge1.jpg',
 ]
 
 const sprites = [
@@ -481,14 +482,14 @@ const NEW_MAP = {
   grid: [
     [{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } }],
     [{ type: 'wall', textureType: 'color', textureConfig: { colorType: 'hsl', color: { h: 100 } } },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } }],
-    [{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } }],
+    [{ type: 'wall', textureType: 'image', textureConfig: { name: 'hedge1' } },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' }, faces: { south: { textureType: 'image', textureConfig: { name: 'hedge1' } } } },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } }],
     [{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } }],
     [{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } }],
     [{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } }],
   ],
   playerPos: {
-    x: 3,
-    y: 3,
+    x: 2,
+    y: 4.5,
   },
   playerDir: {
     x: 0,
