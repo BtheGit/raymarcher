@@ -477,6 +477,44 @@ const MAP1 = {
   }
 };
 
+const NEW_MAP = {
+  grid: [
+    [{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } }],
+    [{ type: 'wall', textureType: 'color', textureConfig: { colorType: 'hsl', color: { h: 100 } } },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } }],
+    [{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } }],
+    [{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } }],
+    [{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } }],
+    [{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'default' } }],
+  ],
+  playerPos: {
+    x: 3,
+    y: 3,
+  },
+  playerDir: {
+    x: 0,
+    y: -1
+  },
+  playerPlane: {
+    x: -0.66,
+    Y: 0
+  },
+  skyGradient: [
+    {
+      stop: 0,
+      color: "#7AA1D2"
+    },
+    {
+      stop: .8,
+      color: "#DBD4B4"
+    },
+    {
+      stop: 1,
+      color: "#CC95C0"
+    }
+  ],
+
+}
+
 const MAP2 = {
   grid: [
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -591,6 +629,7 @@ const MAP_TILETEST = {
 
 
 const map = [
+  NEW_MAP,
   MAP1,
   MAP_TILETEST,
   MAP2,
