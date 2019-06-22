@@ -1,6 +1,7 @@
 import { 
   applyColorStopsToLinearGradient,
   toDegrees,
+  hexToRGB,
 } from '../utilities';
 import ImageBuffer from './ImageBuffer';
 
@@ -54,6 +55,32 @@ const getFaceSpecificWallConfig = (cell, wallFace) => {
   return cell;
 
 }
+
+const getWallColor = (wallTextureConfig, brightness) => {
+  const colorType = wallTextureConfig.colorType;
+  let color;
+  switch(colorType){
+    case 'hex':
+      color = '#' + wallTextureConfig.color;
+      break;
+    case 'hsl':
+      const defaultHSL = {
+        h: 25,
+        s: 100,
+        l: brightness,
+      }
+      const mergedHSL = { ...defaultHSL, ...wallTextureConfig.color }
+      color = `hsl(${ mergedHSL.h }, ${ mergedHSL.s }%, ${ mergedHSL.l }%)`;
+      break;
+    case 'rgb':
+      // I'm not sure I really want to support HSL. Might be better to always convert it in the editor.
+    default:
+      color = 'cornflowerblue';
+      break;
+  }
+  return color;
+}
+
 
 const VALID_TEXTURE_TYPES = ['image', 'color', 'gradient'];
 const VALID_COLOR_TYPES = ['hsl', 'rgb', 'hex'];
@@ -360,28 +387,8 @@ class Screen {
         // If it's a color, it's a completely different thing. We can just draw a rect for the texture strip. 
         // TODO: We should combine this with the fallback color drawing later if possible.
         if(wallTextureType === 'color'){
-          const colorType = wallTextureConfig.colorType;
-          let color;
-          switch(colorType){
-            case 'hex':
-              color = wallTextureConfig.color;
-              break;
-            case 'hsl':
-              const defaultHSL = {
-                h: 25,
-                s: 100,
-                l: brightness,
-              }
-              const mergedHSL = { ...defaultHSL, ...wallTextureConfig.color }
-              color = `hsl(${ mergedHSL.h }, ${ mergedHSL.s }%, ${ mergedHSL.l }%)`;
-              break;
-            case 'rgb':
-              // I'm not sure I really want to support HSL. Might be better to always convert it in the editor.
-            default:
-              color = 'cornflowerblue';
-              break;
-          }
-          // We support hex, hsl, and rgb (not rgba).
+          const color = getWallColor(wallTextureConfig, brightness);
+          // We support hex, hsl, and someday rgb (not rgba).
           this.ctxBuffer.fillStyle = color;
           this.ctxBuffer.beginPath();
           this.ctxBuffer.fillRect(i,top, 1, columnHeight);
@@ -503,82 +510,112 @@ class Screen {
           // TODO: DEBUG ASAP! Was this error always here or is there something missing in the defaults?
           if(gridCell !== null && gridCell !== undefined){
 
-            // Until all textures are complex cells, we need to handle simple integers or objects.
-            let floorTexture, ceilingTexture = null;
-            if(typeof gridCell === 'number'){
-              // TODO: Deprecate.
-              floorTexture = this.game.images[gridCell];
-            }
-            // This will be the entirety of the process in the future.
+            
+            // Let's dim the floor
+            // TODO: Better dropoff curve.
+            const brightnessModifier = this.lookupFloorBrightnessModifier[y];
 
-            // Notes:
-            // The cell structure requires any depth to have a textureType and then the corresponding (correct) config for 
-            // that type. Instead of falling back through image -> gradient -> color -> default fallback, it will just be
-            // specified type -> default fallback.
-            else {
-              if (gridCell.texture != null) {
-                floorTexture = this.game.images[gridCell.texture];
-              }
-              if (gridCell.ceiling != null && typeof gridCell.ceiling === 'object' && gridCell.ceiling.texture != null) {
-                ceilingTexture = this.game.images[gridCell.ceiling.texture];
-              }
-            }
+            if(gridCell.textureType === 'color') {
+              // TODO: This is going to be a bit of a slow down. We should require floors to be hex?
+              const color = getWallColor(gridCell.textureConfig, brightness);
 
-            // Temp, to have a floor.
-            if(floorTexture == null){
-              floorTexture = fallBackTexture_Rainbow;
-            }
-            // Temp, to have a ceiling
-            if(gridCell.ceiling != null && typeof gridCell.ceiling === 'object' && gridCell.ceiling.texture != null && this.game.images[gridCell.ceiling.texture] == null) {
-              ceilingTexture = fallBackTexture_Rainbow;
-            }
-  
-            // ### DRAW FLOOR
-            if (floorTexture != null){
-              const floorTexturePixels = floorTexture.getImageData();
-    
-              const floorTexX = Math.floor(currentFloorX * floorTexture.width) % floorTexture.width;
-              const floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
-              const textureIndex = (floorTexY * floorTexture.width + floorTexX) * 4;
-    
-              // Let's dim the floor
-              // TODO: Better dropoff curve.
-              const brightnessModifier = this.lookupFloorBrightnessModifier[y];
-    
-              const red = floorTexturePixels.data[textureIndex] * brightnessModifier;
-              const green = floorTexturePixels.data[textureIndex + 1] * brightnessModifier;
-              const blue = floorTexturePixels.data[textureIndex + 2] * brightnessModifier;
-              const alpha = floorTexturePixels.data[textureIndex + 3];
-    
+              // TODO: Here is a big breaking assumption. ALL floor colors are hex!
+              const { r, g, b } = hexToRGB(color);
+
               const index = (y * this.width + x) * 4;
-              this.offscreenCanvasPixels.data[index] = red;
-              this.offscreenCanvasPixels.data[index + 1] = green;
-              this.offscreenCanvasPixels.data[index + 2] = blue;
-              this.offscreenCanvasPixels.data[index + 3] = alpha;
+              this.offscreenCanvasPixels.data[index] = r * brightnessModifier;
+              this.offscreenCanvasPixels.data[index + 1] = g * brightnessModifier;
+              this.offscreenCanvasPixels.data[index + 2] = b * brightnessModifier;
+              this.offscreenCanvasPixels.data[index + 3] = 255;
             }
-  
+            else {
+              // TODO: Handle gradients.
+
+              let floorTexture = null;
+              
+              // TODO: Temp, to have a floor while textures are missing
+              if(floorTexture == null){
+                floorTexture = fallBackTexture_Rainbow;
+              }
+
+              // ### DRAW FLOOR
+              if (floorTexture != null){
+                const floorTexturePixels = floorTexture.getImageData();
+      
+                const floorTexX = Math.floor(currentFloorX * floorTexture.width) % floorTexture.width;
+                const floorTexY = Math.floor(currentFloorY * floorTexture.height) % floorTexture.height;
+                const textureIndex = (floorTexY * floorTexture.width + floorTexX) * 4;
+            
+                const red = floorTexturePixels.data[textureIndex] * brightnessModifier;
+                const green = floorTexturePixels.data[textureIndex + 1] * brightnessModifier;
+                const blue = floorTexturePixels.data[textureIndex + 2] * brightnessModifier;
+                const alpha = floorTexturePixels.data[textureIndex + 3];
+      
+                const index = (y * this.width + x) * 4;
+                this.offscreenCanvasPixels.data[index] = red;
+                this.offscreenCanvasPixels.data[index + 1] = green;
+                this.offscreenCanvasPixels.data[index + 2] = blue;
+                this.offscreenCanvasPixels.data[index + 3] = alpha;
+              }
+            }
+            
             // ### DRAW CEILING
-            if (ceilingTexture != null) {
-              const ceilingTexturePixels = ceilingTexture.getImageData();
-  
-              const ceilTexX = Math.floor(currentFloorX * ceilingTexture.width) % ceilingTexture.width;
-              const ceilTexY = Math.floor((this.height - currentFloorY) * ceilingTexture.height) % ceilingTexture.height;
-              const textureIndex = (ceilTexY * ceilingTexture.width + ceilTexX) * 4;
-    
+
+            // TODO: Add config bool to specify ceiling. Have fallback color when no ceiling config exists?
+            
+            // For now, just check if ceilingConfig exists and assume it is valid.
+            const hasCeiling = gridCell.hasOwnProperty('ceilingConfig') && gridCell.ceilingConfig != null;
+            if(hasCeiling){
               // Let's dim the ceiling more than the floor.
               // TODO: Better dropoff curve.
-              const brightnessModifier = this.lookupFloorBrightnessModifier[y] - .2;
+              const ceilingBrightnessModifier = brightnessModifier - .2;
+  
+              const { ceilingConfig } = gridCell;
+  
+              if(ceilingConfig.textureType === 'color') {
+                // TODO: This is going to be a bit of a slow down. We should require floors to be hex?
+                const ceilingColor = getWallColor(ceilingConfig.textureConfig, brightness);
+  
+                // TODO: Here is a big breaking assumption. ALL floor colors are hex!
+                const { r, g, b } = hexToRGB(ceilingColor);
+  
+                const index = ((this.height - y) * this.width + x) * 4;
+                this.offscreenCanvasPixels.data[index] = r * ceilingBrightnessModifier;
+                this.offscreenCanvasPixels.data[index + 1] = g * ceilingBrightnessModifier;
+                this.offscreenCanvasPixels.data[index + 2] = b * ceilingBrightnessModifier;
+                this.offscreenCanvasPixels.data[index + 3] = 255;              
+              }
+              else {
+                // TODO: Handle gradients.
+                
+                let ceilingTexture = null;
     
-              const red = ceilingTexturePixels.data[textureIndex] * brightnessModifier;
-              const green = ceilingTexturePixels.data[textureIndex + 1] * brightnessModifier;
-              const blue = ceilingTexturePixels.data[textureIndex + 2] * brightnessModifier;
-              const alpha = ceilingTexturePixels.data[textureIndex + 3];
-    
-              const index = ((this.height - y) * this.width + x) * 4;
-              this.offscreenCanvasPixels.data[index] = red;
-              this.offscreenCanvasPixels.data[index + 1] = green;
-              this.offscreenCanvasPixels.data[index + 2] = blue;
-              this.offscreenCanvasPixels.data[index + 3] = alpha;
+                // TODO: Temp, to have a ceiling
+                if(ceilingTexture == null) {
+                  ceilingTexture = fallBackTexture_Rainbow;
+                }
+      
+      
+                if (ceilingTexture != null) {
+                  const ceilingTexturePixels = ceilingTexture.getImageData();
+      
+                  const ceilTexX = Math.floor(currentFloorX * ceilingTexture.width) % ceilingTexture.width;
+                  const ceilTexY = Math.floor((this.height - currentFloorY) * ceilingTexture.height) % ceilingTexture.height;
+                  const textureIndex = (ceilTexY * ceilingTexture.width + ceilTexX) * 4;
+        
+        
+                  const red = ceilingTexturePixels.data[textureIndex] * ceilingBrightnessModifier;
+                  const green = ceilingTexturePixels.data[textureIndex + 1] * ceilingBrightnessModifier;
+                  const blue = ceilingTexturePixels.data[textureIndex + 2] * ceilingBrightnessModifier;
+                  const alpha = ceilingTexturePixels.data[textureIndex + 3];
+        
+                  const index = ((this.height - y) * this.width + x) * 4;
+                  this.offscreenCanvasPixels.data[index] = red;
+                  this.offscreenCanvasPixels.data[index + 1] = green;
+                  this.offscreenCanvasPixels.data[index + 2] = blue;
+                  this.offscreenCanvasPixels.data[index + 3] = alpha;
+                }
+              }
             }
           }        
         }
