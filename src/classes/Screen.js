@@ -61,7 +61,8 @@ const getWallColor = (wallTextureConfig, brightness) => {
   let color;
   switch(colorType){
     case 'hex':
-      color = '#' + wallTextureConfig.color;
+      const hasLeadingHash = wallTextureConfig.color[0] === '#';
+      color = hasLeadingHash ? wallTextureConfig.color : '#' + wallTextureConfig.color;
       break;
     case 'hsl':
       const defaultHSL = {
