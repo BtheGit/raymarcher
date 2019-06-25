@@ -61,7 +61,6 @@ const textures = [
   './images/tiles/concrete1.jpg',
   './images/tiles/rusted_steel1.jpg',
   './images/tiles/cliff1.jpg',
-  './images/tiles/hedge1.jpg',
   './images/tiles/concrete_brick1.jpg',
   './images/tiles/concrete_brick2.jpg',
   './images/tiles/concrete_tile1.jpg',

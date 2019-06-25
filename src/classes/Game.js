@@ -167,6 +167,14 @@ class Game {
     this.grid.updateGrid(newGrid);
   }
 
+  getTextureMap(){
+    return this.textureMap;
+  }
+
+  getTextureList(){
+    return Object.keys(this.textureMap);
+  }
+
 }
 
 export default Game;

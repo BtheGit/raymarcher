@@ -530,9 +530,9 @@ class Screen {
               this.offscreenCanvasPixels.data[index + 3] = 255;
             }
             else {
-              // TODO: Handle gradients.
-
-              let floorTexture = null;
+              // TODO: Handle gradients. This will fail on gradients.
+              const floorTextureName = gridCell.textureConfig.name;
+              let floorTexture = this.game.textureMap[floorTextureName];
               
               // TODO: Temp, to have a floor while textures are missing
               if(floorTexture == null){
@@ -576,7 +576,6 @@ class Screen {
               if(ceilingConfig.textureType === 'color') {
                 // TODO: This is going to be a bit of a slow down. We should require floors to be hex?
                 const ceilingColor = getWallColor(ceilingConfig.textureConfig, brightness);
-  
                 // TODO: Here is a big breaking assumption. ALL floor colors are hex!
                 const { r, g, b } = hexToRGB(ceilingColor);
   
@@ -588,14 +587,13 @@ class Screen {
               }
               else {
                 // TODO: Handle gradients.
-                
-                let ceilingTexture = null;
-    
+                const ceilingTextureName = ceilingConfig.textureConfig.name;
+                let ceilingTexture = this.game.textureMap[ceilingTextureName];
+      
                 // TODO: Temp, to have a ceiling
                 if(ceilingTexture == null) {
                   ceilingTexture = fallBackTexture_Rainbow;
                 }
-      
       
                 if (ceilingTexture != null) {
                   const ceilingTexturePixels = ceilingTexture.getImageData();
@@ -603,7 +601,6 @@ class Screen {
                   const ceilTexX = Math.floor(currentFloorX * ceilingTexture.width) % ceilingTexture.width;
                   const ceilTexY = Math.floor((this.height - currentFloorY) * ceilingTexture.height) % ceilingTexture.height;
                   const textureIndex = (ceilTexY * ceilingTexture.width + ceilTexX) * 4;
-        
         
                   const red = ceilingTexturePixels.data[textureIndex] * ceilingBrightnessModifier;
                   const green = ceilingTexturePixels.data[textureIndex + 1] * ceilingBrightnessModifier;
