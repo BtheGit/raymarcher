@@ -50,10 +50,8 @@ In the interests of making lists that never get completed, here are some potenti
 - Try voxel terrain instead (need height maps)
 
 ### Immediate bug fixes
-- ~~Enable wall slipping. it's impossible to slip along walls when you're right up against them. Perhaps a combination of creating an artifical limit to keep player from directly contacting wall as well as a calculation to move perpendicular at some velocity if you are not directly walking into a wall but at an angle.~~
-- ~~Using bokeh now causes the whole thing to break on resizes. Might not be possible to workaround without pushing new updates to bokeh (other than a conditional render - so tiles without canvas height will fall back to a default color like fire engine red). The issue is that on a window resize event the bokeh field canvas is resized to its parent's client sizes. But in this case, the parent doesn't have a client size since it's not attached to the dom~~
 - Minimap does not render correctly when map grid is not square
-- ~~Seams at the bottom of walls showing.~~
+- Seams at the bottom of walls showing.
 - Refactor casting algorithm from player class to screen class. At this point the logic is split with walls in the player and floors in the screen. There is some logic in having the player have a cast method (hit scanning and collision detection with NOCs and what not) but for simplicity let's put it all in one place for now.
 - It would be great to reverse the calculations that effectively make every grid reversed. That means likely changing the render direction
 - The skybox renders an extra pixel above ceilings, created a single pixel line.
@@ -62,6 +60,8 @@ In the interests of making lists that never get completed, here are some potenti
 - Prevent errors triggered from walking to the edge of a world with no walls.
 - FIX THE DAMN REVERSE THING!
 - Issue with crashes when no outer wall in viewport.
+- A single gap appears at 0 (when the level first starts for example).
+- Default WAD is no longer valid.
 
 ### Random working notes / Plan
 
@@ -86,7 +86,6 @@ In the interests of making lists that never get completed, here are some potenti
 - Sprites, WADs holding textures and maps, sessionstorage onbeforeunload...
 - Add biomes. Ie, have the skybox image be dependent on where a player is standing (either a certain number of biome specific blocks near the player (a la Terraria)) or based on an invisible biome map that is hard coded. Would need a transition effect to fade in and out. This would be a great feature for procedurally generated levels.
 
-- ~~ceiling casting, make complex map where floor and ceiling are defined (ceilings can be seethru), make the textures smaller, use bigger textures for my info stuff but cheaper ones for everywhere else, keep looking for places to precalc everything.~~
 - Is it straightforward and cheap enough to do upsampling? IE, when closer to walls use a higher texture or more scan lines. All we need to do is have multiple versions of a texture (optionally) and select which one based on the distance to player. This would require coordination of course to make sure the various resolutions had the small dimensions and alignment of course. (Could also be auto generated in a map builder.)
 - Should we change the rendering to only do alternate scanlines? It would probably make everything a fair bit quicker if I start running into issues with higher quality textures on the floors or ceilings again. I might be able to get alot more fidelity and complexity without anymore efficiency just by doing half the pixel rendering each frame. There's also no reason I couldn't drop the frame rate a bit.
 - How expensive would motion blur be?
@@ -107,41 +106,26 @@ In the interests of making lists that never get completed, here are some potenti
 - If I really want to go crazy, I could make this a multiplayer world. But I think I'll leave that for a long time, I'd rather have static pages than sockets and a server for the scope of this.
 
 PLAN:
-    - ~~Add in ceiling casting. See if it works when only some empty cells have ceilings. That is unlikely but would be an amazing surprise.~~
-    - ~~Add in sprite sorting.~~
-    - ~~Add in sprite collisions.~~
-    - ~~Add actual sprite class so we can remove hardcoded locations and sprite texture. Use names (tiles will eventually too.)~~
-    - ~~Add in a mechanism for controlling sprite sizes (can use just the height since ew have a vertical offset and the image ratios are now respected).~~
-    - ~~Add in a basic text interaction for sprites.~~
-    - The whole program needs to be abstracted to allow for using in the editor. This mainly means separating the instantiation logic from the code. But I'd also like to use this opportunity to finally move the project into a build system.
     - Calculate font sizes dynamically.
     - Refactor to only one map per WAD.
     - Add in logic to highlight closest sprite at x = 0 if it's within trigger distance and it has a trigger.
     - Refactor to create wall class so it's easier to program unique triggers and handle animated faces. Deprecate LinkImageBuffer and BokehBuffer.
-    - Add in a fall back floor gradient. (This will be useful if I ever want to have a mode without textures.)
-    - Add in mobile controls so I can start testing on a mobile phone.
     - Add in a console text display that is toggleable (like the minimap), change the minimap to being switched on or off rather than on when a button is pressed.
     - Explore what adding in a dialogue tree would entail.
     - Validation: Grid cells.
-    - ~~Add in specified wall faces.~~
     <!-- - Add in draw distance (so that I can render varying height walls behind other walls) -->
     <!-- - Render all walls in draw distance, back to front (painter's algorithm); -->
     <!-- - Add back in ascend/descend controls. -->
-    - Add in a text overlay (so that I can have pop-up messages or npcs talking or signs...). Maybe multiple types. But for now just text on the screen that is triggered by an event and a way to dismiss it. (For cheap purposes, we can use a console HUD until we have a more diegetic approach.)
-    - To that effect, let's create a text display overlay that will run on it's own buffer and be drawn last. We'll let events write to is and we'll make it time based (so we don't have to deal with overlapping interactions for now.)
 
-
-    - ~~Add in fallback gradient if no background sky or sky gradient is specified.~~
-    - ~~Add in interactions with sprites. (Press spacebar and the sprite does something/says something).~~
     - Add in signs. (Sprites that draw text or play audio when you interact with them).
     - Make a first pass of a portfolio site!! (Or at least have the initial room point towards the portfolio (links) and the rest of the world be in development - that way I can at least replace my home domain with something new (even if it just links back to the legacy portfolio));
     - Make map builder. Without one, using texture names for walls will be too annoying, so let's get this done sooner than later.
     - As soon as we have a map builder, swap out for named textures which are loaded and then assigned to wall class instances. Link-images will need to be refactored.
 
-    - IMPORTANT: We need to move away from numbers for cells. Even just colors should be specified explicitly. To that end we also need to move away from using 0 to denote a floor. Now that we have a map builder, every cell should be complex. To that effect, we should have a cell type rather than booleans that may or may not exist. We should really do this as soon as outputting from the editor becomes tenable because it is going to break everything until fully refactored.
     - Instead of only linear grid stops (or linear in one direction, we should use a more dynamic setup that allows us to pass in all the config for the grid.)
     - Cells should have a gradient, color, and texture property instead of just overloading the texture property. The texture is first. Then the gradient. The color is a fallback check. Finally a built in default is the last resort.
     - create generic texture getter in Screen or use textureType key?
+    - Look for lots of precalc opportunities.
 
 Map Editor note in map editor repo now.
 

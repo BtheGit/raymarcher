@@ -649,7 +649,7 @@ class Screen {
           const spriteX_relativeToPlayer = spriteX - this.game.player.pos.x;
           const spriteY_relativeToPlayer = spriteY - this.game.player.pos.y;
           
-          const transformX = this.game.player.inverseDeterminate * (this.game.player.dir.y * spriteX_relativeToPlayer - this.game.player.dir.x * spriteY_relativeToPlayer);
+          const transformX = this.game.player.inverseDeterminate * (this.game.player.dir.x * spriteY_relativeToPlayer - this.game.player.dir.y * spriteX_relativeToPlayer);
           // This provides the depth on screen, much like a z-index in a 3d system.
           // Depth will of course we used to determine size, height, vertical offset, and wall clipping.
           // NOTE TO SELF: The Math.max is used to clamp to zero. For some reason, planck-length level numbers were being created

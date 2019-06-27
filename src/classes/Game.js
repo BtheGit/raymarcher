@@ -110,10 +110,10 @@ class Game {
         this.screen.hideMap();
       }
       if(this.keyState.a){
-        this.player.rotate(1);
+        this.player.rotate(-1);
       }
       if(this.keyState.d){
-        this.player.rotate(-1);
+        this.player.rotate(1);
       }
       if(this.keyState.w){
         // if(this.keyState.Shift){

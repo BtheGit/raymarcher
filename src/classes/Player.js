@@ -117,7 +117,7 @@ class Player {
     for(let i = 0; i < screenWidth; i++){
       const cameraX = 2 * i / screenWidth - 1;
       const ray = this.castRay(cameraX);
-      rays.push(ray);
+      rays.unshift(ray);
     }
     this.rays = rays;
   }
