@@ -12,11 +12,11 @@ import {
 
 class Game {
   constructor(settings, map, images, sprites, textureMap){
-    this.storageId = settings.storageId;
     this.editorMode = settings.editorMode;
-    // We want to preserve the player's location when they are returning from an interaction
-    // that caused them to navigate away to a link.
+
+    this.storageId = settings.storageId;
     const savedState = loadStateFromSessionStorage(this.storageId);
+
     this.images = images;
     this.interval = settings.framerate;
     this.animationFrame = null;
@@ -24,8 +24,14 @@ class Game {
     this.textureMap = textureMap;
     this.sprites = sprites;
     this.map = map;
-    // Gonna hardcode the first level for now. TODO: REMOVE
-    this.currentMap = savedState ? savedState.currentMap : this.map;
+    this.currentMap = this.map;
+
+    if(!this.editorMode && savedState){
+      // We want to preserve the player's location when they are returning from an interaction
+      // that caused them to navigate away to a link.
+      // This won't be used in Editor Mode.
+      this.currentMap = savedState.currentMap;
+    }
 
     // Ugh I need to find all the places I call this and rename it to map!!
     this.grid = new Map(this.currentMap.grid);
@@ -40,19 +46,21 @@ class Game {
       this.textDisplay.write(introText.text, introText.displayLength);
     }
 
-    this.player = savedState 
-      ? new Player(
-          this,
-          new Vector(savedState.playerPos.x, savedState.playerPos.y), 
-          new Vector(savedState.playerDir.x, savedState.playerDir.y),
-          new Vector(savedState.playerPlane.x, savedState.playerPlane.y)
-        )
-      : new Player(
-          this, 
-          new Vector(this.currentMap.playerPos.x, this.currentMap.playerPos.y), 
-          new Vector(this.currentMap.playerDir.x, this.currentMap.playerDir.y),
-          new Vector(this.currentMap.playerPlane.x, this.currentMap.playerPlane.y)
-        );
+    this.player = new Player(
+      this, 
+      new Vector(this.currentMap.playerPos.x, this.currentMap.playerPos.y), 
+      new Vector(this.currentMap.playerDir.x, this.currentMap.playerDir.y),
+      new Vector(this.currentMap.playerPlane.x, this.currentMap.playerPlane.y)
+    );
+
+    if(!this.editorMode && savedState) {
+      this.player = new Player(
+        this,
+        new Vector(savedState.playerPos.x, savedState.playerPos.y), 
+        new Vector(savedState.playerDir.x, savedState.playerDir.y),
+        new Vector(savedState.playerPlane.x, savedState.playerPlane.y)
+      )
+    }
     
     this.canvas = document.getElementById(settings.displayId);
     this.keyState = {}; // Active store of keypresses
@@ -175,6 +183,14 @@ class Game {
     return Object.keys(this.textureMap);
   }
 
+  getPlayerPos(){
+    const { pos: playerPos, dir: playerDir, plane: playerPlane } = this.player;
+    return {
+      playerPos,
+      playerDir,
+      playerPlane,
+    }
+  }
 }
 
 export default Game;

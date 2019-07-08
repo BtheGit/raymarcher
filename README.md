@@ -43,6 +43,7 @@ In the interests of making lists that never get completed, here are some potenti
 - [x] Ceiling textures
 - [ ] Variable wall heights.
 - [x] WAD packs to instantiate the 'game' with. Including all textures and maps for now. Maps should be bundled with starting player location and direction and plane as well.
+- [ ] Separate textures from WAD to allow for hosting maps and sharing texture DB.
 
 ### Alternate fun ideas with raycasters:
 
@@ -58,10 +59,11 @@ In the interests of making lists that never get completed, here are some potenti
 - Performance is smooth in Chrome, sluggish in FF and Safari. This will improve once I stop using such big textures, but it does beg a bit more of precalcing and using lookup tables  (which may also entail working harder to avoid floating points, which I've been lazy about so far.)
 - Refactor all calls for grid cells to use correct getter.
 - Prevent errors triggered from walking to the edge of a world with no walls.
-- FIX THE DAMN REVERSE THING!
 - Issue with crashes when no outer wall in viewport.
 - A single gap appears at 0 (when the level first starts for example).
 - Default WAD is no longer valid.
+- FIX THE REVERSE THING!
+- Constrain touchscreen to non-editor mode only.
 
 ### Random working notes / Plan
 
@@ -104,6 +106,7 @@ In the interests of making lists that never get completed, here are some potenti
 - Create a god mod HUD, with a series of controls that let us dynamically change world settings on the fly. Clipping, textures, shading...
 - It might behoove me to create a sprite manager service class, so that there is a straightforward way to query for sprites outside of a Player or some such method. (Things like triggering).
 - If I really want to go crazy, I could make this a multiplayer world. But I think I'll leave that for a long time, I'd rather have static pages than sockets and a server for the scope of this.
+- Can add in an external API for letting other systems control player motion. After an action, return the new position and it will be possible for an AI to register collisions in the diff.
 
 PLAN:
     - Calculate font sizes dynamically.

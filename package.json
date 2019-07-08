@@ -1,6 +1,6 @@
 {
   "name": "raymarcher",
-  "version": "0.1.2",
+  "version": "0.1.21",
   "description": "A raymarching-based virtual world.",
   "main": "./dist/main.js",
   "scripts": {
