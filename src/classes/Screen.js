@@ -308,44 +308,53 @@ class Screen {
    * Else use a hardcoded default color (or in the future a generated one based on the default floor texture (a darker color perhaps)).
    */
   drawPOVBackground(){
-    const backgroundImageTextureKey = this.game.currentMap.skyTexture;
-    const backgroundImage = this.game.textureMap[backgroundImageTextureKey];
-    if(backgroundImage){
-      // We need to have an origin for the image
-      // We need to find the offset from that origin in the FOV and then sample 1/6 of the image
-      // from that point then draw it to the background.
-      const { x, y } = this.game.player.dir;
-      const angle = Math.atan2(x, y);
-      let degrees = angle > 0 ? toDegrees(angle) : 360 + toDegrees(angle);
-      // degrees = degrees - 30 >= 0 ? degrees - 30 : 360 + degrees - 30;
-      const sampleWidth = backgroundImage.width / 6;// 1/3 of image because FOV / 180
-      const currentSampleStart = (degrees / 360) * backgroundImage.width;
-      const willOverflow = (backgroundImage.width - currentSampleStart) < sampleWidth;
-      if(willOverflow){
-        const overflowWidth = (currentSampleStart + sampleWidth) - backgroundImage.width;
-        const nonOverflowWidth = sampleWidth - overflowWidth;
-        const overflowRatio = nonOverflowWidth / sampleWidth;
-        const seamPoint = overflowRatio * this.width;
-        // We need to get the two pieces separately and stitch them together on a new canvas.
-        // In the case where we are too close to the edges, we need to sample the overflow from the head or tail
-        // to create the seam.
-        this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, nonOverflowWidth, backgroundImage.height, 0, 0, seamPoint, this.height)
-        this.ctxBuffer.drawImage(backgroundImage.canvas, 0, 0, overflowWidth, backgroundImage.height, seamPoint, 0, this.width - seamPoint, this.height)
-      }
-      else {
-        this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, sampleWidth, backgroundImage.height, 0, 0, this.width, this.height)
-      }
-    }
-    else {
-      const skyGradientGradientStops = this.game.currentMap.skyGradient;
-      const fallbackGradientStops = [{ stop: 0, color: '#6190E8'}, { stop: 1, color: '#A7BFE8'}];
-      const stops = skyGradientGradientStops && skyGradientGradientStops.length > 0 
-                      ? skyGradientGradientStops 
-                      : fallbackGradientStops;
-      if(!this.hasDrawnSkyGradient){
-        this.generateSkyGradient(stops);
-      }
-      this.ctxBuffer.drawImage(this.staticPOVBackgroundCanvasBuffer, 0, 0, this.width, this.height / 2);
+    const { textureType, textureConfig } = this.game.currentMap.sky;
+    // We're going to start with assuming the textureConfig is valid. Fallbacks to be added later.
+    switch(textureType){
+      case 'color':
+        // We'll always use hexes. Since the pattern for other texture configs is without the leading hash,
+        // we'll remain consistent here.
+        const { color } = textureConfig;
+        this.ctxBuffer.fillStyle = `#${ color }`;
+        this.ctxBuffer.fillRect(0,0, this.width, (this.height / 2));
+        break;
+      case 'gradient':
+        const { stops } = textureConfig;
+        const fallbackGradientStops = [{ stop: 0, color: '#6190E8'}, { stop: 1, color: '#A7BFE8'}];
+        const gradientStops = (stops && stops.length > 0) ? stops : fallbackGradientStops;
+        if(!this.hasDrawnSkyGradient){
+          this.generateSkyGradient(gradientStops);
+        }
+        this.ctxBuffer.drawImage(this.staticPOVBackgroundCanvasBuffer, 0, 0, this.width, this.height / 2);
+        break;
+      case 'image':
+        const { name } = textureConfig;
+        const backgroundImage = this.game.textureMap[name];
+        // We need to have an origin for the image
+        // We need to find the offset from that origin in the FOV and then sample 1/6 of the image
+        // from that point then draw it to the background.
+        const { x, y } = this.game.player.dir;
+        const angle = Math.atan2(x, y);
+        let degrees = angle > 0 ? toDegrees(angle) : 360 + toDegrees(angle);
+        // degrees = degrees - 30 >= 0 ? degrees - 30 : 360 + degrees - 30;
+        const sampleWidth = backgroundImage.width / 6;// 1/3 of image because FOV / 180
+        const currentSampleStart = (degrees / 360) * backgroundImage.width;
+        const willOverflow = (backgroundImage.width - currentSampleStart) < sampleWidth;
+        if(willOverflow){
+          const overflowWidth = (currentSampleStart + sampleWidth) - backgroundImage.width;
+          const nonOverflowWidth = sampleWidth - overflowWidth;
+          const overflowRatio = nonOverflowWidth / sampleWidth;
+          const seamPoint = overflowRatio * this.width;
+          // We need to get the two pieces separately and stitch them together on a new canvas.
+          // In the case where we are too close to the edges, we need to sample the overflow from the head or tail
+          // to create the seam.
+          this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, nonOverflowWidth, backgroundImage.height, 0, 0, seamPoint, this.height)
+          this.ctxBuffer.drawImage(backgroundImage.canvas, 0, 0, overflowWidth, backgroundImage.height, seamPoint, 0, this.width - seamPoint, this.height)
+        }
+        else {
+          this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, sampleWidth, backgroundImage.height, 0, 0, this.width, this.height)
+        }
+        break;
     }
   }
 

@@ -268,17 +268,12 @@ const MAP1 = {
     x: -0.66,
     Y: 0
   },
-  skyTexture: 'background_trees3',
-  skyGradient: [
-    {
-      stop: 0,
-      color: "purple"
-    },
-    {
-      stop: 1,
-      color: "red"
-    },
-  ],
+  sky: {
+    textureType: 'image',
+    textureConfig: {
+      name: 'background_trees3'
+    }
+  },
   introText: {
     text: "Welcome!\n\nUse WASD to move and spacebar\nto interact with things.\n\n\nFeel free to walk around and enjoy the sights.\nMake yourself at home.\nJust don't look in the basement, ever.",
     displayLength: 3500,
@@ -324,21 +319,25 @@ const DEV_MAP = {
     x: -0.66,
     Y: 0
   },
-  skyGradient: [
-    {
-      stop: 0,
-      color: "#7AA1D2"
-    },
-    {
-      stop: .8,
-      color: "#DBD4B4"
-    },
-    {
-      stop: 1,
-      color: "#CC95C0"
+  sky: {
+    textureType: 'gradient',
+    textureConfig: {
+      stops: [
+        {
+          stop: 0,
+          color: "#7AA1D2"
+        },
+        {
+          stop: .8,
+          color: "#DBD4B4"
+        },
+        {
+          stop: 1,
+          color: "#CC95C0"
+        }
+      ],
     }
-  ],
-
+  },
 }
 
 const MAP2 = {
@@ -355,20 +354,25 @@ const MAP2 = {
     x: -0.66,
     Y: 0
   },
-  skyGradient: [
-    {
-      stop: 0,
-      color: "#7AA1D2"
-    },
-    {
-      stop: .8,
-      color: "#DBD4B4"
-    },
-    {
-      stop: 1,
-      color: "#CC95C0"
+  sky: {
+    textureType: 'gradient',
+    textureConfig: {
+      stops: [
+        {
+          stop: 0,
+          color: "#7AA1D2"
+        },
+        {
+          stop: .8,
+          color: "#DBD4B4"
+        },
+        {
+          stop: 1,
+          color: "#CC95C0"
+        }
+      ],
     }
-  ],
+  },
 };
 
 const MAP_TILETEST = {
@@ -385,20 +389,25 @@ const MAP_TILETEST = {
     x: -0.66,
     Y: 0
   },
-  skyGradient: [
-    {
-      stop: 0,
-      color: "#7AA1D2"
-    },
-    {
-      stop: .8,
-      color: "#DBD4B4"
-    },
-    {
-      stop: 1,
-      color: "#CC95C0"
+  sky: {
+    textureType: 'gradient',
+    textureConfig: {
+      stops: [
+        {
+          stop: 0,
+          color: "#7AA1D2"
+        },
+        {
+          stop: .8,
+          color: "#DBD4B4"
+        },
+        {
+          stop: 1,
+          color: "#CC95C0"
+        }
+      ],
     }
-  ],
+  },
 };
 
 
