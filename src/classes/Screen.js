@@ -338,7 +338,7 @@ class Screen {
         let degrees = angle > 0 ? toDegrees(angle) : 360 + toDegrees(angle);
         // degrees = degrees - 30 >= 0 ? degrees - 30 : 360 + degrees - 30;
         const sampleWidth = backgroundImage.width / 6;// 1/3 of image because FOV / 180
-        const currentSampleStart = (degrees / 360) * backgroundImage.width;
+        const currentSampleStart = (( 360 - degrees) / 360) * backgroundImage.width;
         const willOverflow = (backgroundImage.width - currentSampleStart) < sampleWidth;
         if(willOverflow){
           const overflowWidth = (currentSampleStart + sampleWidth) - backgroundImage.width;
