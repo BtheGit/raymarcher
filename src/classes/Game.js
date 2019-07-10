@@ -23,8 +23,7 @@ class Game {
 
     this.textureMap = textureMap;
     this.sprites = sprites;
-    this.map = map;
-    this.currentMap = this.map;
+    this.currentMap = map;
 
     if(!this.editorMode && savedState){
       // We want to preserve the player's location when they are returning from an interaction
@@ -171,8 +170,10 @@ class Game {
   }
 
   // Methods for hot updating game assets.
-  updateGrid(newGrid){
-    this.grid.updateGrid(newGrid);
+  updateMap(newMap){
+    // TODO: Better setters and a handler for map struct
+    this.currentMap = newMap;
+    this.grid.updateGrid(newMap.grid);
   }
 
   getTextureMap(){
