@@ -51,7 +51,7 @@ const textures = [
   './images/sprite__palm_tree_1_high.png',
   './images/sprite__palm_tree_1_low.png',
   './images/sprite__spider-man_static_1.png',
-  './images/tiles/background_trees3.jpg',
+  './images/tiles/background__trees1.jpg',
   './images/tiles/hedge1.jpg',
   './images/tiles/floor_grass1.jpg',
   './images/tiles/floor_carpet1.jpg',
@@ -271,7 +271,7 @@ const MAP1 = {
   sky: {
     textureType: 'image',
     textureConfig: {
-      name: 'background_trees3'
+      name: 'background__trees1'
     }
   },
   introText: {

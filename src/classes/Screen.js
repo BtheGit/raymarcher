@@ -353,11 +353,11 @@ class Screen {
           // We need to get the two pieces separately and stitch them together on a new canvas.
           // In the case where we are too close to the edges, we need to sample the overflow from the head or tail
           // to create the seam.
-          this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, nonOverflowWidth, backgroundImage.height, 0, 0, seamPoint, this.height)
-          this.ctxBuffer.drawImage(backgroundImage.canvas, 0, 0, overflowWidth, backgroundImage.height, seamPoint, 0, this.width - seamPoint, this.height)
+          this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, nonOverflowWidth, backgroundImage.height, 0, 0, seamPoint, this.height / 2)
+          this.ctxBuffer.drawImage(backgroundImage.canvas, 0, 0, overflowWidth, backgroundImage.height, seamPoint, 0, this.width - seamPoint, this.height / 2)
         }
         else {
-          this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, sampleWidth, backgroundImage.height, 0, 0, this.width, this.height)
+          this.ctxBuffer.drawImage(backgroundImage.canvas, currentSampleStart, 0, sampleWidth, backgroundImage.height, 0, 0, this.width, this.height / 2)
         }
         break;
     }
