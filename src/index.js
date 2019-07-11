@@ -118,17 +118,19 @@ const DEFAULT_WAD = {
   tiles: [],
   map: {
     grid: DEFAULT_GRID,
-    playerPos: {
-      x: 5,
-      y: 5
-    },
-    playerDir: {
-      x: 0,
-      y: -1
-    },
-    playerPlane: {
-      x: -0.66,
-      Y: 0
+    player: {
+      pos: {
+        x: 5,
+        y: 5
+      },
+      dir: {
+        x: 0,
+        y: -1
+      },
+      plane: {
+        x: -0.66,
+        Y: 0
+      },
     },
     skyGradient: [
       {

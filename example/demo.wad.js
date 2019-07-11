@@ -306,18 +306,20 @@ const DEV_MAP = {
     [{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } }],
     [{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'floor', textureType: 'image', textureConfig: { name: 'default' }, },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } }],
     [{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } },{ type: 'wall', textureType: 'image', textureConfig: { name: 'light_brick1' } }],    
-],
-  playerPos: {
-    x: 2,
-    y: 4.5,
-  },
-  playerDir: {
-    x: 0,
-    y: -1
-  },
-  playerPlane: {
-    x: -0.66,
-    Y: 0
+  ],
+  player: {
+    pos: {
+      x: 2,
+      y: 4.5,
+    },
+    dir: {
+      x: 0,
+      y: -1
+    },
+    plane: {
+      x: -0.66,
+      Y: 0
+    },
   },
   sky: {
     textureType: 'gradient',

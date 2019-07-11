@@ -47,17 +47,17 @@ class Game {
 
     this.player = new Player(
       this, 
-      new Vector(this.currentMap.playerPos.x, this.currentMap.playerPos.y), 
-      new Vector(this.currentMap.playerDir.x, this.currentMap.playerDir.y),
-      new Vector(this.currentMap.playerPlane.x, this.currentMap.playerPlane.y)
+      new Vector(this.currentMap.player.pos.x, this.currentMap.player.pos.y), 
+      new Vector(this.currentMap.player.dir.x, this.currentMap.player.dir.y),
+      new Vector(this.currentMap.player.plane.x, this.currentMap.player.plane.y)
     );
 
     if(!this.editorMode && savedState) {
       this.player = new Player(
         this,
-        new Vector(savedState.playerPos.x, savedState.playerPos.y), 
-        new Vector(savedState.playerDir.x, savedState.playerDir.y),
-        new Vector(savedState.playerPlane.x, savedState.playerPlane.y)
+        new Vector(savedState.player.pos.x, savedState.player.pos.y), 
+        new Vector(savedState.player.dir.x, savedState.player.dir.y),
+        new Vector(savedState.player.plane.x, savedState.player.plane.y)
       )
     }
     
@@ -152,17 +152,19 @@ class Game {
   saveStateToSessionStorageOnUnload(){
     // We need a few things to restore the game (in its current form)
     const state = {
-      playerPos: {
-        x: this.player.pos.x,
-        y: this.player.pos.y
-      },
-      playerDir: {
-        x: this.player.dir.x,
-        y: this.player.dir.y
-      },
-      playerPlane: {
-        x: this.player.plane.x,
-        y: this.player.plane.y
+      player: {
+        pos: {
+          x: this.player.pos.x,
+          y: this.player.pos.y
+        },
+        dir: {
+          x: this.player.dir.x,
+          y: this.player.dir.y
+        },
+        plane: {
+          x: this.player.plane.x,
+          y: this.player.plane.y
+        },
       },
       currentMap: this.currentMap
     };
@@ -185,11 +187,11 @@ class Game {
   }
 
   getPlayerPos(){
-    const { pos: playerPos, dir: playerDir, plane: playerPlane } = this.player;
+    const { pos, dir, plane } = this.player;
     return {
-      playerPos,
-      playerDir,
-      playerPlane,
+      pos,
+      dir,
+      plane,
     }
   }
 }
