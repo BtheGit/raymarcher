@@ -136,6 +136,7 @@ class Screen {
     this.staticPOVBackgroundCanvasBuffer = document.createElement('canvas');
     this.staticPOVBackgroundCtxBuffer = this.staticPOVBackgroundCanvasBuffer.getContext('2d');
     // Use this for a singleton pattern to avoid redrawing the sky gradient on each frame.
+    // Note: In editor mode, we'll want to be able to change this live.
     this.hasDrawnSkyGradient = false;
     // Just to make sure the canvas is reset before beginning.
     // When this is true, draw minimap overlay.
@@ -150,7 +151,11 @@ class Screen {
   }
 
   generateSkyGradient(stops){
-    this.hasDrawnSkyGradient = true;
+    // We want to always be updating the sky in editor mode. It's much heavier, but otherwise we don't get
+    // live gradient changes
+    if(!this.game.editorMode){
+      this.hasDrawnSkyGradient = true;
+    }
     const gradient = this.staticPOVBackgroundCtxBuffer.createLinearGradient(0,0,0, this.height / 2);
     applyColorStopsToLinearGradient(gradient, stops);
     this.staticPOVBackgroundCtxBuffer.fillStyle = gradient;
