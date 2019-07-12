@@ -1,6 +1,6 @@
 import Vector from './Vector';
 
-const checkIsFloor = cell => {
+export const checkIsFloor = cell => {
   if(typeof cell === 'number' && cell === 0) {
     return true;
   }
@@ -10,9 +10,23 @@ const checkIsFloor = cell => {
   return false;
 }
 
+export const publishPlayerMove = publish => player => () => {
+  const { pos, dir, plane } = player;
+  const event = {
+    type: 'PLAYER_MOVE',
+    payload: {
+      pos,
+      dir,
+      plane,
+    },
+  }
+  publish(event);
+}
+
 class Player {
   constructor(game, pos, dir, plane){
     this.game = game;
+    this.publishPlayerMove = publishPlayerMove(this.game.eventHandler.publish)(this);
     this.grid = this.game.grid;
     this.pos = pos;
     this.dir = dir;
@@ -181,6 +195,7 @@ class Player {
         this.pos.y = newPosY;
       }
     }
+    this.publishPlayerMove();
   }
 
   moveBack(){
@@ -205,6 +220,7 @@ class Player {
         this.pos.y = newPosY;
       }
     }
+    this.publishPlayerMove();
   }
 
   rotate(rotation){
@@ -216,6 +232,7 @@ class Player {
     const newPlaneY = this.plane.x * Math.sin(this.rotationSpeed * rotation) + this.plane.y * Math.cos(this.rotationSpeed * rotation);
     this.dir = new Vector(newDirX, newDirY);
     this.plane = new Vector(newPlaneX, newPlaneY);
+    this.publishPlayerMove();
   }
 
   trigger(){

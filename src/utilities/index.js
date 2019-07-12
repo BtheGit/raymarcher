@@ -78,3 +78,46 @@ export const hexToRGB = (hex) => {
   const b = total & 255;
   return { r, g, b };
 }
+
+/**
+ * We want a reasonable mechanism to publish events.
+ * 
+ * The following should be an agnostic API that allows us to either
+ * attach an event broadcaster (to simply broadcast events to the window) or
+ * a series of subscribers.
+ * 
+ * For simplicity's sake we want all broadcast events to have a standard structure
+ * that allows external listeners to select for particular events. Much like a type key
+ * in redux.
+ * 
+ * To ensure better typing, we can use event creators in much the same way redux uses action
+ * creators. Not out of necessity but to avoid errors.
+ */
+export const createEventHandler = () => {
+  let listeners = [];
+
+  const publish = event => {
+    listeners.forEach(listener => listener(event));
+  }
+
+  const subscribe = listener => {
+    let isSubscribed = true;
+    listeners = [...listeners, listener];
+
+    const unsubscribe = () => {
+      if(!isSubscribed){
+        return;
+      }
+
+      isSubscribed = false;
+      listeners = listeners.filter(list => list !== listener);
+    }
+
+    return unsubscribe;
+  }
+
+  return {
+    publish,
+    subscribe,
+  }
+};

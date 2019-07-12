@@ -8,10 +8,12 @@ import TouchScreen from './TouchScreen';
 import {
   loadStateFromSessionStorage,
   saveStatetoSessionStorage,
+  createEventHandler,
 } from '../utilities';
 
 class Game {
   constructor(settings, map, images, sprites, textureMap){
+    this.eventHandler = createEventHandler();
     this.editorMode = settings.editorMode;
 
     this.storageId = settings.storageId;
@@ -193,6 +195,10 @@ class Game {
       dir,
       plane,
     }
+  }
+
+  subscribe(listener){
+    return this.eventHandler.subscribe(listener);
   }
 }
 
