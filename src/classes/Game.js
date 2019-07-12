@@ -180,6 +180,22 @@ class Game {
     this.grid.updateGrid(newMap.grid);
   }
 
+  updateSprites(newSpriteConfigs){
+    // We need to update the old sprite instances with the new config properties.
+    // However, this is a N^2 operation at best. 
+    // TODO: Start using IDs for sprites so we can do this with cross lookups instead of
+    // nested array loops. 
+    // For now we are going to act under the very dangerous assumption that names are unique. We will have
+    // to enforce that later. Or just generate a unique ID dynamically.
+    this.sprites.map(oldSprite => {
+      newSpriteConfigs.forEach(newSpriteConfig => {
+        if(oldSprite.name === newSpriteConfig.name){
+          oldSprite.update(newSpriteConfig);
+        }
+      })
+    })
+  }
+
   getTextureMap(){
     return this.textureMap;
   }

@@ -17,6 +17,9 @@ class Sprite {
     this.isAnimated = spriteConfig.isAnimated;
     this.trigger = spriteConfig.trigger;
 
+    // Our 'unique' ID for the editor to target
+    this.name = spriteConfig.name;
+
     // TODO: The height might need to be calculated dynimcally. For now we'll just
     // use the spritesheet dimensions (since we only have single frame sprites as of now)
     this.scale = spriteConfig.scale ? spriteConfig.scale : 1;
@@ -36,6 +39,12 @@ class Sprite {
     if(this.isAnimated){
       // Deal with controllers, paths, subscribe to animation loops etc.
     }
+  }
+
+  // For hot updating properties without having to generate a new instance.
+  update(newConfig){
+    // Temp: Just update the position.
+    this.pos = new Vector(newConfig.pos.x, newConfig.pos.y);
   }
 
   getFrame(){
