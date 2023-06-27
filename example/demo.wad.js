@@ -221,38 +221,6 @@ const tiles = [
   // },
 ];
 
-// A map needs
-// - a grid
-// - a starting tile and direction
-// - background colors
-
-const MAP1 = {
-  grid: [],
-  playerPos: {
-    x: 12.5,
-    y: 22,
-  },
-  playerDir: {
-    x: 0,
-    y: -1,
-  },
-  playerPlane: {
-    x: -0.66,
-    Y: 0,
-  },
-  sky: {
-    textureType: "image",
-    textureConfig: {
-      name: "background__trees1",
-    },
-  },
-  introText: {
-    text:
-      "Welcome!\n\nUse WASD to move and spacebar\nto interact with things.\n\n\nFeel free to walk around and enjoy the sights.\nMake yourself at home.\nJust don't look in the basement, ever.",
-    displayLength: 3500,
-  },
-};
-
 const floor_default = {
   type: "floor",
   textureType: "image",
@@ -265,7 +233,7 @@ const wall_default = {
   textureConfig: { name: "light_brick1" },
 };
 
-const DEV_MAP = {
+const map = {
   grid: [
     [
       wall_default,
@@ -999,78 +967,6 @@ const DEV_MAP = {
     },
   },
 };
-
-const MAP2 = {
-  grid: [],
-  playerPos: {
-    x: 18.5,
-    y: 23,
-  },
-  playerDir: {
-    x: 0,
-    y: -1,
-  },
-  playerPlane: {
-    x: -0.66,
-    Y: 0,
-  },
-  sky: {
-    textureType: "gradient",
-    textureConfig: {
-      stops: [
-        {
-          stop: 0,
-          color: "#7AA1D2",
-        },
-        {
-          stop: 0.8,
-          color: "#DBD4B4",
-        },
-        {
-          stop: 1,
-          color: "#CC95C0",
-        },
-      ],
-    },
-  },
-};
-
-const MAP_TILETEST = {
-  grid: [],
-  playerPos: {
-    x: 18.5,
-    y: 23,
-  },
-  playerDir: {
-    x: 0,
-    y: -1,
-  },
-  playerPlane: {
-    x: -0.66,
-    Y: 0,
-  },
-  sky: {
-    textureType: "gradient",
-    textureConfig: {
-      stops: [
-        {
-          stop: 0,
-          color: "#7AA1D2",
-        },
-        {
-          stop: 0.8,
-          color: "#DBD4B4",
-        },
-        {
-          stop: 1,
-          color: "#CC95C0",
-        },
-      ],
-    },
-  },
-};
-
-const map = [DEV_MAP, MAP1, MAP_TILETEST, MAP2][0];
 
 window.WAD = {
   map,
