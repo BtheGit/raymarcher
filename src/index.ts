@@ -78,6 +78,8 @@ const loadSprites = (textureMap) => (spriteConfigs) => {
   return sprites;
 };
 
+// TODO: DEFAULT MAP no longer is supported.
+
 const DEFAULT_SETTINGS = {
   displayId: "display-main",
   width: 1024,
