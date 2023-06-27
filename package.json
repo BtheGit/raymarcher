@@ -2,11 +2,22 @@
   "name": "raymarcher",
   "version": "0.1.22",
   "description": "A raymarching-based virtual world.",
-  "main": "./dist/main.js",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/raymarcher.umd.cjs",
+  "module": "./dist/raymarcher.js",
+  "source": "src/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/my-lib.js",
+      "require": "./dist/my-lib.umd.cjs"
+    }
+  },
   "scripts": {
-    "dev": "webpack --mode development",
-    "watch": "webpack --watch --mode development",
-    "build": "webpack --mode production"
+    "dev": "vite",
+    "watch": "vite build --watch",
+    "build": "vite build"
   },
   "repository": {
     "type": "git",
@@ -19,7 +30,6 @@
   },
   "homepage": "https://github.com/BtheGit/raymarcher#readme",
   "devDependencies": {
-    "webpack": "^4.34.0",
-    "webpack-cli": "^3.3.4"
+    "vite": "^4.3.9"
   }
 }
