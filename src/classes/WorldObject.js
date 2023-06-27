@@ -10,10 +10,9 @@ class WorldObject {
   // a static sprite with 8 angles, a moveable sprite with one angle, a moveable sprite with 8 angles, a moveable sprite with one angle
   // and multiple animation states, a moveable sprite with 8 angles and multiple animation states.
   // The class breakdown
-  constructor(pos, spritesheetBuffer, isSolid = false){
+  constructor(pos, spritesheetBuffer, isSolid = false) {
     this.pos = new Vector(pos.x, pos.y);
-    this.dir = 
-    this.spritesheet = spritesheetBuffer;
+    this.dir = this.spritesheet = spritesheetBuffer;
     this.boundingBox = isSolid ? this.spritesheet.width / 2 : null;
     // The spritesheet will be an imagebuffer already
   }

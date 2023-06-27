@@ -19,55 +19,55 @@
 //   const scaledY = vector.y * scaleY;
 //   return { x: scaledX, y: scaledY };
 // }
-export const toDegrees = radians => radians / (Math.PI/ 180);
-export const loadImage = path => {
+export const toDegrees = (radians) => radians / (Math.PI / 180);
+export const loadImage = (path) => {
   return new Promise((resolve, reject) => {
-    const img = document.createElement('img');
-    img.addEventListener('load', () => {
+    const img = document.createElement("img");
+    img.addEventListener("load", () => {
       resolve(img);
-    })
+    });
     img.src = path;
-  })
-}
+  });
+};
 export const applyColorStopsToLinearGradient = (linearGradient, stops) => {
-  for(let i = 0; i < stops.length; i++){
-    linearGradient.addColorStop(stops[i].stop, stops[i].color)
+  for (let i = 0; i < stops.length; i++) {
+    linearGradient.addColorStop(stops[i].stop, stops[i].color);
   }
-}
+};
 
-export const loadStateFromSessionStorage = storageId => {
+export const loadStateFromSessionStorage = (storageId) => {
   try {
-      const serializedState = sessionStorage.getItem(storageId);
-      if(serializedState === null) {
-          return undefined;
-      }
-      const state = JSON.parse(serializedState);
-      // Clear sessionStorage so that refreshes restart a level
-      sessionStorage.removeItem(storageId);
-      return state;
-  }
-  catch(err) {
+    const serializedState = sessionStorage.getItem(storageId);
+    if (serializedState === null) {
       return undefined;
+    }
+    const state = JSON.parse(serializedState);
+    // Clear sessionStorage so that refreshes restart a level
+    sessionStorage.removeItem(storageId);
+    return state;
+  } catch (err) {
+    return undefined;
   }
-}
+};
 
 export const saveStatetoSessionStorage = (storageId, currentState) => {
   try {
-      const serializedState = JSON.stringify(currentState);
-      sessionStorage.setItem(storageId, serializedState)
+    const serializedState = JSON.stringify(currentState);
+    sessionStorage.setItem(storageId, serializedState);
+  } catch (err) {
+    console.log(err);
   }
-  catch(err) {
-      console.log(err);
-  }
-}
+};
 
-export const colorValueToHex = value => ("0" + Number(value).toString(16)).substr(-2);
+export const colorValueToHex = (value) =>
+  ("0" + Number(value).toString(16)).substr(-2);
 
-export const rgbToHex = (r,g,b) => colorValueToHex(r) + colorValueToHex(g) + colorValueToHex(b);
+export const rgbToHex = (r, g, b) =>
+  colorValueToHex(r) + colorValueToHex(g) + colorValueToHex(b);
 
 export const hexToRGB = (hex) => {
   // Strip the leading hash;
-  if (hex[0] === '#') {
+  if (hex[0] === "#") {
     hex = hex.substr(1);
   }
   // Assume it is 6 characters;
@@ -77,47 +77,47 @@ export const hexToRGB = (hex) => {
   const g = (total >> 8) & 255;
   const b = total & 255;
   return { r, g, b };
-}
+};
 
 /**
  * We want a reasonable mechanism to publish events.
- * 
+ *
  * The following should be an agnostic API that allows us to either
  * attach an event broadcaster (to simply broadcast events to the window) or
  * a series of subscribers.
- * 
+ *
  * For simplicity's sake we want all broadcast events to have a standard structure
  * that allows external listeners to select for particular events. Much like a type key
  * in redux.
- * 
+ *
  * To ensure better typing, we can use event creators in much the same way redux uses action
  * creators. Not out of necessity but to avoid errors.
  */
 export const createEventHandler = () => {
   let listeners = [];
 
-  const publish = event => {
-    listeners.forEach(listener => listener(event));
-  }
+  const publish = (event) => {
+    listeners.forEach((listener) => listener(event));
+  };
 
-  const subscribe = listener => {
+  const subscribe = (listener) => {
     let isSubscribed = true;
     listeners = [...listeners, listener];
 
     const unsubscribe = () => {
-      if(!isSubscribed){
+      if (!isSubscribed) {
         return;
       }
 
       isSubscribed = false;
-      listeners = listeners.filter(list => list !== listener);
-    }
+      listeners = listeners.filter((list) => list !== listener);
+    };
 
     return unsubscribe;
-  }
+  };
 
   return {
     publish,
     subscribe,
-  }
+  };
 };
