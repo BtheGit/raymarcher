@@ -15,8 +15,10 @@
       WorldEngine({
         width: document.documentElement.clientWidth,
         height: document.documentElement.clientHeight,
-        framerate: 1000 / 120,
+        framerate: 1000 / 60,
       })(WAD);
+
+      // NOTE: Canvas breaks when page is zoomed using browser.
     </script>
   </body>
 </html>
