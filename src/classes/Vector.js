@@ -4,23 +4,19 @@ class Vector {
     this.y = y;
   }
 
-  add(vector){
+  add(vector) {
     return new Vector(this.x + vector.x, this.y + vector.y);
   }
 
-  scale(scalar){
+  scale(scalar) {
     return new Vector(this.x * scalar, this.y * scalar);
   }
 
-  cross(vector){
+  cross(vector) {}
 
-  }
+  dot(vector) {}
 
-  dot(vector){
-
-  }
-
-  map(callback){
+  map(callback) {
     return new Vector(callback(this.x), callback(this.y));
   }
 }
