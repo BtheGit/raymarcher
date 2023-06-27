@@ -147,17 +147,19 @@ const DEFAULT_WAD = {
 };
 
 // Instead of wrapping the game, we could wrap each level with a loader so that asset loads are lighter.
-const main = (settings) => async (wad = DEFAULT_WAD) => {
-  const textureMap = await loadTextures(wad.textures);
-  const sprites = loadSprites(textureMap)(wad.sprites);
-  const tiles = await loadTiles(wad.tiles);
-  const map = wad.map;
+const main =
+  (settings) =>
+  async (wad = DEFAULT_WAD) => {
+    const textureMap = await loadTextures(wad.textures);
+    const sprites = loadSprites(textureMap)(wad.sprites);
+    const tiles = await loadTiles(wad.tiles);
+    const map = wad.map;
 
-  const game = new Game(settings, map, tiles, sprites, textureMap);
-  // I should probably return the game before calling start. And wrap the init into this same function (composed perhaps).
-  game.start();
-  return game;
-};
+    const game = new Game(settings, map, tiles, sprites, textureMap);
+    // I should probably return the game before calling start. And wrap the init into this same function (composed perhaps).
+    game.start();
+    return game;
+  };
 
 // Get base settings and return pre-instantiated game.
 const init = (settings = {}) => {
@@ -168,6 +170,6 @@ const init = (settings = {}) => {
   return main(mergedSettings);
 };
 
-window.WorldEngine = init;
+window["WorldEngine"] = init;
 
 export default init;
