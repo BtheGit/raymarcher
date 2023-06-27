@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Raymarcher</title>
-    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./index.css" />
   </head>
   <body>
     <canvas id="display-main"></canvas>
     <script src="./demo.wad.js"></script>
-    <script src="../dist/main.js"></script>
-    <script>WorldEngine.default()(WAD)</script>
+    <script src="../dist/raymarcher.umd.js"></script>
+    <script>
+      WorldEngine({
+        width: document.documentElement.clientWidth,
+        height: document.documentElement.clientHeight,
+        framerate: 1000 / 120,
+      })(WAD);
+    </script>
   </body>
 </html>
