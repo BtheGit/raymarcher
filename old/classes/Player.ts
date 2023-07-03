@@ -32,11 +32,12 @@ class Player {
     this.grid = this.game.grid;
     this.pos = pos;
     this.dir = dir;
+    // TODO: Can this be moved to a raycasted in an ECS system?
     this.plane = plane;
     this.elevation = 1;
     this.walkSpeed = 0.15;
     this.rotationSpeed = 0.12;
-    this.elevationStep = 0.035;
+    // this.elevationStep = 0.035; // Dont remember what this was
     // This only seems to be needed to be calculated once, unless the FOV changes.
     this.inverseDeterminate =
       1.0 / (this.plane.x * this.dir.y - this.dir.x * this.plane.y);

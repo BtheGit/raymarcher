@@ -2,7 +2,7 @@
 
 # Raymarcher Test
 
-This is just a bit of faffing about with making a basic raymarcher in HTML5 canvas. 
+This is just a bit of faffing about with making a basic raymarcher in HTML5 canvas.
 
 ### Feature checkpoints
 
@@ -39,11 +39,26 @@ In the interests of making lists that never get completed, here are some potenti
 - [ ] Rainbow gun
 - [x] Floor textures.
 - [\] Floor dimming.
-- [x] Sky box texture 
+- [x] Sky box texture
 - [x] Ceiling textures
 - [ ] Variable wall heights.
 - [x] WAD packs to instantiate the 'game' with. Including all textures and maps for now. Maps should be bundled with starting player location and direction and plane as well.
 - [ ] Separate textures from WAD to allow for hosting maps and sharing texture DB.
+
+### 5 Years later
+
+- [ ] Offscreen canvas
+- [ ] Animated textures
+- [ ] Touch controls
+- [ ] Mouse press bug
+- [ ] Touch controls
+- [ ] Animated sprites with state machine?
+- [ ] Spritesheets
+- [ ] Gonna need all kinds of optimizations around reducing overhead when doing animated stuff.
+- [ ] use wolfenstein trick to mark what grid coordinates are intersected by raymarcher (ie frustum) and only render sprites on those grid tiles
+- [ ] other wolfenstein trick to only render visible columns of sprites. But this one should be less an issue today.
+- [ ] Try ECS system. Initially thought bespoke. Goign to see if miniplex is enough for this pretty bare bones library.
+- [ ] Replace textures with texture atlas.
 
 ### Alternate fun ideas with raycasters:
 
@@ -51,12 +66,13 @@ In the interests of making lists that never get completed, here are some potenti
 - Try voxel terrain instead (need height maps)
 
 ### Immediate bug fixes
+
 - Minimap does not render correctly when map grid is not square
 - Seams at the bottom of walls showing.
 - Refactor casting algorithm from player class to screen class. At this point the logic is split with walls in the player and floors in the screen. There is some logic in having the player have a cast method (hit scanning and collision detection with NOCs and what not) but for simplicity let's put it all in one place for now.
 - It would be great to reverse the calculations that effectively make every grid reversed. That means likely changing the render direction
 - The skybox renders an extra pixel above ceilings, created a single pixel line.
-- Performance is smooth in Chrome, sluggish in FF and Safari. This will improve once I stop using such big textures, but it does beg a bit more of precalcing and using lookup tables  (which may also entail working harder to avoid floating points, which I've been lazy about so far.)
+- Performance is smooth in Chrome, sluggish in FF and Safari. This will improve once I stop using such big textures, but it does beg a bit more of precalcing and using lookup tables (which may also entail working harder to avoid floating points, which I've been lazy about so far.)
 - Refactor all calls for grid cells to use correct getter.
 - Prevent errors triggered from walking to the edge of a world with no walls.
 - Issue with crashes when no outer wall in viewport.
@@ -73,8 +89,7 @@ In the interests of making lists that never get completed, here are some potenti
   - We can possibly draw multilayered images over wall tiles.
   - We can create orientations for the tiles, so each cardinal direction has a different tile (this will make the minimap a bit annoying)
 - Create this as a drop-in library. All that would be needed were a map grid (in this case it would make sense to constrain it to simple numbers for the grid), and textures to map to the numbers. Also, fallbacks for colors to stand in for textures could be used to make sure it still works without textures. It should work fine whether links to local files or urls for images are used.
-- Add a simple mapbuilder for people.
-  0. Build in a fallback for autofilling walls if none are selected
+- Add a simple mapbuilder for people. 0. Build in a fallback for autofilling walls if none are selected
   1. Let them draw a grid with one type of wall on one side, and show the map on the other side.
   2. Let them select the size of the grid.
   3. Let them generate the grid as a map on a second screen.
@@ -110,17 +125,11 @@ In the interests of making lists that never get completed, here are some potenti
 - If I really want to go crazy, I could make this a multiplayer world. But I think I'll leave that for a long time, I'd rather have static pages than sockets and a server for the scope of this.
 - Can add in an external API for letting other systems control player motion. After an action, return the new position and it will be possible for an AI to register collisions in the diff.
 
-PLAN:
-    - Calculate font sizes dynamically.
-    - Refactor to only one map per WAD.
-    - Add in logic to highlight closest sprite at x = 0 if it's within trigger distance and it has a trigger.
-    - Refactor to create wall class so it's easier to program unique triggers and handle animated faces. Deprecate LinkImageBuffer and BokehBuffer.
-    - Add in a console text display that is toggleable (like the minimap), change the minimap to being switched on or off rather than on when a button is pressed.
-    - Explore what adding in a dialogue tree would entail.
-    - Validation: Grid cells.
-    <!-- - Add in draw distance (so that I can render varying height walls behind other walls) -->
-    <!-- - Render all walls in draw distance, back to front (painter's algorithm); -->
-    <!-- - Add back in ascend/descend controls. -->
+PLAN: - Calculate font sizes dynamically. - Refactor to only one map per WAD. - Add in logic to highlight closest sprite at x = 0 if it's within trigger distance and it has a trigger. - Refactor to create wall class so it's easier to program unique triggers and handle animated faces. Deprecate LinkImageBuffer and BokehBuffer. - Add in a console text display that is toggleable (like the minimap), change the minimap to being switched on or off rather than on when a button is pressed. - Explore what adding in a dialogue tree would entail. - Validation: Grid cells.
+
+<!-- - Add in draw distance (so that I can render varying height walls behind other walls) -->
+<!-- - Render all walls in draw distance, back to front (painter's algorithm); -->
+<!-- - Add back in ascend/descend controls. -->
 
     - Add in signs. (Sprites that draw text or play audio when you interact with them).
     - Make a first pass of a portfolio site!! (Or at least have the initial room point towards the portfolio (links) and the rest of the world be in development - that way I can at least replace my home domain with something new (even if it just links back to the legacy portfolio));
@@ -135,6 +144,6 @@ PLAN:
 Map Editor note in map editor repo now.
 
 Server/DB/Backend:
-    Notes:
-        At some point, I'm going to need a backend of some sort. For dev purposes I will have the editor save output just to a file (or just a text display on screen), but eventually that won't be enough if my idea of letting people save WADS and generate permanent URLs.
-        We'll revisit this much later.
+Notes:
+At some point, I'm going to need a backend of some sort. For dev purposes I will have the editor save output just to a file (or just a text display on screen), but eventually that won't be enough if my idea of letting people save WADS and generate permanent URLs.
+We'll revisit this much later.

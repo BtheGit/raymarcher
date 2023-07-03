@@ -3,15 +3,22 @@
 // TODO: If I can add in support of background images for bokehfy, I can use it as
 // an effect over normal game tiles!
 class BokehImageBuffer {
+  el = document.createElement("div");
+  field: any; // Some bokeh specific thing
+  settings: any & { parent: HTMLDivElement }; // More bokeh specific stuff to be clarified later
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+  width: number;
+  height: number;
+
   constructor(bokehSettings = {}, sideLength = 200) {
-    this.el = document.createElement("div");
     this.settings = { ...bokehSettings, parent: this.el };
     this.field = bokehfy(this.settings);
     this.canvas = this.field.canvas;
+    this.ctx = this.canvas.getContext("2d")!;
     this.width = this.canvas.width = sideLength;
     this.height = this.canvas.height = sideLength;
-    this.ctx = this.canvas.getContext("2d");
-    console.log("yo");
+    console.log("bokeh image buffer");
   }
 
   getCanvas() {
@@ -26,7 +33,7 @@ class BokehImageBuffer {
   }
 
   getImageData() {
-    console.log("hello");
+    console.log("get bokeh image data");
     return this.ctx.getImageData(0, 0, this.width, this.height);
   }
 
