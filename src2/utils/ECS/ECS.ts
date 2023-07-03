@@ -5,7 +5,7 @@
  */
 
 export class Bucket<Entity> implements Iterable<Entity> {
-  protected bucket: Entity[];
+  protected bucket: Entity[] = [];
   private memberMap = new Map<Entity, number>();
 
   constructor(members: Entity[] = []) {
@@ -61,10 +61,20 @@ export class Bucket<Entity> implements Iterable<Entity> {
  *
  * I should note, instead of passing around an entiytIndex as reference, I'm expectingthe system to be passing around actual entities. Now, that's partly because the system itself treats objects as references. revisit later in optimization pass. Also look into maps instead ob objects.
  */
-export class EntityPool<Entity> extends Bucket<Entity> {
+export class EntityManager<Entity> extends Bucket<Entity> {
   constructor(members: Entity[] = []) {
     super(members);
   }
+
+  updateEntity = (entity: Entity, updates: Partial<Entity>) => {
+    for (const entry of Object.entries(updates)) {
+      const [key, value] = entry;
+      entity[key] = value;
+    }
+    // TODO: Notify components that care
+    // TODO: This does not provide a way to delete components. But we have that below.
+    return entity;
+  };
 
   addComponentToEntity = (
     entity: Entity,
@@ -117,15 +127,15 @@ export interface System {
   update(dt: number): void;
 }
 
-// This is a placeholder essentially. For now we just need to be able to add these and to loop over them.
-export class SystemPool<System> implements Iterable<System> {
-  protected systemBucket: System[];
+// This is a placeholder essentially. For now we just need to be able to add these and to loop over them. That's why it's a generic and not a system either.
+export class SystemPool<S> implements Iterable<S> {
+  protected systemBucket: S[];
 
-  constructor(systems: System[] = []) {
+  constructor(systems: S[] = []) {
     this.systemBucket = systems;
   }
 
-  [Symbol.iterator](): Iterator<System> {
+  [Symbol.iterator](): Iterator<S> {
     return this.systemBucket[Symbol.iterator]();
   }
 
@@ -133,11 +143,11 @@ export class SystemPool<System> implements Iterable<System> {
     return this.systemBucket.length;
   }
 
-  add = (system: System) => {
+  add = (system: S) => {
     this.systemBucket.push(system);
   };
 
-  remove = (system: System) => {
+  remove = (system: S) => {
     const index = this.systemBucket.indexOf(system);
     if (index === -1) return;
     this.systemBucket.splice(index, 1);
@@ -145,17 +155,17 @@ export class SystemPool<System> implements Iterable<System> {
 }
 
 export class ECS {
-  private entityPool: EntityPool<any>;
+  private _entityManager: EntityManager<any>;
   private systemPool: SystemPool<System>;
 
   // TODO: Support passing in existing values or config
   constructor() {
-    this.entityPool = new EntityPool();
+    this._entityManager = new EntityManager();
     this.systemPool = new SystemPool();
   }
 
-  get entities() {
-    return this.entityPool;
+  get entityManager() {
+    return this._entityManager;
   }
 
   get systems() {

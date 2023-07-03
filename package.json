@@ -7,7 +7,7 @@
   ],
   "main": "./dist/raymarcher.umd.cjs",
   "module": "./dist/raymarcher.js",
-  "source": "src/index.js",
+  "source": "src2/index.ts",
   "exports": {
     ".": {
       "import": "./dist/my-lib.js",

@@ -968,9 +968,11 @@ const map = {
   },
 };
 
-window.WAD = {
+export const wad = {
   map,
   tiles,
   sprites,
   textures,
 };
+
+export default wad;

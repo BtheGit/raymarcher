@@ -3,6 +3,7 @@ import {
   toDegrees,
   hexToRGB,
 } from "../utilities";
+import Game from "./Game";
 import ImageBuffer from "./ImageBuffer";
 
 const PI2 = Math.PI * 2;
@@ -15,13 +16,12 @@ const HUES = {
   5: "220",
 };
 
-const fallBackTexture_Rainbow = (function() {
+const fallBackTexture_Rainbow = (function () {
   const fallBackTextureCanvas_Rainbow = document.createElement("canvas");
   fallBackTextureCanvas_Rainbow.width = 64;
   fallBackTextureCanvas_Rainbow.height = 64;
-  const fallbackTexture_Rainbow = fallBackTextureCanvas_Rainbow.getContext(
-    "2d"
-  );
+  const fallbackTexture_Rainbow =
+    fallBackTextureCanvas_Rainbow.getContext("2d");
   for (let i = 0; i < fallBackTextureCanvas_Rainbow.width; i += 8) {
     fallbackTexture_Rainbow.fillStyle = `hsl(${i * 5}, 100%, 80%)`;
     fallbackTexture_Rainbow.fillRect(i, 0, 8, 64);
@@ -129,16 +129,45 @@ const validateWallTextureConfig = (textureType, textureConfig) => {
  * @param {string} id The DOM id of the canvas element this screen instance wraps.
  */
 class Screen {
+  width: number;
+  height: number;
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+  canvasBuffer: HTMLCanvasElement;
+  ctxBuffer: CanvasRenderingContext2D;
+  floorBuffer: HTMLCanvasElement;
+  floorCtxBuffer: CanvasRenderingContext2D;
+  staticPOVBackgroundCanvasBuffer: HTMLCanvasElement;
+  staticPOVBackgroundCtxBuffer: CanvasRenderingContext2D;
+  offscreenCanvasPixels: ImageData;
+  backgroundColor: string;
+  game: Game;
+
+  // Just to make sure the canvas is reset before beginning.
+  // When this is true, draw minimap overlay.
+  // TODO: Can have all conditional render options set as single object with getters/setters later. (HUD, etc)
+  isMapActive = false;
+  // Use this for a singleton pattern to avoid redrawing the sky gradient on each frame.
+  // Note: In editor mode, we'll want to be able to change this live.
+  hasDrawnSkyGradient = false;
+  // constants to speed up the casting
+  CENTER_Y: number;
+  lookupCurrentDist: { [offset: number]: number };
+  lookupFloorBrightnessModifier: { [height: number]: number };
+
   constructor(game, mainScreenCanvasId, width, height) {
-    this.canvas = document.getElementById(mainScreenCanvasId);
-    this.ctx = this.canvas.getContext("2d");
+    this.canvas = document.getElementById(
+      mainScreenCanvasId
+    ) as HTMLCanvasElement;
+    this.ctx = this.canvas.getContext("2d")!;
     this.canvasBuffer = document.createElement("canvas");
-    this.ctxBuffer = this.canvasBuffer.getContext("2d");
+    this.ctxBuffer = this.canvasBuffer.getContext("2d")!;
     this.floorBuffer = document.createElement("canvas");
-    this.floorCtxBuffer = this.floorBuffer.getContext("2d");
+    this.floorCtxBuffer = this.floorBuffer.getContext("2d", {
+      willReadFrequently: true,
+    })!;
     this.canvas.width = this.canvasBuffer.width = this.width = width;
     this.canvas.height = this.canvasBuffer.height = this.height = height;
-    this.offscreenCanvasPixels;
     this.backgroundColor = "black";
     this.game = game;
     this.currentMap = this.game.currentMap;
@@ -146,22 +175,15 @@ class Screen {
     // We delay creating the background until after the main canvas size is determined.
     // TODO: We could also generate this only as needed, if it seems like it adds too much memory.
     this.staticPOVBackgroundCanvasBuffer = document.createElement("canvas");
-    this.staticPOVBackgroundCtxBuffer = this.staticPOVBackgroundCanvasBuffer.getContext(
-      "2d"
-    );
-    // Use this for a singleton pattern to avoid redrawing the sky gradient on each frame.
-    // Note: In editor mode, we'll want to be able to change this live.
-    this.hasDrawnSkyGradient = false;
-    // Just to make sure the canvas is reset before beginning.
-    // When this is true, draw minimap overlay.
-    // TODO: Can have all conditional render options set as single object with getters/setters later. (HUD, etc)
-    this.isMapActive = false;
+    this.staticPOVBackgroundCtxBuffer =
+      this.staticPOVBackgroundCanvasBuffer.getContext("2d")!;
 
     // Create constants to speed up the casting
     this.CENTER_Y = this.height / 2;
     // Create lookup tables to speed up the casting.
     this.lookupCurrentDist = this.generateCurrentDistLookupTable();
-    this.lookupFloorBrightnessModifier = this.generateFloorBrightnessModifierLookupTable();
+    this.lookupFloorBrightnessModifier =
+      this.generateFloorBrightnessModifierLookupTable();
   }
 
   generateSkyGradient(stops) {
@@ -186,8 +208,9 @@ class Screen {
     );
   }
 
+  // TODO: Memoize and make sure its rerun on screen size chagnes.
   generateCurrentDistLookupTable() {
-    const table = {};
+    const table: { [offset: number]: number } = {};
     for (let i = this.CENTER_Y; i < this.height; i++) {
       table[i] = this.height / (2.0 * i - this.height);
     }
@@ -195,7 +218,7 @@ class Screen {
   }
 
   generateFloorBrightnessModifierLookupTable() {
-    const table = {};
+    const table: { [height: number]: number } = {};
     // Since we know dead center of the screen is the darkest possible and we want a fall off, we can use
     // an inverse square law.
     // Let's say that the maximum drop off is 50% brightness. That means brightness is 1 / dist.
@@ -475,7 +498,7 @@ class Screen {
       zBuffer.push(normalizedDistance);
 
       const columnHeight = Math.ceil(this.height / normalizedDistance);
-      const top = this.height / 2 - (columnHeight / 2) * playerElevation;
+      const top = this.height / 2 - (columnHeight / 2) * playerElevation; // TODO: Player Elevation is moot right now.
       const VIEW_DISTANCE = 25;
       const brightnessMultiplier = 1.3;
       const darknessMultiplier = 0.9;
