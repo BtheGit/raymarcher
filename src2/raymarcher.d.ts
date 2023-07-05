@@ -22,6 +22,7 @@ export enum PlayerState {
 // TODO: Oh man. Uh. Sort term gonna just stick a flag on player, then we figure out how to make the camera jump around for freeview and stuff.
 export interface CameraComponent {
   inverseDeterminate: number;
+  fov: number;
 }
 
 export interface UserControlledComponent {
