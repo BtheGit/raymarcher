@@ -1,3 +1,6 @@
+import SpriteScientist from "./images/sprites/scientist.json" assert { type: "json" };
+import SpriteTree_1 from "./images/sprites/tree_1.json" assert { type: "json" };
+
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
 // A 'WAD' file will have the list of texture assets, the maps, and the starting parameters for the player.
@@ -183,14 +186,24 @@ const textures = {
   stone2: "./images/textures/stone2.jpg",
   tile_blue1: "./images/textures/tile_blue1.jpg",
   stripes_creamsicle1: "./images/textures/stripes_creamsicle1.jpg",
-  sprite__tree_1: "./images/sprites/sprite__tree_1.png",
-  sprite__tree_2: "./images/sprites/sprite__tree_2.png",
-  sprite__tree_2_low: "./images/sprites/sprite__tree_2_low.png",
-  sprite__palm_tree_1_high: "./images/sprites/sprite__palm_tree_1_high.png",
-  sprite__palm_tree_1_low: "./images/sprites/sprite__palm_tree_1_low.png",
-  sprite__spider_man_static_1:
-    "./images/sprites/sprite__spider_man_static_1.png",
+  // sprite__tree_1: "./images/sprites/sprite__tree_1.png",
+  // sprite__tree_2: "./images/sprites/sprite__tree_2.png",
+  // scientist: "./images/sprites/scientist.png",
 };
+
+const sprites = [SpriteScientist, SpriteTree_1];
+
+const spriteMaps = sprites.reduce((acc, curr) => {
+  acc[curr.meta.name] = curr;
+  return acc;
+}, {});
+
+// Add spritesheets to textures
+for (const sprite of sprites) {
+  textures[sprite.meta.name] = `./images/sprites/${sprite.meta.image}`;
+}
+
+// TODO: Dynamically determining frames for animations based on naming system (doom is as good as any I guess, If i'm gonna use assets from those wads anyway). Right now I'm going to manually build the arrays just to save brain power and get more hands on.
 
 // const sprites = {
 // };
@@ -271,6 +284,8 @@ const wad = {
         wall_default,
         floor_default,
         floor_default,
+        floor_default,
+        floor_default,
         {
           type: "floor",
           texture: {
@@ -282,8 +297,6 @@ const wad = {
             textureName: "marble1",
           },
         },
-        floor_default,
-        floor_default,
         floor_default,
         floor_default,
         floor_default,
@@ -964,25 +977,17 @@ const wad = {
     start: {
       position: {
         x: 2,
-        y: 4.5,
+        y: 2.5,
       },
-      // TODO: Replace with rotation.
-      rotation: 0, // TODO: Make this work in the engine!
-      direction: {
-        x: 0,
-        y: -1,
-      },
-      plane: {
-        x: -0.66,
-        y: 0,
-      },
+      rotation: 30,
+      fov: 130,
     },
     objects: [
       {
         transform: {
           position: {
             x: 7,
-            y: 7,
+            y: 3,
           },
           rotation: 0,
           scale: {
@@ -993,6 +998,7 @@ const wad = {
         sprite: {
           texture: "sprite__tree_1",
         },
+        // If no state, then no animation (default state)
       },
       {
         transform: {
@@ -1008,6 +1014,36 @@ const wad = {
         },
         sprite: {
           texture: "sprite__tree_1",
+        },
+      },
+      {
+        transform: {
+          position: {
+            x: 6,
+            y: 10,
+          },
+          rotation: 0,
+          scale: {
+            x: 1,
+            y: 1,
+          },
+        },
+        sprite: {
+          texture: "scientist",
+        },
+        state: "idle",
+        animation: {
+          animations: {
+            idle: {
+              name: "idle",
+              duration: 80,
+              frames: {
+                0: ["SCZAA1", "SCZAA2"],
+              },
+            },
+          },
+          currentAnimation: "idle",
+          currentFrame: 0,
         },
       },
     ],

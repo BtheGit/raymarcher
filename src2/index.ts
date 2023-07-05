@@ -3,7 +3,12 @@ import { PlayerControllerSystem } from "./systems/PlayerControllerSystem";
 import { RaycasterSystem } from "./systems/RaycasterSystem";
 import { RenderSystem } from "./systems/RenderSystem";
 import { ECS } from "./utils/ECS/ECS";
-import { Vector } from "./utils/math";
+import {
+  Vector,
+  directionVectorFromRotation,
+  planeVectorFromRotation,
+  toRadians,
+} from "./utils/math";
 import { TextureManager } from "./TextureManager/TextureManager";
 import { GridManager } from "./GridManager/GridManager";
 import {
@@ -114,12 +119,16 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
 
   // ## Player/CAMERA
   const startingPosition = wad.map.start;
+  const fovRadians = toRadians(startingPosition.fov);
+  const fov = Math.abs(Math.tan(fovRadians));
+  const direction = directionVectorFromRotation(
+    startingPosition.rotation
+  ).scale(fov);
+  const plane = planeVectorFromRotation(startingPosition.rotation);
   const playerEntity: PlayerEntity = {
     camera: {
-      inverseDeterminate:
-        1.0 /
-        (startingPosition.plane.x * startingPosition.direction.y -
-          startingPosition.direction.x * startingPosition.plane.y),
+      inverseDeterminate: 1.0 / (plane.x * direction.y - direction.x * plane.y),
+      fov: fov,
     },
     userControl: {
       isControlled: true,
