@@ -74,8 +74,12 @@ export interface AnimationComponent {
   timeSinceLastFrame: number;
 }
 
-export interface CollisionComponent {
-  radius: number;
+export interface ColliderComponent {
+  type: "aabb" | "circle";
+  radius?: number;
+  width?: number;
+  height?: number;
+  solid: boolean;
   // TODO: Support circle and rectangle bounding boxes.
 }
 
@@ -144,7 +148,7 @@ export interface GridTileEntity {
   accessible: boolean;
   wallTile?: WallTileComponent;
   floorTile?: FloorTileComponent;
-  collision?: CollisionComponent;
+  // collider?: ColliderComponent;
   // collisionResult: CollisionResultComponent;
 }
 
@@ -158,8 +162,8 @@ export interface PlayerEntity {
   velocity: VelocityComponent;
   movement: MovementComponent;
   // sprite: SpriteComponent;
-  collision: CollisionComponent;
-  collisionResult: CollisionResultComponent;
+  collider: ColliderComponent;
+  collisions: CollisionResultComponent;
   state: PlayerStateComponent;
 }
 
@@ -173,8 +177,8 @@ export interface ObjectEntity {
   state?: StateComponent;
   texture?: TileTextureComponent;
   animation?: AnimationComponent;
-  collision?: CollisionComponent;
-  collisionResult?: CollisionResultComponent;
+  collider?: ColliderComponent;
+  collisions?: CollisionResultComponent;
 }
 
 export interface GameSettingsComponent {

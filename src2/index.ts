@@ -93,10 +93,10 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
       };
 
       // TODO: Allow floor types to be collidable.
-      if (type === "wall") {
-        // NOTE: Radius is arbitrary since we'll process this differently (fingers crossed).
-        entity.collision = { radius: 1 };
-      }
+      // if (type === "wall") {
+      //   // NOTE: Radius is arbitrary since we'll process this differently (fingers crossed).
+      //   entity.collider = { radius: 1 };
+      // }
 
       if (type === "floor") {
         entity.floorTile = {
@@ -147,8 +147,13 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
     ),
     direction,
     plane,
-    collision: { radius: 1 },
-    collisionResult: {
+    collider: {
+      type: "aabb",
+      width: 0.4,
+      height: 0.4,
+      solid: true,
+    },
+    collisions: {
       collidedWith: [],
     },
     velocity: new Vector(0, 0),
@@ -183,6 +188,13 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
     };
     texture?: string;
     state?: string;
+    collider?: {
+      type: "aabb" | "circle";
+      radius?: number;
+      width?: number;
+      height?: number;
+      solid: boolean;
+    };
     animation?: {
       animations: {
         [key: string]: {
@@ -198,7 +210,7 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
   };
   const objects: MapObject[] = wad.map.objects ?? [];
   objects.forEach((object) => {
-    const { transform, texture, state, animation } = object;
+    const { transform, texture, state, animation, collider } = object;
 
     const objectEntity: ObjectEntity = {
       transform: {
@@ -208,6 +220,7 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
         direction: directionVectorFromRotation(transform.rotation),
         scale: new Vector(transform.scale.x, transform.scale.y),
       },
+      collider,
       // TODO: I don't really think objects should directly reference a spritesheet texture now, since they could reference multiple sheets.
       // sprite: {
       //   texture: sprite.texture,
