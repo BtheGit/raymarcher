@@ -73,6 +73,47 @@ export class TextureManager {
     return { width: texture.width, height: texture.height };
   }
 
+  // Going to try this for sprite frames. But might want to simply create Imagebuffers for each frame instead. Not sure.
+  public getCroppedTexture(
+    key: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    mirrored = false
+  ): TextureBuffer | null {
+    const texture = this.getTexture(key);
+    if (!texture) return null;
+
+    const croppedCanvas = document.createElement("canvas");
+    croppedCanvas.width = width;
+    croppedCanvas.height = height;
+
+    const ctx = croppedCanvas.getContext("2d");
+    if (!ctx) return null;
+
+    ctx.save();
+    if (mirrored) {
+      ctx.scale(-1, 1);
+    }
+
+    ctx.drawImage(
+      texture.getCanvas(),
+      x,
+      y,
+      width,
+      height,
+      mirrored ? -width : 0,
+      0,
+      width,
+      height
+    );
+
+    ctx.restore();
+
+    return TextureBuffer.fromImage(croppedCanvas);
+  }
+
   // public setDefaultTexturePath(path: string): void {
   //   this.defaultTexturePath = path;
   // }

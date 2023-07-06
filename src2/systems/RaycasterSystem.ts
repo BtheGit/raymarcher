@@ -37,9 +37,13 @@ export class RaycasterSystem implements System {
     const rayDirection = this.camera.plane
       .scale(cameraX)
       .add(this.camera.direction);
+    // NOTE: Interestingly Lode uses what looks like a round, not floor here. but taht doesnt work for me. Maybe its different in c++ and always casts ints with floor.
     const activeCell = this.camera.position.map(Math.floor);
 
     // The distance from the nearest cell walls
+    // Lode uses the following. I would like to verify its the same:
+    // double deltaDistX = sqrt(1 + (rayDirY * rayDirY) / (rayDirX * rayDirX));
+    // double deltaDistY = sqrt(1 + (rayDirX * rayDirX) / (rayDirY * rayDirY));
     const distanceDelta = rayDirection.map((scalar) => Math.abs(1 / scalar));
     // Which way we're going.
     const stepX = rayDirection.x < 0 ? -1 : 1;
@@ -126,9 +130,9 @@ export class RaycasterSystem implements System {
     // For each pixel, cast a ray and push to a ray map.
     // TODO: Can I reverse this?
     for (let i = 0; i < this.width; i++) {
-      const cameraX = (2 * i) / this.width - 1;
+      const cameraX = (2 * i) / this.width - 1; // x-Coordinate in camera space
       const ray = this.castRay(cameraX);
-      rays.unshift(ray);
+      rays.push(ray);
     }
     this.rays = rays;
     this.eventManager.rays = rays;

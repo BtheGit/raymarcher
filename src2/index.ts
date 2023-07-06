@@ -20,6 +20,8 @@ import {
   SkyboxEntity,
 } from "./raymarcher";
 import { EventManager } from "./EventManager/EventManager";
+import { AnimationSystem } from "./systems/AnimationSystem";
+import { SpriteManager } from "./SpriteManager/SpriteManager";
 
 const DEFAULT_SETTINGS = {
   width: 1024,
@@ -32,6 +34,7 @@ const DEFAULT_SETTINGS = {
 const main = async (wad, settings = DEFAULT_SETTINGS) => {
   const ecs = new ECS();
   const textureManager = new TextureManager();
+  const spriteManager = new SpriteManager(textureManager);
   const gridManager = new GridManager(ecs);
 
   // I don't love the idea of modeling everything as an entity, but since it's easier to revert that than implement it... yolo.
@@ -56,6 +59,8 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
       return textureManager.loadTexture(key, path);
     })
   );
+
+  wad.sprites.forEach((spriteData) => spriteManager.loadSprites(spriteData));
 
   // TODO: Type the wad files.
   type GridCell = {
@@ -120,7 +125,7 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
   // ## Player/CAMERA
   const startingPosition = wad.map.start;
   const fovRadians = toRadians(startingPosition.fov);
-  const fov = Math.abs(Math.tan(fovRadians));
+  const fov = Math.abs(Math.atan(fovRadians));
   const direction = directionVectorFromRotation(
     startingPosition.rotation
   ).scale(fov);
@@ -137,11 +142,8 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
       startingPosition.position.x,
       startingPosition.position.y
     ),
-    direction: new Vector(
-      startingPosition.direction.x,
-      startingPosition.direction.y
-    ),
-    plane: new Vector(startingPosition.plane.x, startingPosition.plane.y),
+    direction,
+    plane,
     // rotation: startingPosition.rotation,
     collision: { radius: 1 },
     collisionResult: {
@@ -177,32 +179,61 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
         y: number;
       };
     };
-    sprite: {
-      texture: string;
+    texture?: string;
+    state?: string;
+    animation?: {
+      animations: {
+        [key: string]: {
+          name: string;
+          duration: number;
+          frames: string[];
+          directions: 0 | 8;
+        };
+      };
+      currentAnimation: string;
+      currentFrame: number;
     };
   };
   const objects: MapObject[] = wad.map.objects ?? [];
   objects.forEach((object) => {
-    const { transform, sprite } = object;
-    const textureDimensions = textureManager.getTextureDimensions(
-      sprite.texture
-    );
-    if (!textureDimensions) {
-      // Ok. This will essentially not process any objects without an associated texture. I'm ok with that for now.
-      return;
-    }
+    const { transform, texture, state, animation } = object;
+
     const objectEntity: ObjectEntity = {
       transform: {
         position: new Vector(transform.position.x, transform.position.y),
+        // TODO: Deprecate roation if the math is more work
         rotation: transform.rotation,
+        direction: directionVectorFromRotation(transform.rotation),
         scale: new Vector(transform.scale.x, transform.scale.y),
       },
-      sprite: {
-        texture: sprite.texture,
-        width: textureDimensions.width,
-        height: textureDimensions.height,
-      },
+      // TODO: I don't really think objects should directly reference a spritesheet texture now, since they could reference multiple sheets.
+      // sprite: {
+      //   texture: sprite.texture,
+      //   // TODO: Not sure dimensions are helpful since this is the entire spritesheet, not the object or a frame.
+      //   width: textureDimensions.width,
+      //   height: textureDimensions.height,
+      // },
     };
+
+    if (texture) {
+      objectEntity.texture = {
+        name: texture,
+      };
+    }
+
+    // TODO: There may be a case for state without animations, but never animations without state.
+    if (state) {
+      objectEntity.state = {
+        currentState: state,
+      };
+
+      if (animation) {
+        objectEntity.animation = {
+          ...animation,
+          timeSinceLastFrame: 0,
+        };
+      }
+    }
 
     ecs.entityManager.add(objectEntity);
   });
@@ -217,6 +248,8 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
   ecs.systems.add(
     new RaycasterSystem(gridManager, eventManager, playerEntity, settings.width)
   );
+
+  ecs.systems.add(new AnimationSystem(ecs));
 
   // Once again, we're cheating a bit to avoid extra lookups until we have a better ECS system. I'm going to persist a skybox reference here.
   const skyboxEntity: SkyboxEntity = {
@@ -233,6 +266,7 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
       ecs,
       gameSettingsEntity,
       textureManager,
+      spriteManager,
       gridManager,
       eventManager,
       playerEntity,

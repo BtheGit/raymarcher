@@ -19,12 +19,55 @@ import {
   ObjectEntity,
 } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
-import { toDegrees } from "../utils/math";
+import { apparentDirectionAngle, toDegrees } from "../utils/math";
 import { hexToRGB } from "../utils/image";
+import { SpriteManager } from "../SpriteManager/SpriteManager";
+
+export const frameDirectionIndexByAngle = (angle: number) => {
+  // The following are both sort of solutions. But since I really don't want to worry about other directional counts. Let's be smart and just be stupid. Which means less math, more lookups.
+
+  if (angle >= 22.5 && angle < 67.5) {
+    return 8;
+  } else if (angle >= 67.5 && angle < 112.5) {
+    return 7;
+  } else if (angle >= 112.5 && angle < 157.5) {
+    return 6;
+  } else if (angle >= 157.5) {
+    return 5;
+  } else if (angle < -157.5) {
+    return 5;
+  } else if (angle >= -157.5 && angle < -112.5) {
+    return 4;
+  } else if (angle >= -112.5 && angle < -67.5) {
+    return 3;
+  } else if (angle >= -67.5 && angle < -22.5) {
+    return 2;
+  } else {
+    return 1;
+  }
+
+  // // Calculate the sector size for each direction
+  // const sectorSize = 360 / 8;
+
+  // // Calculate the sector index based on the angle
+  // let sectorIndex = Math.floor(angle / sectorSize);
+
+  // // Handle the special case of 360 degrees
+  // if (sectorIndex === 8) {
+  //   sectorIndex = 1;
+  // }
+
+  // // Map the sector index to the corresponding direction
+  // // Add 1 to match your specified direction numbering
+  // const direction = (sectorIndex + 1) % 8;
+
+  // return direction;
+};
 
 export class RenderSystem implements System {
   ecs: ECS;
   textureManager: TextureManager;
+  spriteManager: SpriteManager;
   gridManager: GridManager;
   gameSettings: GameSettingsComponent;
   eventManager: EventManager;
@@ -79,6 +122,7 @@ export class RenderSystem implements System {
     ecs: ECS,
     gameSettings: GameSettingsEntity,
     textureManager: TextureManager,
+    spriteManager: SpriteManager,
     gridManager: GridManager,
     eventManager: EventManager,
     camera: PlayerEntity,
@@ -87,6 +131,7 @@ export class RenderSystem implements System {
     this.ecs = ecs;
     this.gameSettings = gameSettings.gameSettings;
     this.textureManager = textureManager;
+    this.spriteManager = spriteManager;
     this.gridManager = gridManager;
     this.eventManager = eventManager;
     this.camera = camera;
@@ -119,7 +164,7 @@ export class RenderSystem implements System {
     );
 
     // TODO: Support animation
-    this.objects = ecs.entityManager.with(["sprite", "transform"]);
+    this.objects = ecs.entityManager.with(["transform"]);
   }
 
   // TODO: Memoize and make sure its rerun on screen size chagnes.
@@ -571,9 +616,209 @@ export class RenderSystem implements System {
     this.offscreenCtx.drawImage(this.worldCanvas, 0, 0);
   }
 
-  renderSprites() {
+  // NOT WORKING FOR NOW
+  renderFloors() {
+    // FLOOR CASTING
+    for (let y = 0; y < this.gameSettings.height; y++) {
+      // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
+      const rayDirX0 = this.camera.direction.x - this.camera.plane.x;
+      const rayDirY0 = this.camera.direction.y - this.camera.plane.y;
+      const rayDirX1 = this.camera.direction.x + this.camera.plane.x;
+      const rayDirY1 = this.camera.direction.y + this.camera.plane.y;
+
+      // Current y position compared to the center of the screen (the horizon)
+      const p = y - this.gameSettings.height / 2;
+
+      // Vertical position of the camera.
+      const posZ = 0.5 * this.gameSettings.height;
+
+      // Horizontal distance from the camera to the floor for the current row.
+      // 0.5 is the z position exactly in the middle between floor and ceiling.
+      const rowDistance = posZ / p;
+
+      // calculate the real world step vector we have to add for each x (parallel to camera plane)
+      // adding step by step avoids multiplications with a weight in the inner loop
+      const floorStepX =
+        (rowDistance * (rayDirX1 - rayDirX0)) / this.gameSettings.width;
+      const floorStepY =
+        (rowDistance * (rayDirY1 - rayDirY0)) / this.gameSettings.width;
+
+      // real world coordinates of the leftmost column. This will be updated as we step to the right.
+      let floorX = this.camera.position.x + rowDistance * rayDirX0;
+      let floorY = this.camera.position.y + rowDistance * rayDirY0;
+
+      for (let x = 0; x < this.gameSettings.width; ++x) {
+        // the cell coord is simply got from the integer parts of floorX and floorY
+        const cellX = Math.floor(floorX);
+        const cellY = Math.floor(floorY);
+
+        const gridCell = this.gridManager.getGridTile(cellX, cellY);
+        if (gridCell == undefined || gridCell.floorTile == undefined) {
+          continue;
+        }
+
+        floorX += floorStepX;
+        floorY += floorStepY;
+
+        const brightnessModifier = this.lookupFloorBrightnessModifier[y];
+        const { surface } = gridCell.floorTile;
+
+        switch (surface) {
+          case "color":
+            // TODO: This is going to be a bit of a slow down. We should require floors to be hex?
+            // const color = getWallColor(gridCell.textureConfig, brightness);
+
+            // TODO: Here is a big breaking assumption. ALL floor colors are hex!
+            // TODO: Preprocess wads to coerce all color values into RGB (or require it from the get go, to save stuff like this). Can do this immediately.
+            const color = gridCell.floorTile.color;
+            const { r, g, b } = hexToRGB(color);
+
+            const index = (y * this.gameSettings.width + x) * 4;
+            this.floorCeilingPixelData.data[index] = r * brightnessModifier;
+            this.floorCeilingPixelData.data[index + 1] = g * brightnessModifier;
+            this.floorCeilingPixelData.data[index + 2] = b * brightnessModifier;
+            this.floorCeilingPixelData.data[index + 3] = 255;
+            break;
+          case "texture":
+            // TODO: Handle gradients. This will fail on gradients.
+            const textureName = gridCell.floorTile.texture!.name;
+            const floorTexture = this.textureManager.getTexture(textureName)!;
+
+            // // TODO: Temp, to have a floor while textures are missing
+            // if (floorTextureName === undefined || floorTexture == null) {
+            //   floorTexture = fallBackTexture_Rainbow;
+            // }
+
+            // ### DRAW FLOOR
+            if (floorTexture != null) {
+              const floorTexturePixels = floorTexture.getImageData();
+              // get the texture coordinate from the fractional part
+              // const tx = ((floorX - cellX) * texWidth) & (texWidth - 1);
+              // const ty = ((floorY - cellY) * texHeight) & (texHeight - 1);
+              const floorTexX =
+                Math.floor(floorX * floorTexture.width) % floorTexture.width;
+              const floorTexY =
+                Math.floor(floorY * floorTexture.height) % floorTexture.height;
+              const textureIndex =
+                (floorTexY * floorTexture.width + floorTexX) * 4;
+
+              const red =
+                floorTexturePixels.data[textureIndex] * brightnessModifier;
+              const green =
+                floorTexturePixels.data[textureIndex + 1] * brightnessModifier;
+              const blue =
+                floorTexturePixels.data[textureIndex + 2] * brightnessModifier;
+              const alpha = floorTexturePixels.data[textureIndex + 3];
+
+              const index = (y * this.gameSettings.width + x) * 4;
+              this.floorCeilingPixelData.data[index] = red;
+              this.floorCeilingPixelData.data[index + 1] = green;
+              this.floorCeilingPixelData.data[index + 2] = blue;
+              this.floorCeilingPixelData.data[index + 3] = alpha;
+            }
+
+            break;
+        }
+
+        const ceiling = gridCell.floorTile.ceiling;
+        if (!ceiling) continue;
+
+        // Let's dim the ceiling more than the floor.
+        // TODO: Better dropoff curve.
+        const ceilingBrightnessModifier = brightnessModifier - 0.2;
+
+        const ceilingSurface = ceiling.surface;
+        switch (ceilingSurface) {
+          case "color":
+            const ceilingColor = ceiling.color!.color;
+            // TODO: Here is a big breaking assumption. ALL floor colors are hex!
+            const { r, g, b } = hexToRGB(ceilingColor);
+
+            const index =
+              ((this.gameSettings.height - y) * this.gameSettings.width + x) *
+              4;
+            this.floorCeilingPixelData.data[index] =
+              r * ceilingBrightnessModifier;
+            this.floorCeilingPixelData.data[index + 1] =
+              g * ceilingBrightnessModifier;
+            this.floorCeilingPixelData.data[index + 2] =
+              b * ceilingBrightnessModifier;
+            this.floorCeilingPixelData.data[index + 3] = 255;
+            break;
+          case "texture":
+            // TODO: Handle gradients.
+            const ceilingTextureName = ceiling.texture!.name;
+            let ceilingTexture =
+              this.textureManager.getTexture(ceilingTextureName)!;
+
+            if (ceilingTexture != null) {
+              const ceilingTexturePixels = ceilingTexture.getImageData();
+
+              const ceilTexX =
+                Math.floor(floorX * ceilingTexture.width) %
+                ceilingTexture.width;
+              const ceilTexY =
+                Math.floor(
+                  (this.gameSettings.height - floorY) * ceilingTexture.height
+                ) % ceilingTexture.height;
+              const textureIndex =
+                (ceilTexY * ceilingTexture.width + ceilTexX) * 4;
+
+              const red =
+                ceilingTexturePixels.data[textureIndex] *
+                ceilingBrightnessModifier;
+              const green =
+                ceilingTexturePixels.data[textureIndex + 1] *
+                ceilingBrightnessModifier;
+              const blue =
+                ceilingTexturePixels.data[textureIndex + 2] *
+                ceilingBrightnessModifier;
+              const alpha = ceilingTexturePixels.data[textureIndex + 3];
+
+              const index =
+                ((this.gameSettings.height - y) * this.gameSettings.width + x) *
+                4;
+              this.floorCeilingPixelData.data[index] = red;
+              this.floorCeilingPixelData.data[index + 1] = green;
+              this.floorCeilingPixelData.data[index + 2] = blue;
+              this.floorCeilingPixelData.data[index + 3] = alpha;
+            }
+
+            break;
+        }
+
+        // // choose texture and draw the pixel
+        // const floorTexture = 3;
+        // const ceilingTexture = 6;
+        // let color: number;
+
+        // // floor
+        // color = texture[floorTexture][texWidth * ty + tx];
+        // color = (color >> 1) & 8355711; // make a bit darker
+        // buffer[y][x] = color;
+
+        // // ceiling (symmetrical, at screenHeight - y - 1 instead of y)
+        // color = texture[ceilingTexture][texWidth * ty + tx];
+        // color = (color >> 1) & 8355711; // make a bit darker
+        // buffer[screenHeight - y - 1][x] = color;
+      }
+    }
+
+    // ## Floor Rendering.
+    // We don't need to put image data on each ray, it makes sense to blit once per frame. We're just calculating on the same pass as the wall.
+    this.floorCeilingCtx.putImageData(this.floorCeilingPixelData, 0, 0);
+    this.offscreenCtx.drawImage(this.floorCeilingCanvas, 0, 0);
+    // TODO: This is a very inefficient way to clear the pixel data I think.
+    this.floorCeilingPixelData = this.floorCeilingCtx.createImageData(
+      this.gameSettings.width,
+      this.gameSettings.height
+    );
+    this.offscreenCtx.drawImage(this.worldCanvas, 0, 0);
+  }
+
+  renderObjects() {
     // Sort the sprites by distance from the camera
-    const sortedSprites = this.objects.sort((a, b) => {
+    const sortedObjects = this.objects.sort((a, b) => {
       const aDistance =
         Math.pow(this.camera.position.x - a.transform.position.x, 2) +
         Math.pow(this.camera.position.y - a.transform.position.y, 2);
@@ -583,30 +828,30 @@ export class RenderSystem implements System {
       return bDistance - aDistance;
     });
 
-    if (!sortedSprites.length) return;
+    if (!sortedObjects.length) return;
 
     const zBuffer = this.eventManager.nextRays.rays.map(
       (nextRay) => nextRay.normalizedDistance
     );
 
-    // Render each sprite
-    for (const object of sortedSprites) {
-      if (object.transform && object.sprite) {
+    for (const object of sortedObjects) {
+      // Render each sprite
+      if (object.transform) {
         // if (object.transform && object.sprite && object.animation) {
         // Calculate the screen position and size of the sprite
-        const spriteXRelativeToCamera =
+        const objectXRelativeToCamera =
           object.transform.position.x - this.camera.position.x;
-        const spriteYRelativeToCamera =
+        const objectYRelativeToCamera =
           object.transform.position.y - this.camera.position.y;
 
         const transformX =
           this.camera.camera.inverseDeterminate *
-          (this.camera.direction.x * spriteYRelativeToCamera -
-            this.camera.direction.y * spriteXRelativeToCamera);
+          (this.camera.direction.y * objectXRelativeToCamera -
+            this.camera.direction.x * objectYRelativeToCamera);
         const transformY = Math.max(
           this.camera.camera.inverseDeterminate *
-            (-this.camera.plane.y * spriteXRelativeToCamera +
-              this.camera.plane.x * spriteYRelativeToCamera),
+            (-this.camera.plane.y * objectXRelativeToCamera +
+              this.camera.plane.x * objectYRelativeToCamera),
           0
         );
         const spriteScreenX = Math.floor(
@@ -625,17 +870,47 @@ export class RenderSystem implements System {
         );
         const drawEndY = spriteHeight + drawStartY;
 
+        // If an object has a texture field, we wont check for animation frames. So, be warned, for now, it's one or the other! And no multiple states for static textures.
+        let texture;
+        const staticTextureName = object?.texture?.name;
+        if (staticTextureName) {
+          texture = this.textureManager.getTexture(staticTextureName);
+        } else {
+          // Uh. If we have no texture and no animation frame, should mark this object as rubbish. But just doing the check anyway.
+          if (object.animation) {
+            const { currentAnimation, currentFrame } = object.animation;
+            const animation = object.animation.animations[currentAnimation];
+            const baseFrameId = animation.frames[currentFrame];
+            let frameId;
+            const directions = animation.directions;
+            if (directions === 0) {
+              // The frameId only gets us halfway there. We still need rotation. (If directions isn't 0)
+              frameId = `${baseFrameId}0`;
+            } else {
+              // For now, it's 0 or 8.
+              const angle = apparentDirectionAngle(
+                object.transform.position,
+                object.transform.direction,
+                this.camera.position
+              );
+              const frameDirection = frameDirectionIndexByAngle(angle);
+              frameId = `${baseFrameId}${frameDirection}`;
+            }
+
+            texture = this.spriteManager.getSpriteTexture(frameId);
+          }
+        }
+
+        if (!texture) continue;
+
         //calculate width of the sprite
         // The width ratio ensures the sprite is not stretched horizontally.
-        const widthRatio =
-          (object.sprite.width / object.sprite.height) * scale.x;
+        const widthRatio = (texture.width / texture.height) * scale.x;
         const spriteWidth = Math.abs(
           Math.floor((this.gameSettings.height / transformY) * widthRatio)
         );
         const drawStartX = Math.floor(-spriteWidth / 2 + spriteScreenX);
         const drawEndX = spriteWidth / 2 + spriteScreenX;
-
-        const texture = this.textureManager.getTexture(object.sprite.texture);
 
         // Draw sprite in vertical strips.
         for (let stripe = drawStartX; stripe < drawEndX; stripe++) {
@@ -643,7 +918,7 @@ export class RenderSystem implements System {
             Math.floor(
               (256 *
                 (stripe - (-spriteWidth / 2 + spriteScreenX)) *
-                object.sprite.width) /
+                texture.width) /
                 spriteWidth
             ) / 256;
           //the conditions in the if are:
@@ -657,13 +932,12 @@ export class RenderSystem implements System {
             stripe < this.gameSettings.width &&
             transformY < zBuffer[stripe]
           ) {
-            // TODO: When sprites are multifaceted, we'll need to pass in player pos/dir to calculate the face;
             this.offscreenCtx.drawImage(
               texture!.canvas,
               texX,
               0,
               1,
-              object.sprite.height,
+              texture.height,
               stripe,
               drawStartY,
               1,
@@ -686,8 +960,9 @@ export class RenderSystem implements System {
     // TODO: Render Sky
     this.renderSkybox();
     // TODO: Render World (Walls, Floors, Ceilings, Sprites)
+    // this.renderFloors();
     this.renderWorld();
-    this.renderSprites();
+    this.renderObjects();
     // TODO: Render HUD (MapOverlay, Text, etc)
 
     // TODO: Combine all the buffers into a single offscreen buffer.

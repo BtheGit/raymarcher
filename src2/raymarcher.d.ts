@@ -46,6 +46,7 @@ export interface MovementComponent {
 export interface TransformComponent {
   position: Vector;
   rotation: number;
+  direction: Vector;
   scale: Vector;
 }
 
@@ -63,9 +64,9 @@ export interface AnimationComponent {
   animations: {
     [state: string]: {
       name: string;
-      startFrame: number;
-      endFrame: number;
-      frameDuration: number;
+      frames: string[];
+      directions: 0 | 8;
+      duration: number; // Length between frame changes
     };
   };
   currentAnimation: string;
@@ -167,8 +168,9 @@ export interface SkyboxEntity {
 
 export interface ObjectEntity {
   transform: TransformComponent;
-  sprite: SpriteComponent;
+  // sprite: SpriteComponent;
   state?: StateComponent;
+  texture?: TileTextureComponent;
   animation?: AnimationComponent;
   collision?: CollisionComponent;
   collisionResult?: CollisionResultComponent;
@@ -182,4 +184,55 @@ export interface GameSettingsComponent {
 
 export interface GameSettingsEntity {
   gameSettings: GameSettingsComponent;
+}
+
+export interface SpriteFrame {
+  frame: {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  };
+  rotated: boolean;
+  trimmed: boolean;
+  spriteSourceSize: {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  };
+  sourceSize: {
+    w: number;
+    h: number;
+  };
+  pivot: {
+    x: number;
+    y: number;
+  };
+}
+
+export interface SpritesheetData {
+  frames: { [key: string]: SpriteFrame };
+  meta: {
+    image: string;
+    name: string;
+    id: string;
+    format: string;
+    size: {
+      w: number;
+      h: number;
+    };
+    scale: number;
+  };
+}
+
+export interface SpriteFrameData {
+  textureKey: string;
+  frame: {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  };
+  // Add additional frame data properties as needed
 }

@@ -191,16 +191,16 @@ const textures = {
   // scientist: "./images/sprites/scientist.png",
 };
 
-const sprites = [SpriteScientist, SpriteTree_1];
+const spriteDatas = [SpriteScientist, SpriteTree_1];
 
-const spriteMaps = sprites.reduce((acc, curr) => {
+const spriteMaps = spriteDatas.reduce((acc, curr) => {
   acc[curr.meta.name] = curr;
   return acc;
 }, {});
 
-// Add spritesheets to textures
-for (const sprite of sprites) {
-  textures[sprite.meta.name] = `./images/sprites/${sprite.meta.image}`;
+// Add spritesheets to textures (maybe we can just make this a texture again)
+for (const spriteData of spriteDatas) {
+  textures[spriteData.meta.name] = `./images/sprites/${spriteData.meta.image}`;
 }
 
 // TODO: Dynamically determining frames for animations based on naming system (doom is as good as any I guess, If i'm gonna use assets from those wads anyway). Right now I'm going to manually build the arrays just to save brain power and get more hands on.
@@ -979,7 +979,7 @@ const wad = {
         x: 2,
         y: 2.5,
       },
-      rotation: 30,
+      rotation: 0,
       fov: 130,
     },
     objects: [
@@ -995,9 +995,7 @@ const wad = {
             y: 1,
           },
         },
-        sprite: {
-          texture: "sprite__tree_1",
-        },
+        texture: "sprite__tree_1",
         // If no state, then no animation (default state)
       },
       {
@@ -1012,9 +1010,7 @@ const wad = {
             y: 1,
           },
         },
-        sprite: {
-          texture: "sprite__tree_1",
-        },
+        texture: "sprite__tree_1",
       },
       {
         transform: {
@@ -1028,18 +1024,20 @@ const wad = {
             y: 1,
           },
         },
-        sprite: {
-          texture: "scientist",
-        },
         state: "idle",
         animation: {
           animations: {
             idle: {
               name: "idle",
-              duration: 80,
-              frames: {
-                0: ["SCZAA1", "SCZAA2"],
-              },
+              duration: 200,
+              directions: 8,
+              // TODO: This lets us use frames across multiple sprite sheets. Gotta be careful about collisions though
+              frames: [
+                "SCIENTIST__A",
+                "SCIENTIST__B",
+                "SCIENTIST__C",
+                "SCIENTIST__D",
+              ],
             },
           },
           currentAnimation: "idle",
@@ -1048,6 +1046,7 @@ const wad = {
       },
     ],
   },
+  sprites: spriteDatas,
 };
 
 export default wad;
