@@ -23,6 +23,9 @@ export class PlayerControllerSystem implements System {
   update(dt: number) {
     const incrementalModifier = 1; // NOTE: NO need to artificially slow it down when we're barely chugging along as it is. dt / 1000;
     const mouseSensitivity = 0.05;
+    // TODO: Base this on run or walk state (or key press)
+    const walkSpeed = 0.01;
+    const rotationSpeed = 0.03;
     for (const entity of this.playerEntities) {
       if (!entity.userControl) {
         // Since this property might be flipped instead of removed.
@@ -31,7 +34,6 @@ export class PlayerControllerSystem implements System {
       const direction = new Vector(entity.direction.x, entity.direction.y);
       const plane = new Vector(entity.plane.x, entity.plane.y);
       let velocity = new Vector(0, 0);
-      const { walkSpeed, rotationSpeed } = entity.movement;
 
       // TODO: NO COLLISION DETECTION PORTED YET
       if (
@@ -87,13 +89,13 @@ export class PlayerControllerSystem implements System {
 
         // position.x -= plane.x * walkSpeed * incrementalModifier;
         // position.y -= plane.y * walkSpeed * incrementalModifier;
-        velocity = velocity.subtract(plane.scale(walkSpeed));
+        velocity = velocity.subtract(plane.scale(walkSpeed * 0.5));
       }
       if (
         this.inputSystem.isKeyPressed("ArrowRight") ||
         this.inputSystem.isKeyPressed("d")
       ) {
-        velocity = velocity.add(plane.scale(walkSpeed));
+        velocity = velocity.add(plane.scale(walkSpeed * 0.5));
         // position.x += plane.x * walkSpeed * incrementalModifier;
         // position.y += plane.y * walkSpeed * incrementalModifier;
 

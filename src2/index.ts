@@ -154,6 +154,7 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
     velocity: new Vector(0, 0),
     // TODO: Use movement speed to port old code.
     // FUTURE: Just change velocity with keys and let collision detection reconcile movement?
+    // TODO: Not using right now. Main player settings should really be a base setting.
     movement: {
       walkSpeed: 0.15,
       rotationSpeed: 0.12,
