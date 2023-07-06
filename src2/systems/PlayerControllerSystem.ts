@@ -22,6 +22,7 @@ export class PlayerControllerSystem implements System {
 
   update(dt: number) {
     const incrementalModifier = 1; // NOTE: NO need to artificially slow it down when we're barely chugging along as it is. dt / 1000;
+    const mouseSensitivity = 0.05;
     for (const entity of this.playerEntities) {
       if (!entity.userControl) {
         // Since this property might be flipped instead of removed.
@@ -59,54 +60,86 @@ export class PlayerControllerSystem implements System {
         this.inputSystem.isKeyPressed("ArrowLeft") ||
         this.inputSystem.isKeyPressed("a")
       ) {
-        const rotation = -1;
-        direction.x =
-          entity.direction.x *
-            Math.cos(rotationSpeed * rotation * incrementalModifier) -
-          entity.direction.y *
-            Math.sin(rotationSpeed * rotation * incrementalModifier);
-        direction.y =
-          entity.direction.x *
-            Math.sin(rotationSpeed * rotation * incrementalModifier) +
-          entity.direction.y *
-            Math.cos(rotationSpeed * rotation * incrementalModifier);
-        plane.x =
-          entity.plane.x *
-            Math.cos(rotationSpeed * rotation * incrementalModifier) -
-          entity.plane.y *
-            Math.sin(rotationSpeed * rotation * incrementalModifier);
-        plane.y =
-          entity.plane.x *
-            Math.sin(rotationSpeed * rotation * incrementalModifier) +
-          entity.plane.y *
-            Math.cos(rotationSpeed * rotation * incrementalModifier);
+        // OLD -> Rotating with left arrow
+        // const rotation = -1;
+        // direction.x =
+        //   entity.direction.x *
+        //     Math.cos(rotationSpeed * rotation * incrementalModifier) -
+        //   entity.direction.y *
+        //     Math.sin(rotationSpeed * rotation * incrementalModifier);
+        // direction.y =
+        //   entity.direction.x *
+        //     Math.sin(rotationSpeed * rotation * incrementalModifier) +
+        //   entity.direction.y *
+        //     Math.cos(rotationSpeed * rotation * incrementalModifier);
+        // plane.x =
+        //   entity.plane.x *
+        //     Math.cos(rotationSpeed * rotation * incrementalModifier) -
+        //   entity.plane.y *
+        //     Math.sin(rotationSpeed * rotation * incrementalModifier);
+        // plane.y =
+        //   entity.plane.x *
+        //     Math.sin(rotationSpeed * rotation * incrementalModifier) +
+        //   entity.plane.y *
+        //     Math.cos(rotationSpeed * rotation * incrementalModifier);
+        position.x -= plane.x * walkSpeed * incrementalModifier;
+        position.y -= plane.y * walkSpeed * incrementalModifier;
       }
       if (
         this.inputSystem.isKeyPressed("ArrowRight") ||
         this.inputSystem.isKeyPressed("d")
       ) {
-        const rotation = 1;
-        direction.x =
-          entity.direction.x *
-            Math.cos(rotationSpeed * rotation * incrementalModifier) -
-          entity.direction.y *
-            Math.sin(rotationSpeed * rotation * incrementalModifier);
-        direction.y =
-          entity.direction.x *
-            Math.sin(rotationSpeed * rotation * incrementalModifier) +
-          entity.direction.y *
-            Math.cos(rotationSpeed * rotation * incrementalModifier);
-        plane.x =
-          entity.plane.x *
-            Math.cos(rotationSpeed * rotation * incrementalModifier) -
-          entity.plane.y *
-            Math.sin(rotationSpeed * rotation * incrementalModifier);
-        plane.y =
-          entity.plane.x *
-            Math.sin(rotationSpeed * rotation * incrementalModifier) +
-          entity.plane.y *
-            Math.cos(rotationSpeed * rotation * incrementalModifier);
+        position.x += plane.x * walkSpeed * incrementalModifier;
+        position.y += plane.y * walkSpeed * incrementalModifier;
+
+        // OLD -> rotating with right arrow
+        // const rotation = 1;
+        // direction.x =
+        //   entity.direction.x *
+        //     Math.cos(rotationSpeed * rotation * incrementalModifier) -
+        //   entity.direction.y *
+        //     Math.sin(rotationSpeed * rotation * incrementalModifier);
+        // direction.y =
+        //   entity.direction.x *
+        //     Math.sin(rotationSpeed * rotation * incrementalModifier) +
+        //   entity.direction.y *
+        //     Math.cos(rotationSpeed * rotation * incrementalModifier);
+        // plane.x =
+        //   entity.plane.x *
+        //     Math.cos(rotationSpeed * rotation * incrementalModifier) -
+        //   entity.plane.y *
+        //     Math.sin(rotationSpeed * rotation * incrementalModifier);
+        // plane.y =
+        //   entity.plane.x *
+        //     Math.sin(rotationSpeed * rotation * incrementalModifier) +
+        //   entity.plane.y *
+        //     Math.cos(rotationSpeed * rotation * incrementalModifier);
       }
+
+      const { movementX, movementY } = this.inputSystem.getMouseDelta();
+      const rotation = movementX * mouseSensitivity;
+
+      direction.x =
+        entity.direction.x *
+          Math.cos(rotationSpeed * rotation * incrementalModifier) -
+        entity.direction.y *
+          Math.sin(rotationSpeed * rotation * incrementalModifier);
+      direction.y =
+        entity.direction.x *
+          Math.sin(rotationSpeed * rotation * incrementalModifier) +
+        entity.direction.y *
+          Math.cos(rotationSpeed * rotation * incrementalModifier);
+
+      plane.x =
+        entity.plane.x *
+          Math.cos(rotationSpeed * rotation * incrementalModifier) -
+        entity.plane.y *
+          Math.sin(rotationSpeed * rotation * incrementalModifier);
+      plane.y =
+        entity.plane.x *
+          Math.sin(rotationSpeed * rotation * incrementalModifier) +
+        entity.plane.y *
+          Math.cos(rotationSpeed * rotation * incrementalModifier);
 
       // Compare old and new vector. If nothing changed don't update.
       if (!direction.equals(entity.direction)) {

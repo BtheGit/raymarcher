@@ -238,7 +238,7 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
     ecs.entityManager.add(objectEntity);
   });
 
-  const UserInputSystem = SingletonInputSystem.getInstance();
+  const UserInputSystem = SingletonInputSystem.getInstance(settings.canvasId);
 
   ecs.systems.add(new PlayerControllerSystem(ecs, UserInputSystem));
 
