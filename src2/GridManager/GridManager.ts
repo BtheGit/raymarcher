@@ -34,7 +34,6 @@ export class GridManager {
   }
 
   getGridTileFromCoord(x: number, y: number) {
-    console.log(x, y);
     return this.getGridTile(Math.floor(x), Math.floor(y));
   }
 
