@@ -28,9 +28,9 @@ export class PlayerControllerSystem implements System {
         // Since this property might be flipped instead of removed.
         continue;
       }
-      const position = new Vector(entity.position.x, entity.position.y);
       const direction = new Vector(entity.direction.x, entity.direction.y);
       const plane = new Vector(entity.plane.x, entity.plane.y);
+      let velocity = new Vector(0, 0);
       const { walkSpeed, rotationSpeed } = entity.movement;
 
       // TODO: NO COLLISION DETECTION PORTED YET
@@ -38,23 +38,25 @@ export class PlayerControllerSystem implements System {
         this.inputSystem.isKeyPressed("ArrowUp") ||
         this.inputSystem.isKeyPressed("w")
       ) {
-        position.x =
-          entity.position.x +
-          entity.direction.x * walkSpeed * incrementalModifier;
-        position.y =
-          entity.position.y +
-          entity.direction.y * walkSpeed * incrementalModifier;
+        velocity = velocity.add(direction.scale(walkSpeed));
+        // position.x =
+        //   entity.position.x +
+        //   entity.direction.x * walkSpeed * incrementalModifier;
+        // position.y =
+        //   entity.position.y +
+        //   entity.direction.y * walkSpeed * incrementalModifier;
       }
       if (
         this.inputSystem.isKeyPressed("ArrowDown") ||
         this.inputSystem.isKeyPressed("s")
       ) {
-        position.x =
-          entity.position.x -
-          entity.direction.x * walkSpeed * incrementalModifier;
-        position.y =
-          entity.position.y -
-          entity.direction.y * walkSpeed * incrementalModifier;
+        velocity = velocity.subtract(direction.scale(walkSpeed));
+        // position.x =
+        //   entity.position.x -
+        //   entity.direction.x * walkSpeed * incrementalModifier;
+        // position.y =
+        //   entity.position.y -
+        //   entity.direction.y * walkSpeed * incrementalModifier;
       }
       if (
         this.inputSystem.isKeyPressed("ArrowLeft") ||
@@ -82,15 +84,18 @@ export class PlayerControllerSystem implements System {
         //     Math.sin(rotationSpeed * rotation * incrementalModifier) +
         //   entity.plane.y *
         //     Math.cos(rotationSpeed * rotation * incrementalModifier);
-        position.x -= plane.x * walkSpeed * incrementalModifier;
-        position.y -= plane.y * walkSpeed * incrementalModifier;
+
+        // position.x -= plane.x * walkSpeed * incrementalModifier;
+        // position.y -= plane.y * walkSpeed * incrementalModifier;
+        velocity = velocity.subtract(plane.scale(walkSpeed));
       }
       if (
         this.inputSystem.isKeyPressed("ArrowRight") ||
         this.inputSystem.isKeyPressed("d")
       ) {
-        position.x += plane.x * walkSpeed * incrementalModifier;
-        position.y += plane.y * walkSpeed * incrementalModifier;
+        velocity = velocity.add(plane.scale(walkSpeed));
+        // position.x += plane.x * walkSpeed * incrementalModifier;
+        // position.y += plane.y * walkSpeed * incrementalModifier;
 
         // OLD -> rotating with right arrow
         // const rotation = 1;
@@ -148,8 +153,8 @@ export class PlayerControllerSystem implements System {
       if (!plane.equals(entity.plane)) {
         this.ecs.entityManager.updateEntity(entity, { plane });
       }
-      if (!position.equals(entity.position)) {
-        this.ecs.entityManager.updateEntity(entity, { position });
+      if (!velocity.equals(entity.velocity)) {
+        this.ecs.entityManager.updateEntity(entity, { velocity });
       }
     }
   }

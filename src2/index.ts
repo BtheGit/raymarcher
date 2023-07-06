@@ -2,6 +2,7 @@ import SingletonInputSystem from "./systems/SingletonInputSystem";
 import { PlayerControllerSystem } from "./systems/PlayerControllerSystem";
 import { RaycasterSystem } from "./systems/RaycasterSystem";
 import { RenderSystem } from "./systems/RenderSystem";
+import { PhysicsSystem } from "./systems/PhysicsSystem";
 import { ECS } from "./utils/ECS/ECS";
 import {
   Vector,
@@ -65,6 +66,7 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
   // TODO: Type the wad files.
   type GridCell = {
     type: "floor" | "wall";
+    accessible: boolean;
     texture: {
       type: "texture";
       textureName?: string;
@@ -81,11 +83,12 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[0].length; x++) {
       const gridCell = grid[y][x];
-      const { type, texture, ceiling, faces } = gridCell;
+      const { type, accessible, texture, ceiling, faces } = gridCell;
 
       const entity: GridTileEntity = {
         type,
         gridLocation: { x, y },
+        accessible,
         // We are cheating the radius for now. We'll have to figure out how to model this properly since grid locations work differently.
       };
 
@@ -144,12 +147,10 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
     ),
     direction,
     plane,
-    // rotation: startingPosition.rotation,
     collision: { radius: 1 },
     collisionResult: {
       collidedWith: [],
     },
-    // For now velocity is not used
     velocity: new Vector(0, 0),
     // TODO: Use movement speed to port old code.
     // FUTURE: Just change velocity with keys and let collision detection reconcile movement?
@@ -241,6 +242,8 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
   const UserInputSystem = SingletonInputSystem.getInstance(settings.canvasId);
 
   ecs.systems.add(new PlayerControllerSystem(ecs, UserInputSystem));
+
+  ecs.systems.add(new PhysicsSystem(ecs, gridManager));
 
   // TODO:
   // Once again, I don't know the ideal way to separate concerns here (without huge time overhead for good event stuff), so I'm going to short term undo all my good efforts and hard connect systems. Namely the renderer and the raycaster in this case. In fact, until I get smarter, they really shouldn't be two systems at all. But oh well, the renderer will at least have other concerns like text and a HUD that have nothing to do with raycasting. So I'm going to make a very fake eventBus to pass stuff along short term.

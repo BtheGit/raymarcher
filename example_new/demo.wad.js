@@ -210,6 +210,7 @@ for (const spriteData of spriteDatas) {
 
 const floor_default = {
   type: "floor",
+  accessible: true,
   texture: {
     type: "texture",
     textureName: "default",
@@ -218,6 +219,7 @@ const floor_default = {
 
 const wall_default = {
   type: "wall",
+  accessible: false,
   texture: {
     type: "texture",
     textureName: "light_brick1",
@@ -288,6 +290,7 @@ const wad = {
         floor_default,
         {
           type: "floor",
+          accessible: false,
           texture: {
             type: "texture",
             textureName: "marble1",
@@ -585,6 +588,7 @@ const wad = {
         floor_default,
         {
           type: "floor",
+          accessible: true,
           texture: {
             type: "texture",
             textureName: "default",
@@ -596,6 +600,7 @@ const wad = {
         },
         {
           type: "floor",
+          accesible: true,
           texture: {
             type: "texture",
             textureName: "default",
@@ -607,6 +612,7 @@ const wad = {
         },
         {
           type: "floor",
+          accessible: true,
           texture: {
             type: "texture",
             textureName: "default",
@@ -641,6 +647,7 @@ const wad = {
         floor_default,
         {
           type: "floor",
+          accessible: true,
           texture: {
             type: "texture",
             textureName: "default",
@@ -660,6 +667,7 @@ const wad = {
         },
         {
           type: "floor",
+          accessible: true,
           texture: {
             type: "texture",
             textureName: "default",
@@ -694,6 +702,7 @@ const wad = {
         floor_default,
         {
           type: "floor",
+          accessible: true,
           texture: {
             type: "texture",
             textureName: "default",
@@ -705,6 +714,7 @@ const wad = {
         },
         {
           type: "floor",
+          accessible: true,
           texture: {
             type: "texture",
             textureName: "default",
@@ -716,6 +726,7 @@ const wad = {
         },
         {
           type: "floor",
+          accessible: true,
           texture: {
             type: "texture",
             textureName: "default",

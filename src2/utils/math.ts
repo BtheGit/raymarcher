@@ -29,11 +29,12 @@ export class Vector {
     return this.x * vector.x + this.y * vector.y;
   }
 
+  magnitude(vector): number {
+    return Math.sqrt(vector.x ** 2 + vector.y ** 2);
+  }
+
   magnitudeProduct(vector) {
-    return (
-      Math.sqrt(this.x ** 2 + this.y ** 2) *
-      Math.sqrt(vector.x ** 2 + vector.y ** 2)
-    );
+    return this.magnitude(this) * this.magnitude(vector);
   }
 
   map(callback) {
@@ -55,6 +56,16 @@ export class Vector {
 
     this.x = newX;
     this.y = newY;
+  }
+
+  clampMagnitude(min: number, max: number): Vector {
+    const currentMagnitude = this.magnitude(this);
+    if (currentMagnitude < min) {
+      return this.scale(min / currentMagnitude);
+    } else if (currentMagnitude > max) {
+      return this.scale(max / currentMagnitude);
+    }
+    return this;
   }
 }
 

@@ -33,5 +33,10 @@ export class GridManager {
     return this.grid.get(key);
   }
 
+  getGridTileFromCoord(x: number, y: number) {
+    console.log(x, y);
+    return this.getGridTile(Math.floor(x), Math.floor(y));
+  }
+
   // removeEntity() // TODO: Maybe later. But for now, since it's just grid tiles, we never remove anything. When we add in other things with grid location, maybe (like lights or effects or...I dunno.)
 }
