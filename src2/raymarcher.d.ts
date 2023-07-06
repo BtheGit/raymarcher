@@ -141,6 +141,7 @@ export interface FloorTileComponent extends TileSurfaceComponent {
 export interface GridTileEntity {
   type: "wall" | "floor";
   gridLocation: GridLocationComponent;
+  accessible: boolean;
   wallTile?: WallTileComponent;
   floorTile?: FloorTileComponent;
   collision?: CollisionComponent;
