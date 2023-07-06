@@ -25,6 +25,7 @@ export class PlayerControllerSystem implements System {
     const mouseSensitivity = 0.05;
     // TODO: Base this on run or walk state (or key press)
     const walkSpeed = 0.01;
+    // const runSpeed = 0.015;
     const rotationSpeed = 0.03;
     for (const entity of this.playerEntities) {
       if (!entity.userControl) {

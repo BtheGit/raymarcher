@@ -1,5 +1,5 @@
 import { GridManager } from "../GridManager/GridManager";
-import { Entity } from "../raymarcher";
+import { Entity, ObjectEntity } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Vector } from "../utils/math";
 
@@ -60,27 +60,72 @@ export class PhysicsSystem implements System {
       // In fact, collisions are goign to be separate from positional updates. So we can collide with passable walls and impassable walls. First can be a teleport/portal, second can be a bounce effect.
 
       //For now, very basic. No radius or anything.
-      const nextX = this.gridManager.getGridTileFromCoord(
+      const nextXTile = this.gridManager.getGridTileFromCoord(
         potentialPosition.x,
         position.y
-      )!.accessible
-        ? potentialPosition.x
-        : position.x;
-      const nextY = this.gridManager.getGridTileFromCoord(
+      )!;
+
+      const nextYTile = this.gridManager.getGridTileFromCoord(
         position.x,
         potentialPosition.y
-      )!.accessible
-        ? potentialPosition.y
-        : position.y;
+      )!;
+
+      let nextX = nextXTile.accessible ? potentialPosition.x : position.x;
+      let nextY = nextYTile.accessible ? potentialPosition.y : position.y;
+
+      const newPosition = new Vector(nextX, nextY);
+
+      // Perform entity collision detection against other colliders
+      // TODO: Cache this value (not the filtered list though)
+      const collidingEntities: ObjectEntity[] = this.ecs.entityManager
+        .with(["collider"])
+        .filter((e) => e !== entity);
+
+      for (const axis of ["x", "y"]) {
+        for (const collidingEntity of collidingEntities) {
+          const collidingPosition = collidingEntity.transform.position!;
+          const collidingCollider = collidingEntity.collider!;
+
+          if (collidingCollider.type !== "aabb") continue;
+
+          if (
+            newPosition.x < collidingPosition.x + collidingCollider.width! &&
+            newPosition.x + entity.collider.width > collidingPosition.x &&
+            newPosition.y < collidingPosition.y + collidingCollider.height! &&
+            newPosition.y + entity.collider.height > collidingPosition.y
+          ) {
+            console.log("collision at: ", newPosition.x, newPosition.y);
+            console.log("collided with: ", collidingEntity);
+            // Handle collision
+            const xOverlap = Math.min(
+              newPosition.x + entity.collider.width - collidingPosition.x,
+              collidingPosition.x + collidingCollider.width! - newPosition.x
+            );
+            const yOverlap = Math.min(
+              newPosition.y + entity.collider.height - collidingPosition.y,
+              collidingPosition.y + collidingCollider.height! - newPosition.y
+            );
+
+            // Determine the axis with the smallest overlap
+            if (xOverlap < yOverlap) {
+              // Resolve collision along the X axis
+              newPosition.x +=
+                newPosition.x < collidingPosition.x ? -xOverlap : xOverlap;
+            } else {
+              // Resolve collision along the Y axis
+              newPosition.y +=
+                newPosition.y < collidingPosition.y ? -yOverlap : yOverlap;
+            }
+          }
+        }
+      }
 
       // And now we have "collision" again!!
       this.ecs.entityManager.updateEntity(entity, {
-        position: new Vector(nextX, nextY),
+        position: new Vector(newPosition.x, newPosition.y),
       });
     }
-    // Check for all collisions between player and grid tiles.
-    // Check for all collisions between player and collidable entities.
-    // Check for all collisions between collidable entities and grid tiles.
-    // Check for all collisions between collidable entities and themselves (if either has moved)
+    // Collision check all entities with a velocity against other colliders. Mark collisions with current velocity.
+    // However, instead of bouncing, maybe we should arrest movement on that plane similarly to above, then any extra things can occur. Or we can have collider types
   }
 }

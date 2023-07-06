@@ -600,7 +600,7 @@ const wad = {
         },
         {
           type: "floor",
-          accesible: true,
+          accessible: true,
           texture: {
             type: "texture",
             textureName: "default",
@@ -1007,6 +1007,12 @@ const wad = {
           },
         },
         texture: "sprite__tree_1",
+        collider: {
+          type: "aabb",
+          width: 0.8,
+          height: 0.8,
+          solid: true,
+        },
         // If no state, then no animation (default state)
       },
       {
@@ -1022,6 +1028,12 @@ const wad = {
           },
         },
         texture: "sprite__tree_1",
+        collider: {
+          type: "aabb",
+          width: 0.8,
+          height: 0.8,
+          solid: true,
+        },
       },
       {
         transform: {
@@ -1053,6 +1065,12 @@ const wad = {
           },
           currentAnimation: "idle",
           currentFrame: 0,
+        },
+        collider: {
+          type: "aabb",
+          width: 0.8,
+          height: 0.8,
+          solid: true,
         },
       },
     ],
