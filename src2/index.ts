@@ -16,13 +16,13 @@ import {
   AnimatedObjectEntity,
   AnimationState,
   EntityState,
-  FloorTileComponent,
   GameSettingsEntity,
-  GridTileEntity,
   ObjectEntity,
   PlayerEntity,
   SkyboxEntity,
   StaticObjectEntity,
+  WADGridCell,
+  WADObjectEntity,
 } from "./raymarcher";
 import { EventManager } from "./EventManager/EventManager";
 import { AnimationSystem } from "./systems/AnimationSystem";
@@ -67,65 +67,9 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
 
   wad.sprites.forEach((spriteData) => spriteManager.loadSprites(spriteData));
 
-  // TODO: Type the wad files.
-  type GridCell = {
-    type: "floor" | "wall";
-    accessible: boolean;
-    texture: {
-      type: "texture";
-      textureName?: string;
-    };
-    ceiling?: {
-      type: "texture";
-      textureName?: string;
-    };
-    faces?: [];
-  };
   // TODO: Some kind of default fallback map and textures.
-  const grid: GridCell[][] = wad.map.grid!;
-  // Loop through the map and add all the grid locations as entities. We need a grid location entity factory
-  for (let y = 0; y < grid.length; y++) {
-    for (let x = 0; x < grid[0].length; x++) {
-      const gridCell = grid[y][x];
-      const { type, accessible, texture, ceiling, faces } = gridCell;
-
-      const entity: GridTileEntity = {
-        type,
-        gridLocation: { x, y },
-        accessible,
-        // We are cheating the radius for now. We'll have to figure out how to model this properly since grid locations work differently.
-      };
-
-      // TODO: Allow floor types to be collidable.
-      // if (type === "wall") {
-      //   // NOTE: Radius is arbitrary since we'll process this differently (fingers crossed).
-      //   entity.collider = { radius: 1 };
-      // }
-
-      if (type === "floor") {
-        entity.floorTile = {
-          surface: texture.type,
-          texture: { name: texture.textureName! },
-        };
-
-        if (ceiling) {
-          entity.floorTile.ceiling = {
-            surface: ceiling.type,
-            texture: { name: ceiling.textureName! },
-          };
-        }
-      } else if (type === "wall") {
-        entity.wallTile = {
-          surface: texture.type,
-          texture: { name: texture.textureName! },
-        };
-
-        // TODO: Faces
-      }
-
-      gridManager.addEntity(entity);
-    }
-  }
+  const grid: WADGridCell[][] = wad.map.grid!;
+  gridManager.loadGrid(grid);
 
   // TODO: We'll hard code the sky in the renderer until we figure out how to model that.
 
@@ -178,55 +122,6 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
   // ## Objects and NPCS
   // TODO:
   // NOTE: Textures are not added to the wad with dimensions. That is a mistake and with an editor would be fine. So we load the boot process and get all those values now. (We ignored it for tiles since those would always be the same size and stretched.)
-  type WADObjectEntity = {
-    transform: {
-      position: {
-        x: number;
-        y: number;
-      };
-      rotation: number;
-      scale: {
-        x: number;
-        y: number;
-      };
-    };
-    texture?: string;
-    initialState?: string;
-    states?: Array<{
-      name: string;
-      animation: {
-        name: string;
-        frames: Array<{
-          frameId: string;
-          directions: 0 | 8;
-          duration?: number;
-        }>;
-        looping: boolean;
-        frameDuration: number;
-        nextState?: string;
-      };
-      sound?: any;
-    }>;
-    collider?: {
-      type: "aabb" | "circle";
-      radius?: number;
-      width?: number;
-      height?: number;
-      solid: boolean;
-    };
-    animation?: {
-      animations: {
-        [key: string]: {
-          name: string;
-          duration: number;
-          frames: string[];
-          directions: 0 | 8;
-        };
-      };
-      currentAnimation: string;
-      currentFrame: number;
-    };
-  };
   const objects: WADObjectEntity[] = wad.map.objects ?? [];
   objects.forEach((object) => {
     const { transform, texture, states, initialState, collider } = object;

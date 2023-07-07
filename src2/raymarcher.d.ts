@@ -250,3 +250,69 @@ export interface SpriteFrameData {
   };
   // Add additional frame data properties as needed
 }
+
+export interface WADGridCell {
+  type: "floor" | "wall";
+  accessible: boolean;
+  texture: {
+    type: "texture";
+    textureName?: string;
+  };
+  ceiling?: {
+    type: "texture";
+    textureName?: string;
+  };
+  faces?: [];
+}
+
+export type WADGrid = WADGridCell[][];
+
+export interface WADObjectEntity {
+  transform: {
+    position: {
+      x: number;
+      y: number;
+    };
+    rotation: number;
+    scale: {
+      x: number;
+      y: number;
+    };
+  };
+  texture?: string;
+  initialState?: string;
+  states?: Array<{
+    name: string;
+    animation: {
+      name: string;
+      frames: Array<{
+        frameId: string;
+        directions: 0 | 8;
+        duration?: number;
+      }>;
+      looping: boolean;
+      frameDuration: number;
+      nextState?: string;
+    };
+    sound?: any;
+  }>;
+  collider?: {
+    type: "aabb" | "circle";
+    radius?: number;
+    width?: number;
+    height?: number;
+    solid: boolean;
+  };
+  animation?: {
+    animations: {
+      [key: string]: {
+        name: string;
+        duration: number;
+        frames: string[];
+        directions: 0 | 8;
+      };
+    };
+    currentAnimation: string;
+    currentFrame: number;
+  };
+}
