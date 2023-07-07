@@ -13,12 +13,6 @@ export type Ray = {
   activeCell: Vector;
 };
 
-export enum PlayerState {
-  Standing,
-  Walking,
-  Running,
-}
-
 // TODO: Oh man. Uh. Sort term gonna just stick a flag on player, then we figure out how to make the camera jump around for freeview and stuff.
 export interface CameraComponent {
   inverseDeterminate: number;
@@ -56,22 +50,40 @@ export interface SpriteComponent {
   height: number;
 }
 
-export interface StateComponent {
-  currentState: string;
+export interface EntityState {
+  name: string;
+  animation: AnimationState;
+  sound?: SoundComponent; // Some entities should play a sound continuously during a certain state.
 }
 
-export interface AnimationComponent {
-  animations: {
-    [state: string]: {
-      name: string;
-      frames: string[];
-      directions: 0 | 8;
-      duration: number; // Length between frame changes
-    };
-  };
-  currentAnimation: string;
+export interface AnimationState {
+  name: string; // needed?
+  frames: AnimationFrame[];
   currentFrame: number;
   timeSinceLastFrame: number;
+  // TODO: allow for random duration
+  frameDuration: number; // Allow for all frames to share a duration
+  // These two values may better belong on the EntityState
+  looping: boolean;
+  nextState?: string; // At the end of the animation, change entity state to this. (Wouldn't make sense if looping of course)
+}
+
+export interface AnimationFrame {
+  frameId: string;
+  directions: 0 | 8;
+  duration?: number; // Allow a frame to override the base duration of the animation
+  sound?: SoundComponent;
+}
+
+export interface SoundComponent {}
+
+export interface EntityStateComponent {
+  currentState: string;
+  // TODO: Previous state
+  initialState: string;
+  states: {
+    [state: string]: EntityState;
+  };
 }
 
 export interface ColliderComponent {
@@ -80,26 +92,11 @@ export interface ColliderComponent {
   width?: number;
   height?: number;
   solid: boolean;
-  // TODO: Support circle and rectangle bounding boxes.
 }
 
 export interface CollisionResultComponent {
   collidedWith: Entity[];
 }
-
-export interface PlayerStateComponent {
-  isStanding: boolean;
-  // isRunning: boolean;
-  isWalking: boolean;
-  // isJumping: boolean;
-}
-
-// TODO: Model entities so it's easier to track in code.
-
-// Component to represent the type of the grid tile (wall or floor)
-// export interface GridTileTypeComponent {
-//   type: "wall" | "floor";
-// }
 
 export interface GridLocationComponent {
   x: number;
@@ -152,12 +149,15 @@ export interface GridTileEntity {
   // collisionResult: CollisionResultComponent;
 }
 
+export interface PlayerStateComponent {
+  currentState;
+}
+
 export interface PlayerEntity {
   camera: CameraComponent;
   userControl: UserControlledComponent;
   position: PositionComponent;
-  direction: Vector; // TODO: Until I can figure out how to switch to rotation. this is what we have.
-  // rotation: RotationComponent;
+  direction: Vector;
   plane: Vector;
   velocity: VelocityComponent;
   movement: MovementComponent;
@@ -171,15 +171,24 @@ export interface SkyboxEntity {
   skybox: TileSurfaceComponent;
 }
 
-export interface ObjectEntity {
+export interface StaticObjectEntity {
+  // NOTE: This is to make it easier to deal with typescript. It's really got no other use today.
+  entityType: "object__static";
   transform: TransformComponent;
-  // sprite: SpriteComponent;
-  state?: StateComponent;
-  texture?: TileTextureComponent;
-  animation?: AnimationComponent;
+  texture: TileTextureComponent;
   collider?: ColliderComponent;
   collisions?: CollisionResultComponent;
 }
+
+export interface AnimatedObjectEntity {
+  entityType: "object__animated";
+  transform: TransformComponent;
+  state: EntityStateComponent;
+  collider?: ColliderComponent;
+  collisions?: CollisionResultComponent;
+}
+
+export type ObjectEntity = StaticObjectEntity | AnimatedObjectEntity;
 
 export interface GameSettingsComponent {
   width: number;

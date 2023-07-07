@@ -13,12 +13,16 @@ import {
 import { TextureManager } from "./TextureManager/TextureManager";
 import { GridManager } from "./GridManager/GridManager";
 import {
+  AnimatedObjectEntity,
+  AnimationState,
+  EntityState,
   FloorTileComponent,
   GameSettingsEntity,
   GridTileEntity,
   ObjectEntity,
   PlayerEntity,
   SkyboxEntity,
+  StaticObjectEntity,
 } from "./raymarcher";
 import { EventManager } from "./EventManager/EventManager";
 import { AnimationSystem } from "./systems/AnimationSystem";
@@ -165,8 +169,8 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
       rotationSpeed: 0.12,
     },
     state: {
-      isStanding: true,
-      isWalking: false,
+      // TODO: For the main player, we'll have to worry about this later. I'm more concerned with NPCs
+      currentState: "idle",
     },
   };
   ecs.entityManager.add(playerEntity);
@@ -174,7 +178,7 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
   // ## Objects and NPCS
   // TODO:
   // NOTE: Textures are not added to the wad with dimensions. That is a mistake and with an editor would be fine. So we load the boot process and get all those values now. (We ignored it for tiles since those would always be the same size and stretched.)
-  type MapObject = {
+  type WADObjectEntity = {
     transform: {
       position: {
         x: number;
@@ -187,7 +191,22 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
       };
     };
     texture?: string;
-    state?: string;
+    initialState?: string;
+    states?: Array<{
+      name: string;
+      animation: {
+        name: string;
+        frames: Array<{
+          frameId: string;
+          directions: 0 | 8;
+          duration?: number;
+        }>;
+        looping: boolean;
+        frameDuration: number;
+        nextState?: string;
+      };
+      sound?: any;
+    }>;
     collider?: {
       type: "aabb" | "circle";
       radius?: number;
@@ -208,11 +227,11 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
       currentFrame: number;
     };
   };
-  const objects: MapObject[] = wad.map.objects ?? [];
+  const objects: WADObjectEntity[] = wad.map.objects ?? [];
   objects.forEach((object) => {
-    const { transform, texture, state, animation, collider } = object;
+    const { transform, texture, states, initialState, collider } = object;
 
-    const objectEntity: ObjectEntity = {
+    let objectEntity = {
       transform: {
         position: new Vector(transform.position.x, transform.position.y),
         // TODO: Deprecate roation if the math is more work
@@ -220,34 +239,63 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
         direction: directionVectorFromRotation(transform.rotation),
         scale: new Vector(transform.scale.x, transform.scale.y),
       },
-      collider,
-      // TODO: I don't really think objects should directly reference a spritesheet texture now, since they could reference multiple sheets.
-      // sprite: {
-      //   texture: sprite.texture,
-      //   // TODO: Not sure dimensions are helpful since this is the entire spritesheet, not the object or a frame.
-      //   width: textureDimensions.width,
-      //   height: textureDimensions.height,
-      // },
     };
 
-    if (texture) {
-      objectEntity.texture = {
-        name: texture,
-      };
+    if (collider) {
+      (objectEntity as ObjectEntity).collider = collider;
     }
 
-    // TODO: There may be a case for state without animations, but never animations without state.
-    if (state) {
-      objectEntity.state = {
-        currentState: state,
+    if (texture) {
+      (objectEntity as StaticObjectEntity) = {
+        ...objectEntity,
+        entityType: "object__static",
+        texture: {
+          name: texture,
+        },
       };
-
-      if (animation) {
-        objectEntity.animation = {
-          ...animation,
-          timeSinceLastFrame: 0,
-        };
+    } else {
+      if (!states || !states.length || !initialState) {
+        throw new Error(
+          "Animated Object is missing required state properties. Can not load"
+        );
       }
+      const entityStates = states.reduce((acc, state) => {
+        const { name, animation: wadAnimation, sound } = state;
+        const animation: AnimationState = {
+          name: wadAnimation.name,
+          frames: wadAnimation.frames,
+          currentFrame: 0,
+          timeSinceLastFrame: 0,
+          looping: wadAnimation.looping,
+          frameDuration: wadAnimation.frameDuration,
+        };
+
+        if (wadAnimation.nextState) {
+          animation.nextState = wadAnimation.nextState;
+        }
+
+        const entityState: EntityState = {
+          name,
+          animation,
+        };
+
+        if (sound) {
+          entityState.sound = sound;
+        }
+
+        acc[name] = entityState;
+        return acc;
+      }, {});
+
+      (objectEntity as AnimatedObjectEntity) = {
+        ...objectEntity,
+        entityType: "object__animated",
+        state: {
+          currentState: initialState,
+          initialState,
+          states: entityStates,
+        },
+      };
     }
 
     ecs.entityManager.add(objectEntity);

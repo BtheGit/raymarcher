@@ -17,6 +17,8 @@ import {
   PlayerEntity,
   SkyboxEntity,
   ObjectEntity,
+  StaticObjectEntity,
+  AnimatedObjectEntity,
 } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
 import { apparentDirectionAngle, toDegrees } from "../utils/math";
@@ -872,36 +874,42 @@ export class RenderSystem implements System {
 
         // If an object has a texture field, we wont check for animation frames. So, be warned, for now, it's one or the other! And no multiple states for static textures.
         let texture;
-        const staticTextureName = object?.texture?.name;
-        if (staticTextureName) {
-          texture = this.textureManager.getTexture(staticTextureName);
+        // Note: Using entityType to make typescript happy.
+        const entityType = object.entityType;
+        if (entityType === "object__static") {
+          texture = this.textureManager.getTexture(object.texture.name);
         } else {
           // Uh. If we have no texture and no animation frame, should mark this object as rubbish. But just doing the check anyway.
-          if (object.animation) {
-            const { currentAnimation, currentFrame } = object.animation;
-            const animation = object.animation.animations[currentAnimation];
-            const baseFrameId = animation.frames[currentFrame];
-            let frameId;
-            const directions = animation.directions;
-            if (directions === 0) {
-              // The frameId only gets us halfway there. We still need rotation. (If directions isn't 0)
-              frameId = `${baseFrameId}0`;
-            } else {
-              // For now, it's 0 or 8.
-              const angle = apparentDirectionAngle(
-                object.transform.position,
-                object.transform.direction,
-                this.camera.position
-              );
-              const frameDirection = frameDirectionIndexByAngle(angle);
-              frameId = `${baseFrameId}${frameDirection}`;
-            }
-
-            texture = this.spriteManager.getSpriteTexture(frameId);
+          // TODO: For now assuming animated since we only have two types of entities.
+          const { currentState, states } = object.state;
+          const { animation } = states[currentState];
+          // if(!animation){
+          //   continue
+          // }
+          const { frames, currentFrame } = animation;
+          const frame = frames[currentFrame];
+          const baseFrameId = frame.frameId;
+          const { directions } = frame;
+          let frameId;
+          if (directions === 0) {
+            // The frameId only gets us halfway there. We still need rotation. (If directions isn't 0)
+            frameId = `${baseFrameId}0`;
+          } else {
+            // For now, it's 0 or 8.
+            const angle = apparentDirectionAngle(
+              object.transform.position,
+              object.transform.direction,
+              this.camera.position
+            );
+            const frameDirection = frameDirectionIndexByAngle(angle);
+            frameId = `${baseFrameId}${frameDirection}`;
           }
+
+          texture = this.spriteManager.getSpriteTexture(frameId);
         }
 
-        if (!texture) continue;
+        // For now this shouldn't be possible. Let's see it error before we uncomment.
+        // if (!texture) continue;
 
         //calculate width of the sprite
         // The width ratio ensures the sprite is not stretched horizontally.

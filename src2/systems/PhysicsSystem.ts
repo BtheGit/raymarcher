@@ -94,8 +94,6 @@ export class PhysicsSystem implements System {
             newPosition.y < collidingPosition.y + collidingCollider.height! &&
             newPosition.y + entity.collider.height > collidingPosition.y
           ) {
-            console.log("collision at: ", newPosition.x, newPosition.y);
-            console.log("collided with: ", collidingEntity);
             // Handle collision
             const xOverlap = Math.min(
               newPosition.x + entity.collider.width - collidingPosition.x,
