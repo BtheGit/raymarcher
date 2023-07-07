@@ -1047,25 +1047,36 @@ const wad = {
             y: 1,
           },
         },
-        state: "idle",
-        animation: {
-          animations: {
-            idle: {
-              name: "idle",
-              duration: 200,
-              directions: 8,
-              // TODO: This lets us use frames across multiple sprite sheets. Gotta be careful about collisions though
+        initialState: "state__idle",
+        states: [
+          {
+            name: "state__idle",
+            animation: {
+              name: "animation__idle",
               frames: [
-                "SCIENTIST__A",
-                "SCIENTIST__B",
-                "SCIENTIST__C",
-                "SCIENTIST__D",
+                {
+                  frameId: "SCIENTIST__A",
+                  directions: 8,
+                },
+                {
+                  frameId: "SCIENTIST__B",
+                  directions: 8,
+                },
+                {
+                  frameId: "SCIENTIST__C",
+                  directions: 8,
+                },
+                {
+                  frameId: "SCIENTIST__D",
+                  directions: 8,
+                },
               ],
+              looping: true,
+              frameDuration: 200,
+              // Animation duration?
             },
           },
-          currentAnimation: "idle",
-          currentFrame: 0,
-        },
+        ],
         collider: {
           type: "aabb",
           width: 0.8,
