@@ -7,6 +7,14 @@ export class Vector {
     this.y = y;
   }
 
+  static normalize(vector: Vector) {
+    const magnitude = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
+    if (magnitude === 0) {
+      return new Vector(0, 0);
+    }
+    return new Vector(vector.x / magnitude, vector.y / magnitude);
+  }
+
   equals(vector) {
     return this.x === vector.x && this.y === vector.y;
   }
