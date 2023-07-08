@@ -40,15 +40,20 @@ export class SingletonInputSystem {
     return SingletonInputSystem.instance;
   }
 
-  private handlePointerLockChange() {
-    if (document.pointerLockElement === this.canvas) {
-      this.handleCanvasFocus();
-      this.pointerLockEnabled = true;
-    } else {
-      this.handleCanvasBlur();
-      this.pointerLockEnabled = false;
+  private handlePointerLockChange = () => {
+    try {
+      if (document.pointerLockElement === this.canvas) {
+        this.handleCanvasFocus();
+        this.pointerLockEnabled = true;
+      } else {
+        this.handleCanvasBlur();
+        this.pointerLockEnabled = false;
+      }
+    } catch (err) {
+      // TODO: This could be an infinite loop
+      setTimeout(this.handlePointerLockChange, 2000);
     }
-  }
+  };
 
   private handleCanvasFocus() {
     this.canvasFocused = true;
