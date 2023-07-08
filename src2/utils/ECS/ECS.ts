@@ -103,6 +103,7 @@ export class EntityManager<Entity> extends Bucket<Entity> {
     // TODO: Broadcast and reindex any queries etc.
   };
 
+  // TODO: Support dot notation for sub properties
   with = (components: string[]) => {
     const entities = this.bucket.filter((entity) => {
       return components.every((component) => {

@@ -56,16 +56,19 @@ export interface EntityState {
   sound?: SoundComponent; // Some entities should play a sound continuously during a certain state.
 }
 
-export interface AnimationState {
+export interface AnimationDefinition {
   name: string; // needed?
   frames: AnimationFrame[];
-  currentFrame: number;
-  timeSinceLastFrame: number;
   // TODO: allow for random duration
   frameDuration: number; // Allow for all frames to share a duration
-  // These two values may better belong on the EntityState
   looping: boolean;
   nextState?: string; // At the end of the animation, change entity state to this. (Wouldn't make sense if looping of course)
+}
+
+export interface AnimationState extends AnimationDefinition {
+  currentFrame: number;
+  timeSinceLastFrame: number;
+  // These two values may better belong on the EntityState
 }
 
 export interface AnimationFrame {
@@ -79,8 +82,9 @@ export interface SoundComponent {}
 
 export interface EntityStateComponent {
   currentState: string;
-  // TODO: Previous state
+  previousState: string | null;
   initialState: string;
+  timeElapsedInState: number;
   states: {
     [state: string]: EntityState;
   };
@@ -98,9 +102,67 @@ export interface CollisionResultComponent {
   collidedWith: Entity[];
 }
 
-export interface GridLocationComponent {
+export interface BaseAIComponent {
+  aiType: string;
+}
+
+export interface SeekTargetComponent {
+  target: Vector | null;
+}
+
+export interface SeekPathComponent {
+  path: GridNode[] | null;
+  currentIndex: number;
+}
+
+export interface DogAIComponent extends BaseAIComponent {
+  aiType: "dog_friendly";
+  playRadius: number;
+  swarmRadius: number;
+  idleDurationRange: [number, number];
+  idleTimer: number;
+  // TODO: I'm getting a bit overwhelmed with options here. Just going to try and keep all these values here, but some might make more sense to be related to state or movement or physics. Also, I should be redefining the state component to not include animations directly again. Ha.
+  seekTarget: SeekTargetComponent;
+  seekPath: SeekPathComponent;
+}
+
+export type AIComponent = DogAIComponent;
+
+export interface BaseObjectEntity {
+  objectType: string;
+  transform: TransformComponent;
+  velocity: VelocityComponent;
+  ai?: AIComponent;
+}
+
+export interface StaticObjectEntity extends BaseObjectEntity {
+  // NOTE: This is to make it easier to deal with typescript. It's really got no other use today.
+  objectType: "object__static";
+  texture: TileTextureComponent;
+  collider?: ColliderComponent;
+  collisions?: CollisionResultComponent;
+}
+
+export interface AnimatedObjectEntity extends BaseObjectEntity {
+  objectType: "object__animated";
+  state: EntityStateComponent;
+  collider?: ColliderComponent;
+  collisions?: CollisionResultComponent;
+}
+
+export interface FriendlyDogEntity extends AnimatedObjectEntity {
+  ai: DogAIComponent;
+}
+
+export type ObjectEntity = StaticObjectEntity | AnimatedObjectEntity;
+
+export interface GridCoord {
   x: number;
   y: number;
+}
+
+export interface GridNode extends GridCoord {
+  parent: GridNode | null;
 }
 
 // Component to store the texture information for the grid tile face
@@ -141,7 +203,7 @@ export interface FloorTileComponent extends TileSurfaceComponent {
 
 export interface GridTileEntity {
   type: "wall" | "floor";
-  gridLocation: GridLocationComponent;
+  gridLocation: GridCoord;
   accessible: boolean;
   wallTile?: WallTileComponent;
   floorTile?: FloorTileComponent;
@@ -156,8 +218,9 @@ export interface PlayerStateComponent {
 export interface PlayerEntity {
   camera: CameraComponent;
   userControl: UserControlledComponent;
-  position: PositionComponent;
-  direction: Vector;
+  transform: TransformComponent;
+  // position: PositionComponent;
+  // direction: Vector;
   plane: Vector;
   velocity: VelocityComponent;
   movement: MovementComponent;
@@ -170,25 +233,6 @@ export interface PlayerEntity {
 export interface SkyboxEntity {
   skybox: TileSurfaceComponent;
 }
-
-export interface StaticObjectEntity {
-  // NOTE: This is to make it easier to deal with typescript. It's really got no other use today.
-  entityType: "object__static";
-  transform: TransformComponent;
-  texture: TileTextureComponent;
-  collider?: ColliderComponent;
-  collisions?: CollisionResultComponent;
-}
-
-export interface AnimatedObjectEntity {
-  entityType: "object__animated";
-  transform: TransformComponent;
-  state: EntityStateComponent;
-  collider?: ColliderComponent;
-  collisions?: CollisionResultComponent;
-}
-
-export type ObjectEntity = StaticObjectEntity | AnimatedObjectEntity;
 
 export interface GameSettingsComponent {
   width: number;
@@ -283,17 +327,7 @@ export interface WADObjectEntity {
   initialState?: string;
   states?: Array<{
     name: string;
-    animation: {
-      name: string;
-      frames: Array<{
-        frameId: string;
-        directions: 0 | 8;
-        duration?: number;
-      }>;
-      looping: boolean;
-      frameDuration: number;
-      nextState?: string;
-    };
+    animation: string;
     sound?: any;
   }>;
   collider?: {
@@ -303,16 +337,29 @@ export interface WADObjectEntity {
     height?: number;
     solid: boolean;
   };
-  animation?: {
-    animations: {
-      [key: string]: {
-        name: string;
-        duration: number;
-        frames: string[];
-        directions: 0 | 8;
-      };
-    };
-    currentAnimation: string;
-    currentFrame: number;
+  ai?: any;
+}
+
+export interface WADAnimation {
+  name: string;
+  frames: Array<{
+    frameId: string;
+    directions: 0 | 8;
+    duration?: number;
+  }>;
+  looping: boolean;
+  frameDuration: number;
+  nextState?: string;
+}
+
+export interface WAD {
+  textures: any;
+  sprites: any;
+  animations: WADAnimation[];
+  map: {
+    grid: WADGrid;
+    sky: any;
+    start: any;
+    objects: WADObjectEntity[];
   };
 }

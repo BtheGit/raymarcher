@@ -36,9 +36,9 @@ export class RaycasterSystem implements System {
   castRay(cameraX, castDistance = Infinity) {
     const rayDirection = this.camera.plane
       .scale(cameraX)
-      .add(this.camera.direction);
+      .add(this.camera.transform.direction);
     // NOTE: Interestingly Lode uses what looks like a round, not floor here. but taht doesnt work for me. Maybe its different in c++ and always casts ints with floor.
-    const activeCell = this.camera.position.map(Math.floor);
+    const activeCell = this.camera.transform.position.map(Math.floor);
 
     // The distance from the nearest cell walls
     // Lode uses the following. I would like to verify its the same:
@@ -51,12 +51,14 @@ export class RaycasterSystem implements System {
 
     let sideDistX =
       (rayDirection.x < 0
-        ? this.camera.position.x - activeCell.x
-        : 1 + activeCell.x - this.camera.position.x) * distanceDelta.x;
+        ? this.camera.transform.position.x - activeCell.x
+        : 1 + activeCell.x - this.camera.transform.position.x) *
+      distanceDelta.x;
     let sideDistY =
       (rayDirection.y < 0
-        ? this.camera.position.y - activeCell.y
-        : 1 + activeCell.y - this.camera.position.y) * distanceDelta.y;
+        ? this.camera.transform.position.y - activeCell.y
+        : 1 + activeCell.y - this.camera.transform.position.y) *
+      distanceDelta.y;
 
     // This assumes infinite draw distance and that all spaces will be fully enclosed
     // TODO: Get rid of that assumption.
@@ -96,16 +98,17 @@ export class RaycasterSystem implements System {
 
     const normalizedDistance =
       wallOrientation === "vertical"
-        ? (activeCell.x - this.camera.position.x + (1 - stepX) / 2) /
+        ? (activeCell.x - this.camera.transform.position.x + (1 - stepX) / 2) /
           rayDirection.x
-        : (activeCell.y - this.camera.position.y + (1 - stepY) / 2) /
+        : (activeCell.y - this.camera.transform.position.y + (1 - stepY) / 2) /
           rayDirection.y;
 
     // Exact intersection point with wall
     const intersection =
       wallOrientation === "vertical"
-        ? this.camera.position.y + normalizedDistance * rayDirection.y
-        : this.camera.position.x + normalizedDistance * rayDirection.x;
+        ? this.camera.transform.position.y + normalizedDistance * rayDirection.y
+        : this.camera.transform.position.x +
+          normalizedDistance * rayDirection.x;
 
     // This gives us the intersection relative to one wall unit.
     const wallIntersection = intersection - Math.floor(intersection);

@@ -3,6 +3,7 @@ import { PlayerControllerSystem } from "./systems/PlayerControllerSystem";
 import { RaycasterSystem } from "./systems/RaycasterSystem";
 import { RenderSystem } from "./systems/RenderSystem";
 import { PhysicsSystem } from "./systems/PhysicsSystem";
+import { AIControllerSystem } from "./systems/AIControllerSystem";
 import { ECS } from "./utils/ECS/ECS";
 import {
   Vector,
@@ -23,10 +24,12 @@ import {
   StaticObjectEntity,
   WADGridCell,
   WADObjectEntity,
+  WAD,
 } from "./raymarcher";
 import { EventManager } from "./EventManager/EventManager";
 import { AnimationSystem } from "./systems/AnimationSystem";
 import { SpriteManager } from "./SpriteManager/SpriteManager";
+import { AnimationManager } from "./AnimationManager/AnimationManager";
 
 const DEFAULT_SETTINGS = {
   width: 1024,
@@ -36,10 +39,11 @@ const DEFAULT_SETTINGS = {
 
 // TODO: Default Wad
 
-const main = async (wad, settings = DEFAULT_SETTINGS) => {
+const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   const ecs = new ECS();
   const textureManager = new TextureManager();
   const spriteManager = new SpriteManager(textureManager);
+  const animationManager = new AnimationManager();
   const gridManager = new GridManager(ecs);
 
   // I don't love the idea of modeling everything as an entity, but since it's easier to revert that than implement it... yolo.
@@ -66,6 +70,7 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
   );
 
   wad.sprites.forEach((spriteData) => spriteManager.loadSprites(spriteData));
+  animationManager.loadAnimations(wad.animations);
 
   // TODO: Some kind of default fallback map and textures.
   const grid: WADGridCell[][] = wad.map.grid!;
@@ -89,11 +94,15 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
     userControl: {
       isControlled: true,
     },
-    position: new Vector(
-      startingPosition.position.x,
-      startingPosition.position.y
-    ),
-    direction,
+    transform: {
+      position: new Vector(
+        startingPosition.position.x,
+        startingPosition.position.y
+      ),
+      direction,
+      rotation: startingPosition.rotation, // TODO: Get rid of
+      scale: new Vector(1, 1),
+    },
     plane,
     collider: {
       type: "aabb",
@@ -114,7 +123,7 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
     },
     state: {
       // TODO: For the main player, we'll have to worry about this later. I'm more concerned with NPCs
-      currentState: "idle",
+      currentState: "todo",
     },
   };
   ecs.entityManager.add(playerEntity);
@@ -124,7 +133,7 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
   // NOTE: Textures are not added to the wad with dimensions. That is a mistake and with an editor would be fine. So we load the boot process and get all those values now. (We ignored it for tiles since those would always be the same size and stretched.)
   const objects: WADObjectEntity[] = wad.map.objects ?? [];
   objects.forEach((object) => {
-    const { transform, texture, states, initialState, collider } = object;
+    const { transform, texture, states, initialState, collider, ai } = object;
 
     let objectEntity = {
       transform: {
@@ -134,16 +143,23 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
         direction: directionVectorFromRotation(transform.rotation),
         scale: new Vector(transform.scale.x, transform.scale.y),
       },
+      velocity: new Vector(0, 0),
     };
 
     if (collider) {
       (objectEntity as ObjectEntity).collider = collider;
     }
 
+    if (ai) {
+      // TODO: Move derived value instantiation out of the wad (stuff like idleTimer)
+      // For now, we'll just force the wad to match the component shape so we can fry bigger fish.
+      (objectEntity as ObjectEntity).ai = ai;
+    }
+
     if (texture) {
       (objectEntity as StaticObjectEntity) = {
         ...objectEntity,
-        entityType: "object__static",
+        objectType: "object__static",
         texture: {
           name: texture,
         },
@@ -154,20 +170,21 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
           "Animated Object is missing required state properties. Can not load"
         );
       }
+
+      // NOTE: I've considered separating the definition of states from animations and sounds.
+      // But, on reflection, I'm going to, fornow, assume that each object, of a certain type (tbd how to implement, currently only aiType exists to differentiate but things that are not self-motivated will also have states), should have all the provided states
+
       const entityStates = states.reduce((acc, state) => {
-        const { name, animation: wadAnimation, sound } = state;
+        // TODO: Here we are doing what should be a world object initialization/spawn bit. Need to move this to a spawner
+        // or something.
+        const { name, animation: animationKey, sound } = state;
+        const animationConfiguration =
+          animationManager.getAnimation(animationKey)!; // TODO: Handle missing animation
         const animation: AnimationState = {
-          name: wadAnimation.name,
-          frames: wadAnimation.frames,
+          ...animationConfiguration,
           currentFrame: 0,
           timeSinceLastFrame: 0,
-          looping: wadAnimation.looping,
-          frameDuration: wadAnimation.frameDuration,
         };
-
-        if (wadAnimation.nextState) {
-          animation.nextState = wadAnimation.nextState;
-        }
 
         const entityState: EntityState = {
           name,
@@ -184,10 +201,12 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
 
       (objectEntity as AnimatedObjectEntity) = {
         ...objectEntity,
-        entityType: "object__animated",
+        objectType: "object__animated",
         state: {
           currentState: initialState,
+          previousState: null,
           initialState,
+          timeElapsedInState: 0,
           states: entityStates,
         },
       };
@@ -199,6 +218,8 @@ const main = async (wad, settings = DEFAULT_SETTINGS) => {
   const UserInputSystem = SingletonInputSystem.getInstance(settings.canvasId);
 
   ecs.systems.add(new PlayerControllerSystem(ecs, UserInputSystem));
+
+  ecs.systems.add(new AIControllerSystem(ecs, gridManager));
 
   ecs.systems.add(new PhysicsSystem(ecs, gridManager));
 

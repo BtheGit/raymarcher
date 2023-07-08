@@ -21,12 +21,16 @@ export class PhysicsSystem implements System {
     //   "collision",
     // ]);
 
-    this.kineticEntities = this.ecs.entityManager.with(["velocity"]);
+    this.kineticEntities = this.ecs.entityManager.with([
+      "velocity",
+      "transform",
+    ]);
   }
 
   update(dt: number) {
     for (const entity of this.kineticEntities) {
-      const { velocity, position } = entity;
+      const { velocity } = entity;
+      const { position } = entity.transform;
       if (velocity.x === 0 && velocity.y === 0) continue;
 
       // TODO: Base this on running or walking.
@@ -120,7 +124,10 @@ export class PhysicsSystem implements System {
 
       // And now we have "collision" again!!
       this.ecs.entityManager.updateEntity(entity, {
-        position: new Vector(newPosition.x, newPosition.y),
+        transform: {
+          ...entity.transform,
+          position: new Vector(newPosition.x, newPosition.y),
+        },
       });
     }
     // Collision check all entities with a velocity against other colliders. Mark collisions with current velocity.

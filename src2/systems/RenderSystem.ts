@@ -29,23 +29,23 @@ export const frameDirectionIndexByAngle = (angle: number) => {
   // The following are both sort of solutions. But since I really don't want to worry about other directional counts. Let's be smart and just be stupid. Which means less math, more lookups.
 
   if (angle >= 22.5 && angle < 67.5) {
-    return 8;
-  } else if (angle >= 67.5 && angle < 112.5) {
-    return 7;
-  } else if (angle >= 112.5 && angle < 157.5) {
-    return 6;
-  } else if (angle >= 157.5) {
-    return 5;
-  } else if (angle < -157.5) {
-    return 5;
-  } else if (angle >= -157.5 && angle < -112.5) {
     return 4;
-  } else if (angle >= -112.5 && angle < -67.5) {
+  } else if (angle >= 67.5 && angle < 112.5) {
     return 3;
-  } else if (angle >= -67.5 && angle < -22.5) {
+  } else if (angle >= 112.5 && angle < 157.5) {
     return 2;
-  } else {
+  } else if (angle >= 157.5) {
     return 1;
+  } else if (angle < -157.5) {
+    return 1;
+  } else if (angle >= -157.5 && angle < -112.5) {
+    return 8;
+  } else if (angle >= -112.5 && angle < -67.5) {
+    return 7;
+  } else if (angle >= -67.5 && angle < -22.5) {
+    return 6;
+  } else {
+    return 5;
   }
 
   // // Calculate the sector size for each direction
@@ -166,7 +166,7 @@ export class RenderSystem implements System {
     );
 
     // TODO: Support animation
-    this.objects = ecs.entityManager.with(["transform"]);
+    this.objects = ecs.entityManager.with(["objectType"]);
   }
 
   // TODO: Memoize and make sure its rerun on screen size chagnes.
@@ -225,7 +225,7 @@ export class RenderSystem implements System {
         // We need to find the offset from that origin in the FOV and then sample 1/6 of the image
         // from that point then draw it to the background.
         // TODO: This bit of code might be the trick to stop using direction and start using rotation.
-        const { x, y } = this.camera.direction;
+        const { x, y } = this.camera.transform.direction;
         const angle = Math.atan2(x, y);
         let degrees = angle > 0 ? toDegrees(angle) : 360 + toDegrees(angle);
         // degrees = degrees - 30 >= 0 ? degrees - 30 : 360 + degrees - 30;
@@ -352,7 +352,7 @@ export class RenderSystem implements System {
 
             let wallIntersectionOffset;
             if (wallOrientation === "horizontal") {
-              if (this.camera.direction.y > 0) {
+              if (this.camera.transform.direction.y > 0) {
                 wallIntersectionOffset =
                   wallIntersection - Math.floor(wallIntersection);
               } else {
@@ -360,7 +360,7 @@ export class RenderSystem implements System {
                   1 - (wallIntersection - Math.floor(wallIntersection));
               }
             } else {
-              if (this.camera.direction.x < 0) {
+              if (this.camera.transform.direction.x < 0) {
                 wallIntersectionOffset =
                   wallIntersection - Math.floor(wallIntersection);
               } else {
@@ -447,9 +447,11 @@ export class RenderSystem implements System {
           const weight = currentDist / normalizedDistance;
 
           const currentFloorX =
-            weight * floorXWall + (1.0 - weight) * this.camera.position.x;
+            weight * floorXWall +
+            (1.0 - weight) * this.camera.transform.position.x;
           const currentFloorY =
-            weight * floorYWall + (1.0 - weight) * this.camera.position.y;
+            weight * floorYWall +
+            (1.0 - weight) * this.camera.transform.position.y;
 
           // TODO: Would it be more efficient for this to be an array of cell references already retrieved before the render pass?
           const gridCell = this.gridManager.getGridTile(
@@ -623,10 +625,10 @@ export class RenderSystem implements System {
     // FLOOR CASTING
     for (let y = 0; y < this.gameSettings.height; y++) {
       // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
-      const rayDirX0 = this.camera.direction.x - this.camera.plane.x;
-      const rayDirY0 = this.camera.direction.y - this.camera.plane.y;
-      const rayDirX1 = this.camera.direction.x + this.camera.plane.x;
-      const rayDirY1 = this.camera.direction.y + this.camera.plane.y;
+      const rayDirX0 = this.camera.transform.direction.x - this.camera.plane.x;
+      const rayDirY0 = this.camera.transform.direction.y - this.camera.plane.y;
+      const rayDirX1 = this.camera.transform.direction.x + this.camera.plane.x;
+      const rayDirY1 = this.camera.transform.direction.y + this.camera.plane.y;
 
       // Current y position compared to the center of the screen (the horizon)
       const p = y - this.gameSettings.height / 2;
@@ -646,8 +648,8 @@ export class RenderSystem implements System {
         (rowDistance * (rayDirY1 - rayDirY0)) / this.gameSettings.width;
 
       // real world coordinates of the leftmost column. This will be updated as we step to the right.
-      let floorX = this.camera.position.x + rowDistance * rayDirX0;
-      let floorY = this.camera.position.y + rowDistance * rayDirY0;
+      let floorX = this.camera.transform.position.x + rowDistance * rayDirX0;
+      let floorY = this.camera.transform.position.y + rowDistance * rayDirY0;
 
       for (let x = 0; x < this.gameSettings.width; ++x) {
         // the cell coord is simply got from the integer parts of floorX and floorY
@@ -822,11 +824,11 @@ export class RenderSystem implements System {
     // Sort the sprites by distance from the camera
     const sortedObjects = this.objects.sort((a, b) => {
       const aDistance =
-        Math.pow(this.camera.position.x - a.transform.position.x, 2) +
-        Math.pow(this.camera.position.y - a.transform.position.y, 2);
+        Math.pow(this.camera.transform.position.x - a.transform.position.x, 2) +
+        Math.pow(this.camera.transform.position.y - a.transform.position.y, 2);
       const bDistance =
-        Math.pow(this.camera.position.x - b.transform.position.x, 2) +
-        Math.pow(this.camera.position.y - b.transform.position.y, 2);
+        Math.pow(this.camera.transform.position.x - b.transform.position.x, 2) +
+        Math.pow(this.camera.transform.position.y - b.transform.position.y, 2);
       return bDistance - aDistance;
     });
 
@@ -842,14 +844,14 @@ export class RenderSystem implements System {
         // if (object.transform && object.sprite && object.animation) {
         // Calculate the screen position and size of the sprite
         const objectXRelativeToCamera =
-          object.transform.position.x - this.camera.position.x;
+          object.transform.position.x - this.camera.transform.position.x;
         const objectYRelativeToCamera =
-          object.transform.position.y - this.camera.position.y;
+          object.transform.position.y - this.camera.transform.position.y;
 
         const transformX =
           this.camera.camera.inverseDeterminate *
-          (this.camera.direction.y * objectXRelativeToCamera -
-            this.camera.direction.x * objectYRelativeToCamera);
+          (this.camera.transform.direction.y * objectXRelativeToCamera -
+            this.camera.transform.direction.x * objectYRelativeToCamera);
         const transformY = Math.max(
           this.camera.camera.inverseDeterminate *
             (-this.camera.plane.y * objectXRelativeToCamera +
@@ -874,9 +876,9 @@ export class RenderSystem implements System {
 
         // If an object has a texture field, we wont check for animation frames. So, be warned, for now, it's one or the other! And no multiple states for static textures.
         let texture;
-        // Note: Using entityType to make typescript happy.
-        const entityType = object.entityType;
-        if (entityType === "object__static") {
+        // Note: Using objectType to make typescript happy.
+        const objectType = object.objectType;
+        if (objectType === "object__static") {
           texture = this.textureManager.getTexture(object.texture.name);
         } else {
           // Uh. If we have no texture and no animation frame, should mark this object as rubbish. But just doing the check anyway.
@@ -899,7 +901,7 @@ export class RenderSystem implements System {
             const angle = apparentDirectionAngle(
               object.transform.position,
               object.transform.direction,
-              this.camera.position
+              this.camera.transform.position
             );
             const frameDirection = frameDirectionIndexByAngle(angle);
             frameId = `${baseFrameId}${frameDirection}`;

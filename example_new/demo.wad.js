@@ -203,6 +203,33 @@ for (const spriteData of spriteDatas) {
   textures[spriteData.meta.name] = `./images/sprites/${spriteData.meta.image}`;
 }
 
+const animations = [
+  {
+    name: "scientist__default",
+    frames: [
+      {
+        frameId: "SCIENTIST__A",
+        directions: 8,
+      },
+      {
+        frameId: "SCIENTIST__B",
+        directions: 8,
+      },
+      {
+        frameId: "SCIENTIST__C",
+        directions: 8,
+      },
+      {
+        frameId: "SCIENTIST__D",
+        directions: 8,
+      },
+    ],
+    looping: true,
+    frameDuration: 200,
+    // Animation duration?
+  },
+];
+
 // TODO: Dynamically determining frames for animations based on naming system (doom is as good as any I guess, If i'm gonna use assets from those wads anyway). Right now I'm going to manually build the arrays just to save brain power and get more hands on.
 
 // const sprites = {
@@ -228,6 +255,8 @@ const wall_default = {
 
 const wad = {
   textures,
+  sprites: spriteDatas,
+  animations,
   map: {
     grid: [
       [
@@ -1051,30 +1080,11 @@ const wad = {
         states: [
           {
             name: "state__idle",
-            animation: {
-              name: "animation__idle",
-              frames: [
-                {
-                  frameId: "SCIENTIST__A",
-                  directions: 8,
-                },
-                {
-                  frameId: "SCIENTIST__B",
-                  directions: 8,
-                },
-                {
-                  frameId: "SCIENTIST__C",
-                  directions: 8,
-                },
-                {
-                  frameId: "SCIENTIST__D",
-                  directions: 8,
-                },
-              ],
-              looping: true,
-              frameDuration: 200,
-              // Animation duration?
-            },
+            animation: "scientist__default",
+          },
+          {
+            name: "state__wander",
+            animation: "scientist__default",
           },
         ],
         collider: {
@@ -1083,10 +1093,23 @@ const wad = {
           height: 0.8,
           solid: true,
         },
+        ai: {
+          aiType: "dog_friendly",
+          playRadius: 1,
+          swarmRadius: 5,
+          idleDurationRange: [1, 3],
+          idleTimer: 0,
+          seekTarget: {
+            target: null,
+          },
+          seekPath: {
+            path: null,
+            currentIndex: 0,
+          },
+        },
       },
     ],
   },
-  sprites: spriteDatas,
 };
 
 export default wad;

@@ -9,14 +9,7 @@ import { GridManager } from "../GridManager/GridManager";
 
 // Oh. I take that back. The grid manager does not keep an actual grid of the map. So maybe we should keep a copy there for this. But also another remapped one as well for search graphs. Using a remapped grid would essentially make this algorithm independent of the grid manager which would only be responsible for generating a (cached) representation of accessible grid tiles. We can decouple that pretty easily later.
 
-export interface GridCoord {
-  x: number;
-  y: number;
-}
-
-export interface GridNode extends GridCoord {
-  parent: GridNode | null;
-}
+import { GridCoord, GridNode } from "../raymarcher";
 
 const directions = [
   { x: -1, y: 0 },
@@ -41,13 +34,16 @@ export const shortestPathBFS = (
   );
 
   queue.push({ ...start, parent: null });
-  visited[start.y][start.x] = true;
+  visited[Math.floor(start.y)][Math.floor(start.x)] = true;
 
   while (queue.length) {
     let current = queue.shift()!;
 
     // Check current node for equality with target
-    if (current.x === target.x && current.y === target.y) {
+    if (
+      Math.floor(current.x) === target.x &&
+      Math.floor(current.y) === target.y
+    ) {
       // We're here!!
       // Now we just need to walk back through the nodes until we hit the start (parent = null).
       // If we're extra clever (because array size preallocation says what in JS world) we just push them in backwards and everything is right as rain!
@@ -64,8 +60,8 @@ export const shortestPathBFS = (
     // Also NOTE: We obviously want to check whether the cell a) exists and b) is accesible.
 
     for (const direction of directions) {
-      const newX = current.x + direction.x;
-      const newY = current.y + direction.y;
+      const newX = Math.floor(current.x + direction.x);
+      const newY = Math.floor(current.y + direction.y);
 
       const wasVisited = visited[newY][newX] === true;
       if (wasVisited) continue;
