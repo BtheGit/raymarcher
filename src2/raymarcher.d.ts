@@ -319,7 +319,7 @@ export interface WADGridCell {
     type: "texture";
     textureName?: string;
   };
-  faces?: [];
+  wallFaces?: [];
 }
 
 export type WADGrid = WADGridCell[][];

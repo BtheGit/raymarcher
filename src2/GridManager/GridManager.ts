@@ -32,7 +32,7 @@ export class GridManager {
     for (let y = 0; y < grid.length; y++) {
       for (let x = 0; x < grid[0].length; x++) {
         const gridCell = grid[y][x];
-        const { type, accessible, texture, ceiling, faces } = gridCell;
+        const { type, accessible, texture, ceiling, wallFaces } = gridCell;
 
         const entity: GridTileEntity = {
           type,
@@ -58,7 +58,10 @@ export class GridManager {
             texture: { name: texture.textureName! },
           };
 
-          // TODO: Faces
+          // TODO: wallFaces
+          if (wallFaces && wallFaces.length) {
+            entity.wallTile.wallFaces = wallFaces;
+          }
         }
 
         this.addEntity(entity);
