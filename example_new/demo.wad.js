@@ -692,7 +692,15 @@ const wad = {
             type: "texture",
             textureName: "light_brick1",
           },
-          // faces: [],
+          wallFaces: [
+            {
+              wallFace: "north",
+              surface: "texture",
+              texture: {
+                name: "dots1",
+              },
+            },
+          ],
         },
         {
           type: "floor",
@@ -1062,6 +1070,138 @@ const wad = {
           width: 0.8,
           height: 0.8,
           solid: true,
+        },
+      },
+      {
+        transform: {
+          position: {
+            x: 10,
+            y: 10,
+          },
+          rotation: 90,
+          scale: {
+            x: 1,
+            y: 1,
+          },
+        },
+        initialState: "state__idle",
+        states: [
+          {
+            name: "state__idle",
+            animation: "scientist__default",
+          },
+          {
+            name: "state__wander",
+            animation: "scientist__default",
+          },
+        ],
+        collider: {
+          type: "aabb",
+          width: 1,
+          height: 1,
+          solid: true,
+        },
+        ai: {
+          aiType: "dog_friendly",
+          playRadius: 1,
+          swarmRadius: 5,
+          idleDurationRange: [1, 3],
+          idleTimer: 0,
+          seekTarget: {
+            target: null,
+          },
+          seekPath: {
+            path: null,
+            currentIndex: 0,
+          },
+        },
+      },
+      {
+        transform: {
+          position: {
+            x: 6,
+            y: 8,
+          },
+          rotation: 120,
+          scale: {
+            x: 1,
+            y: 1,
+          },
+        },
+        initialState: "state__idle",
+        states: [
+          {
+            name: "state__idle",
+            animation: "scientist__default",
+          },
+          {
+            name: "state__wander",
+            animation: "scientist__default",
+          },
+        ],
+        collider: {
+          type: "aabb",
+          width: 0.8,
+          height: 0.8,
+          solid: true,
+        },
+        ai: {
+          aiType: "dog_friendly",
+          playRadius: 1,
+          swarmRadius: 5,
+          idleDurationRange: [1, 3],
+          idleTimer: 0,
+          seekTarget: {
+            target: null,
+          },
+          seekPath: {
+            path: null,
+            currentIndex: 0,
+          },
+        },
+      },
+      {
+        transform: {
+          position: {
+            x: 5,
+            y: 7,
+          },
+          rotation: 215,
+          scale: {
+            x: 1,
+            y: 1,
+          },
+        },
+        initialState: "state__idle",
+        states: [
+          {
+            name: "state__idle",
+            animation: "scientist__default",
+          },
+          {
+            name: "state__wander",
+            animation: "scientist__default",
+          },
+        ],
+        collider: {
+          type: "aabb",
+          width: 0.8,
+          height: 0.8,
+          solid: true,
+        },
+        ai: {
+          aiType: "dog_friendly",
+          playRadius: 1,
+          swarmRadius: 5,
+          idleDurationRange: [1, 3],
+          idleTimer: 0,
+          seekTarget: {
+            target: null,
+          },
+          seekPath: {
+            path: null,
+            currentIndex: 0,
+          },
         },
       },
       {
