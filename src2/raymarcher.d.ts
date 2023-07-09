@@ -2,6 +2,9 @@ import { Vector } from "./utils/math";
 
 export type Entity = any;
 
+// TODO: Do better.
+export type KineticEntity = PlayerEntity | ObjectEntity;
+
 export type Ray = {
   // distance: number;
   normalizedDistance: number; // (This is derived so probably can be calculated later)
@@ -98,8 +101,18 @@ export interface ColliderComponent {
   solid: boolean;
 }
 
-export interface CollisionResultComponent {
-  collidedWith: Entity[];
+export interface CollisionReport {
+  entity: Entity;
+  collidedWith: Entity;
+  axis: "x" | "y";
+  overlap: number;
+  timestamp: number; // Maybe should be frame id
+  // collisionPoints: Vector[];
+  // Additional properties as needed
+  // collisionNormal: Vector;
+  // surfaceMaterial: string;
+  // contactForce: number;
+  // ...
 }
 
 export interface BaseAIComponent {
@@ -140,14 +153,14 @@ export interface StaticObjectEntity extends BaseObjectEntity {
   objectType: "object__static";
   texture: TileTextureComponent;
   collider?: ColliderComponent;
-  collisions?: CollisionResultComponent;
+  collisions?: CollisionReport[];
 }
 
 export interface AnimatedObjectEntity extends BaseObjectEntity {
   objectType: "object__animated";
   state: EntityStateComponent;
   collider?: ColliderComponent;
-  collisions?: CollisionResultComponent;
+  collisions?: CollisionReport[];
 }
 
 export interface FriendlyDogEntity extends AnimatedObjectEntity {
@@ -226,7 +239,7 @@ export interface PlayerEntity {
   movement: MovementComponent;
   // sprite: SpriteComponent;
   collider: ColliderComponent;
-  collisions: CollisionResultComponent;
+  collisions: CollisionReport[];
   state: PlayerStateComponent;
 }
 
