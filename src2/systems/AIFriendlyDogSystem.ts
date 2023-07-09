@@ -23,14 +23,12 @@ export const friendlyDogAI = (
   const path = entity.ai.seekPath.path;
   const currentPathIndex = entity.ai.seekPath.currentIndex;
 
-  // console.log(currentState, entity.transform.position, target, path);
-
   const distanceToPlayer = calculateDistance(
     player.transform.position,
     entity.transform.position
   );
 
-  if (distanceToPlayer <= 1) {
+  if (distanceToPlayer <= 4) {
     // Clear the path and target, and switch to idle state
     entity.ai.seekPath.path = null;
     entity.ai.seekTarget.target = null;
@@ -42,6 +40,13 @@ export const friendlyDogAI = (
   if (currentState === "state__idle") {
     entity.state.currentState = "state__wander";
     // TODO: Reset animation (if it's a different one ... need a system to abstract that aspect away)
+  }
+
+  // TODO: Short term. If there are entity entity collisions. I really just want to reset the path and hope my system makes a new one. However, the bfs pathing doesn't take into account sprites. So really, the simplest thing to do is pick a new target and let that keep happening until we stop colliding. Not pretty, but the least amount of new processes until I figure out something better.
+  if (entity.collisions?.length) {
+    entity.collisions = [];
+    entity.ai.seekTarget.target = null;
+    entity.ai.seekPath.path = null;
   }
 
   if (!target) {

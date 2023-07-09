@@ -49,7 +49,12 @@ export const shortestPathBFS = (
       // If we're extra clever (because array size preallocation says what in JS world) we just push them in backwards and everything is right as rain!
       const path: GridNode[] = [];
       while (current) {
-        path.unshift(current);
+        // NOTE: For simplicity, while we are simply navigating by grid tile, we want to make sure the actor is navigating through the center of grid tiles to save extra worries about clipping into walls. It's not elegant, but it will be an improvement for now.
+        path.unshift({
+          ...current,
+          x: current.x + 0.5,
+          y: current.y + 0.5,
+        });
         current = current.parent!;
       }
       return path;

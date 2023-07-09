@@ -1,5 +1,5 @@
 import { GridManager } from "../GridManager/GridManager";
-import { Entity, ObjectEntity } from "../raymarcher";
+import { KineticEntity, ObjectEntity } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Vector } from "../utils/math";
 
@@ -8,7 +8,7 @@ export class PhysicsSystem implements System {
   // private collidableEntities: Entity[];
   private ecs: ECS;
   private gridManager: GridManager;
-  private kineticEntities: Entity[];
+  private kineticEntities: KineticEntity[];
   private deceleration = 10;
 
   constructor(ecs: ECS, gridManager: GridManager) {
@@ -42,6 +42,11 @@ export class PhysicsSystem implements System {
 
       // Apply velocity to update position
       const deltaPosition = newVelocity.scale(dt);
+
+      // NOTE: If delta position is zero. We skip collision detection for this entity.
+      if (deltaPosition.equals({ x: 0, y: 0 })) {
+        continue;
+      }
 
       const potentialPosition = position.add(deltaPosition);
 
@@ -81,6 +86,8 @@ export class PhysicsSystem implements System {
 
       // Perform entity collision detection against other colliders
       // TODO: Cache this value (not the filtered list though)
+      if (!entity.collider) continue;
+
       const collidingEntities: ObjectEntity[] = this.ecs.entityManager
         .with(["collider"])
         .filter((e) => e !== entity);
@@ -90,21 +97,26 @@ export class PhysicsSystem implements System {
           const collidingPosition = collidingEntity.transform.position!;
           const collidingCollider = collidingEntity.collider!;
 
-          if (collidingCollider.type !== "aabb") continue;
+          // THe following logic is only for AABB to AABB collisions
+          if (
+            collidingCollider.type !== "aabb" ||
+            entity.collider.type !== "aabb"
+          )
+            continue;
 
           if (
             newPosition.x < collidingPosition.x + collidingCollider.width! &&
-            newPosition.x + entity.collider.width > collidingPosition.x &&
+            newPosition.x + entity.collider.width! > collidingPosition.x &&
             newPosition.y < collidingPosition.y + collidingCollider.height! &&
-            newPosition.y + entity.collider.height > collidingPosition.y
+            newPosition.y + entity.collider.height! > collidingPosition.y
           ) {
             // Handle collision
             const xOverlap = Math.min(
-              newPosition.x + entity.collider.width - collidingPosition.x,
+              newPosition.x + entity.collider.width! - collidingPosition.x,
               collidingPosition.x + collidingCollider.width! - newPosition.x
             );
             const yOverlap = Math.min(
-              newPosition.y + entity.collider.height - collidingPosition.y,
+              newPosition.y + entity.collider.height! - collidingPosition.y,
               collidingPosition.y + collidingCollider.height! - newPosition.y
             );
 
@@ -113,10 +125,30 @@ export class PhysicsSystem implements System {
               // Resolve collision along the X axis
               newPosition.x +=
                 newPosition.x < collidingPosition.x ? -xOverlap : xOverlap;
+
+              if (entity.collisions) {
+                entity.collisions.push({
+                  entity: entity,
+                  collidedWith: collidingEntity,
+                  axis: "x",
+                  overlap: xOverlap,
+                  timestamp: Date.now(),
+                });
+              }
             } else {
               // Resolve collision along the Y axis
               newPosition.y +=
                 newPosition.y < collidingPosition.y ? -yOverlap : yOverlap;
+
+              if (entity.collisions) {
+                entity.collisions.push({
+                  entity: entity,
+                  collidedWith: collidingEntity,
+                  axis: "y",
+                  overlap: yOverlap,
+                  timestamp: Date.now(),
+                });
+              }
             }
           }
         }

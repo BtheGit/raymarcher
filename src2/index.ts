@@ -110,9 +110,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
       height: 0.4,
       solid: true,
     },
-    collisions: {
-      collidedWith: [],
-    },
+    collisions: [],
     velocity: new Vector(0, 0),
     // TODO: Use movement speed to port old code.
     // FUTURE: Just change velocity with keys and let collision detection reconcile movement?
@@ -148,6 +146,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
 
     if (collider) {
       (objectEntity as ObjectEntity).collider = collider;
+      (objectEntity as ObjectEntity).collisions = [];
     }
 
     if (ai) {
@@ -170,6 +169,8 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
           "Animated Object is missing required state properties. Can not load"
         );
       }
+
+      // TODO: Anything that has a velocity should have a collisions component.
 
       // NOTE: I've considered separating the definition of states from animations and sounds.
       // But, on reflection, I'm going to, fornow, assume that each object, of a certain type (tbd how to implement, currently only aiType exists to differentiate but things that are not self-motivated will also have states), should have all the provided states
