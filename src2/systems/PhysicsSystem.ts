@@ -79,8 +79,8 @@ export class PhysicsSystem implements System {
         potentialPosition.y
       )!;
 
-      let nextX = nextXTile.accessible ? potentialPosition.x : position.x;
-      let nextY = nextYTile.accessible ? potentialPosition.y : position.y;
+      let nextX = nextXTile?.accessible ? potentialPosition.x : position.x;
+      let nextY = nextYTile?.accessible ? potentialPosition.y : position.y;
 
       const newPosition = new Vector(nextX, nextY);
 

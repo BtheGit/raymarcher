@@ -28,10 +28,19 @@ export const friendlyDogAI = (
     entity.transform.position
   );
 
-  if (distanceToPlayer <= 4) {
+  if (distanceToPlayer <= 3) {
     // Clear the path and target, and switch to idle state
     entity.ai.seekPath.path = null;
     entity.ai.seekTarget.target = null;
+    const direction = Vector.normalize(
+      new Vector(
+        player.transform.position.x,
+        player.transform.position.y
+      ).subtract(entity.transform.position)
+    );
+
+    entity.transform.direction = direction;
+    entity.velocity = new Vector(0, 0);
     entity.state.currentState = "state__idle";
     return;
   }
