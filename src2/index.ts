@@ -68,6 +68,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
       return textureManager.loadTexture(key, path);
     })
   );
+  textureManager.loadTextureAnimations(wad.textureAnimations);
 
   wad.sprites.forEach((spriteData) => spriteManager.loadSprites(spriteData));
   animationManager.loadAnimations(wad.animations);
@@ -179,6 +180,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
         // TODO: Here we are doing what should be a world object initialization/spawn bit. Need to move this to a spawner
         // or something.
         const { name, animation: animationKey, sound } = state;
+        // TODO: Animation Manager has no real purpose at this juncture
         const animationConfiguration =
           animationManager.getAnimation(animationKey)!; // TODO: Handle missing animation
         const animation: AnimationState = {
@@ -231,7 +233,9 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
     new RaycasterSystem(gridManager, eventManager, playerEntity, settings.width)
   );
 
-  ecs.systems.add(new AnimationSystem(ecs));
+  // There's no huge reason to pass this here except maybe to eventually sync the frame rates for all animations.
+  // The animation system is just going to do us a solid of calling update on the tile manager per tick (and later) frame.
+  ecs.systems.add(new AnimationSystem(ecs, textureManager));
 
   // Once again, we're cheating a bit to avoid extra lookups until we have a better ECS system. I'm going to persist a skybox reference here.
   const skyboxEntity: SkyboxEntity = {

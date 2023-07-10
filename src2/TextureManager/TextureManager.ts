@@ -1,8 +1,11 @@
+import { AnimatedTexture } from "./AnimatedTexture";
+import { WADTextureAnimation } from "../raymarcher";
 import { TextureBuffer } from "./TextureBuffer";
 export class TextureManager {
   private textureBuffers: Record<string, TextureBuffer> = {};
   private textureMap: Record<string, string> = {};
   private defaultTexture: TextureBuffer;
+  private animatedTextures = new Map<string, AnimatedTexture>();
 
   // TODO: Support adding textures after. For now, we need them on load and that's it.
   /// TODO:  Support lazy loading textures. Right now we want it blocking just in case. And we want it to load
@@ -112,6 +115,44 @@ export class TextureManager {
     ctx.restore();
 
     return TextureBuffer.fromImage(croppedCanvas);
+  }
+
+  // TODO: This is bad. We should be able to get any texture, animated or otherwise without knowing the difference.
+  // For now though, since it's late but I haven't run out of excuses, I'm going to make it incumbent ont he render call to decide which type of texture to grab (extra yuck). FIX LATER PLEASE
+  getAnimatedTexture = (name: string) => {
+    return this.animatedTextures.get(name);
+  };
+
+  loadTextureAnimation = (wadTileAnimation: WADTextureAnimation) => {
+    // MVP, only support one type, which is preloaded texture based.
+    // Also, temporarily, only going to support flat warping :)
+    const { frameCount, name, texture, animationType } = wadTileAnimation;
+    // Get the pixel data from the original texture buffer.
+    const textureBuffer = this.getTexture(texture);
+    if (!textureBuffer) {
+      throw new Error("Texture buffer does not exist");
+    }
+
+    const animatedTile = new AnimatedTexture(
+      textureBuffer,
+      animationType,
+      name,
+      frameCount
+    );
+    this.animatedTextures.set(name, animatedTile);
+  };
+
+  loadTextureAnimations = (wadTextureAnimations: WADTextureAnimation[]) => {
+    for (const wadTextureAnimation of wadTextureAnimations) {
+      this.loadTextureAnimation(wadTextureAnimation);
+    }
+  };
+
+  update(dt: number) {
+    // TODO: Constrain to frame rate
+    for (const animatedTexture of this.animatedTextures) {
+      animatedTexture[1].advanceFrame();
+    }
   }
 
   // public setDefaultTexturePath(path: string): void {

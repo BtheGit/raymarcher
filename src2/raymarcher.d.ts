@@ -365,10 +365,20 @@ export interface WADAnimation {
   nextState?: string;
 }
 
+// TODO: This is really only one type of animation. Will support others.
+export interface WADTextureAnimation {
+  animationType: "flat_warp";
+  name: string;
+  frameCount: number; // TODO: Maybe only support a fwe different frame lengths if I'm going to pregenerate.
+  // frameDuration: number; // For now all animated tiles are on the same frame rate..
+  texture: string;
+}
+
 export interface WAD {
   textures: any;
   sprites: any;
   animations: WADAnimation[];
+  textureAnimations: WADTextureAnimation[];
   map: {
     grid: WADGrid;
     sky: any;

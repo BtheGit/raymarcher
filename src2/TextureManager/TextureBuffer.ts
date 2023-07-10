@@ -5,7 +5,7 @@ export class TextureBuffer {
   private context: CanvasRenderingContext2D;
   private _imageData: ImageData;
 
-  private constructor(image: HTMLImageElement | HTMLCanvasElement) {
+  protected constructor(image: HTMLImageElement | HTMLCanvasElement) {
     this._canvas = document.createElement("canvas");
     this._canvas.width = image.width;
     this._canvas.height = image.height;

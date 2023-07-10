@@ -343,11 +343,14 @@ export class RenderSystem implements System {
             this.worldCtx.fillRect(i, top, 1, columnHeight);
             this.worldCtx.closePath();
             break;
+          case "animatedTexture":
           case "texture":
-            const wallTextureImageBuffer = this.textureManager.getTexture(
-              texture!.name
-            );
+            const wallTextureImageBuffer =
+              surface === "texture"
+                ? this.textureManager.getTexture(texture!.name)
+                : this.textureManager.getAnimatedTexture(texture!.name);
             const wallTexture = wallTextureImageBuffer!.canvas;
+
             const textureWidth = wallTexture.width;
 
             let wallIntersectionOffset;
@@ -488,10 +491,14 @@ export class RenderSystem implements System {
                 b * brightnessModifier;
               this.floorCeilingPixelData.data[index + 3] = 255;
               break;
+            case "animatedTexture":
             case "texture":
               // TODO: Handle gradients. This will fail on gradients.
               const textureName = gridCell.floorTile.texture!.name;
-              const floorTexture = this.textureManager.getTexture(textureName)!;
+              const floorTexture =
+                surface === "texture"
+                  ? this.textureManager.getTexture(textureName)
+                  : this.textureManager.getAnimatedTexture(textureName);
 
               // // TODO: Temp, to have a floor while textures are missing
               // if (floorTextureName === undefined || floorTexture == null) {
@@ -561,11 +568,14 @@ export class RenderSystem implements System {
                 b * ceilingBrightnessModifier;
               this.floorCeilingPixelData.data[index + 3] = 255;
               break;
+            case "animatedTexture":
             case "texture":
               // TODO: Handle gradients.
               const ceilingTextureName = ceiling.texture!.name;
               let ceilingTexture =
-                this.textureManager.getTexture(ceilingTextureName)!;
+                ceilingSurface === "texture"
+                  ? this.textureManager.getTexture(ceilingTextureName)!
+                  : this.textureManager.getAnimatedTexture(ceilingTextureName);
 
               if (ceilingTexture != null) {
                 const ceilingTexturePixels = ceilingTexture.getImageData();
