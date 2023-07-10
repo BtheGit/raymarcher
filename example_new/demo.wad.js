@@ -186,6 +186,7 @@ const textures = {
   stone2: "./images/textures/stone2.jpg",
   tile_blue1: "./images/textures/tile_blue1.jpg",
   stripes_creamsicle1: "./images/textures/stripes_creamsicle1.jpg",
+  lava: "./images/textures/lava.png",
   // sprite__tree_1: "./images/sprites/sprite__tree_1.png",
   // sprite__tree_2: "./images/sprites/sprite__tree_2.png",
   // scientist: "./images/sprites/scientist.png",
@@ -230,6 +231,16 @@ const animations = [
   },
 ];
 
+const textureAnimations = [
+  {
+    name: "anim_lava_1",
+    animationType: "flat_warp",
+    frameCount: 10,
+    // frameDuration: 100,
+    texture: "lava",
+  },
+];
+
 // TODO: Dynamically determining frames for animations based on naming system (doom is as good as any I guess, If i'm gonna use assets from those wads anyway). Right now I'm going to manually build the arrays just to save brain power and get more hands on.
 
 // const sprites = {
@@ -257,6 +268,7 @@ const wad = {
   textures,
   sprites: spriteDatas,
   animations,
+  textureAnimations,
   map: {
     grid: [
       [
@@ -409,8 +421,22 @@ const wad = {
         floor_default,
         floor_default,
         floor_default,
-        floor_default,
-        floor_default,
+        {
+          type: "floor",
+          accessible: false,
+          texture: {
+            type: "animatedTexture",
+            textureName: "anim_lava_1",
+          },
+        },
+        {
+          type: "floor",
+          accessible: false,
+          texture: {
+            type: "animatedTexture",
+            textureName: "anim_lava_1",
+          },
+        },
         floor_default,
         floor_default,
         floor_default,
@@ -435,8 +461,22 @@ const wad = {
         floor_default,
         floor_default,
         floor_default,
-        floor_default,
-        floor_default,
+        {
+          type: "floor",
+          accessible: false,
+          texture: {
+            type: "animatedTexture",
+            textureName: "anim_lava_1",
+          },
+        },
+        {
+          type: "floor",
+          accessible: false,
+          texture: {
+            type: "animatedTexture",
+            textureName: "anim_lava_1",
+          },
+        },
         floor_default,
         floor_default,
         floor_default,

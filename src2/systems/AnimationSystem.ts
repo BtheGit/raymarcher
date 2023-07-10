@@ -1,11 +1,15 @@
+import { TextureManager } from "../TextureManager/TextureManager";
 import { AnimatedObjectEntity } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
 
 export class AnimationSystem implements System {
   private ecs: ECS;
   private animatedEntities: AnimatedObjectEntity[];
-  constructor(ecs: ECS) {
+  private textureManager: TextureManager;
+
+  constructor(ecs: ECS, textureManager: TextureManager) {
     this.ecs = ecs;
+    this.textureManager = textureManager;
     // Hacky way to exclude the player entity while we sort out that state situation
     this.animatedEntities = this.ecs.entityManager
       .with(["state"])
@@ -42,5 +46,7 @@ export class AnimationSystem implements System {
         activeAnimation.timeSinceLastFrame = 0;
       }
     }
+
+    this.textureManager.update(dt);
   }
 }
