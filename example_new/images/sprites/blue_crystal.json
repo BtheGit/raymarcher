@@ -1,0 +1,137 @@
+{
+  "frames": {
+    "blue_crystal__A4": {
+      "frame": {
+        "x": 3,
+        "y": 3,
+        "w": 43,
+        "h": 60
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 25,
+        "y": 17,
+        "w": 43,
+        "h": 60
+      },
+      "sourceSize": {
+        "w": 96,
+        "h": 96
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "blue_crystal__A5": {
+      "frame": {
+        "x": 52,
+        "y": 3,
+        "w": 52,
+        "h": 58
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 23,
+        "y": 18,
+        "w": 52,
+        "h": 58
+      },
+      "sourceSize": {
+        "w": 96,
+        "h": 96
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "blue_crystal__A2": {
+      "frame": {
+        "x": 110,
+        "y": 3,
+        "w": 44,
+        "h": 58
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 23,
+        "y": 19,
+        "w": 44,
+        "h": 58
+      },
+      "sourceSize": {
+        "w": 96,
+        "h": 96
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "blue_crystal__A3": {
+      "frame": {
+        "x": 160,
+        "y": 3,
+        "w": 36,
+        "h": 58
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 31,
+        "y": 19,
+        "w": 36,
+        "h": 58
+      },
+      "sourceSize": {
+        "w": 96,
+        "h": 96
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "blue_crystal__A1": {
+      "frame": {
+        "x": 202,
+        "y": 3,
+        "w": 54,
+        "h": 57
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 20,
+        "w": 54,
+        "h": 57
+      },
+      "sourceSize": {
+        "w": 96,
+        "h": 96
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "blue_crystal.png",
+    "name": "blue_crystal",
+    "id": "blue_crystal",
+    "format": "RGBA8888",
+    "size": {
+      "w": 259,
+      "h": 66
+    },
+    "scale": 1
+  }
+}

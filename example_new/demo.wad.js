@@ -1,6 +1,7 @@
 import SpriteScientist from "./images/sprites/scientist.json" assert { type: "json" };
 import SpriteTree_1 from "./images/sprites/tree_1.json" assert { type: "json" };
 import BananaMan from "./images/sprites/banana.json" assert { type: "json" };
+import BlueCrystal from "./images/sprites/blue_crystal.json" assert { type: "json" };
 
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
@@ -27,7 +28,7 @@ const sprites_old = [
     // TODO: The type might be useless and ready for deprecation.
     type: "prop",
     name: "tree1",
-    spritesheet: "sprite__tree_1",
+    spritesheet: "tree_1",
     pos: {
       x: 13,
       y: 10,
@@ -59,7 +60,7 @@ const sprites_old = [
   {
     type: "prop",
     name: "tree2",
-    spritesheet: "sprite__tree_1",
+    spritesheet: "tree_1",
     pos: {
       x: 12,
       y: 10.5,
@@ -86,7 +87,7 @@ const sprites_old = [
   {
     type: "prop",
     name: "tree4",
-    spritesheet: "sprite__tree_1",
+    spritesheet: "tree_1",
     pos: {
       x: 12.75,
       y: 11.5,
@@ -99,7 +100,7 @@ const sprites_old = [
   {
     type: "prop",
     name: "tree5",
-    spritesheet: "sprite__tree_1",
+    spritesheet: "tree_1",
     pos: {
       x: 11.5,
       y: 12,
@@ -188,12 +189,9 @@ const textures = {
   tile_blue1: "./images/textures/tile_blue1.jpg",
   stripes_creamsicle1: "./images/textures/stripes_creamsicle1.jpg",
   lava: "./images/textures/lava.png",
-  // sprite__tree_1: "./images/sprites/sprite__tree_1.png",
-  // sprite__tree_2: "./images/sprites/sprite__tree_2.png",
-  // scientist: "./images/sprites/scientist.png",
 };
 
-const spriteDatas = [SpriteScientist, SpriteTree_1, BananaMan];
+const spriteDatas = [SpriteScientist, SpriteTree_1, BananaMan, BlueCrystal];
 
 const spriteMaps = spriteDatas.reduce((acc, curr) => {
   acc[curr.meta.name] = curr;
@@ -206,6 +204,7 @@ for (const spriteData of spriteDatas) {
 }
 
 const animations = [
+  // TODO: I haven't been smart enough to support static sprites/textures
   {
     name: "scientist__default",
     frames: [
@@ -1141,6 +1140,30 @@ const wad = {
         transform: {
           position: {
             x: 7,
+            y: 5,
+          },
+          rotation: 0,
+          scale: {
+            x: 1,
+            y: 1,
+          },
+        },
+        sprite: {
+          name: "blue_crystal__A",
+          directions: 8,
+        },
+        collider: {
+          type: "aabb",
+          width: 0.8,
+          height: 0.8,
+          solid: true,
+        },
+        // If no state, then no animation (default state)
+      },
+      {
+        transform: {
+          position: {
+            x: 7,
             y: 3,
           },
           rotation: 0,
@@ -1149,7 +1172,10 @@ const wad = {
             y: 1,
           },
         },
-        texture: "sprite__tree_1",
+        sprite: {
+          name: "tree_1__A",
+          directions: 0,
+        },
         collider: {
           type: "aabb",
           width: 0.8,
@@ -1170,7 +1196,10 @@ const wad = {
             y: 1,
           },
         },
-        texture: "sprite__tree_1",
+        sprite: {
+          name: "tree_1__A",
+          directions: 0,
+        },
         collider: {
           type: "aabb",
           width: 0.8,

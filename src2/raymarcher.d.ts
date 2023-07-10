@@ -151,7 +151,7 @@ export interface BaseObjectEntity {
 export interface StaticObjectEntity extends BaseObjectEntity {
   // NOTE: This is to make it easier to deal with typescript. It's really got no other use today.
   objectType: "object__static";
-  texture: TileTextureComponent;
+  sprite: SpriteTextureComponent;
   collider?: ColliderComponent;
   collisions?: CollisionReport[];
 }
@@ -181,6 +181,11 @@ export interface GridNode extends GridCoord {
 // Component to store the texture information for the grid tile face
 export interface TileTextureComponent {
   name: string; // Texture URL or identifier
+}
+
+export interface SpriteTextureComponent {
+  name: string; // Texture URL or identifier
+  directions: 0 | 8;
 }
 
 // Component to store the color information for the grid tile face
@@ -336,7 +341,10 @@ export interface WADObjectEntity {
       y: number;
     };
   };
-  texture?: string;
+  sprite?: {
+    name: string;
+    directions: 0 | 8;
+  };
   initialState?: string;
   states?: Array<{
     name: string;
