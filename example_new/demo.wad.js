@@ -1,5 +1,6 @@
 import SpriteScientist from "./images/sprites/scientist.json" assert { type: "json" };
 import SpriteTree_1 from "./images/sprites/tree_1.json" assert { type: "json" };
+import BananaMan from "./images/sprites/banana.json" assert { type: "json" };
 
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
@@ -192,7 +193,7 @@ const textures = {
   // scientist: "./images/sprites/scientist.png",
 };
 
-const spriteDatas = [SpriteScientist, SpriteTree_1];
+const spriteDatas = [SpriteScientist, SpriteTree_1, BananaMan];
 
 const spriteMaps = spriteDatas.reduce((acc, curr) => {
   acc[curr.meta.name] = curr;
@@ -228,6 +229,71 @@ const animations = [
     looping: true,
     frameDuration: 200,
     // Animation duration?
+  },
+  {
+    name: "bananaman__stand",
+    frames: [
+      {
+        frameId: "bananaman__STAND__A",
+        directions: 8,
+      },
+    ],
+    looping: true,
+    frameDuration: 1000,
+  },
+  {
+    name: "bananaman__wait",
+    frames: [
+      {
+        frameId: "bananaman__WAIT__A",
+        directions: 8,
+      },
+      {
+        frameId: "bananaman__WAIT__B",
+        directions: 8,
+      },
+    ],
+    looping: true,
+    frameDuration: 200,
+  },
+  {
+    name: "bananaman__walk",
+    frames: [
+      {
+        frameId: "bananaman__WALK__A",
+        directions: 8,
+      },
+      {
+        frameId: "bananaman__WALK__B",
+        directions: 8,
+      },
+      {
+        frameId: "bananaman__WALK__C",
+        directions: 8,
+      },
+      {
+        frameId: "bananaman__WALK__D",
+        directions: 8,
+      },
+      {
+        frameId: "bananaman__WALK__E",
+        directions: 8,
+      },
+      {
+        frameId: "bananaman__WALK__F",
+        directions: 8,
+      },
+      {
+        frameId: "bananaman__WALK__G",
+        directions: 8,
+      },
+      {
+        frameId: "bananaman__WALK__H",
+        directions: 8,
+      },
+    ],
+    looping: true,
+    frameDuration: 125,
   },
 ];
 
@@ -1265,6 +1331,50 @@ const wad = {
           {
             name: "state__wander",
             animation: "scientist__default",
+          },
+        ],
+        collider: {
+          type: "aabb",
+          width: 0.8,
+          height: 0.8,
+          solid: true,
+        },
+        ai: {
+          aiType: "dog_friendly",
+          playRadius: 1,
+          swarmRadius: 5,
+          idleDurationRange: [1, 3],
+          idleTimer: 0,
+          seekTarget: {
+            target: null,
+          },
+          seekPath: {
+            path: null,
+            currentIndex: 0,
+          },
+        },
+      },
+      {
+        transform: {
+          position: {
+            x: 3,
+            y: 3,
+          },
+          rotation: 0,
+          scale: {
+            x: 1,
+            y: 1,
+          },
+        },
+        initialState: "state__idle",
+        states: [
+          {
+            name: "state__idle",
+            animation: "bananaman__wait",
+          },
+          {
+            name: "state__wander",
+            animation: "bananaman__walk",
           },
         ],
         collider: {
