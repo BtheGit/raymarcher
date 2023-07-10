@@ -1,6 +1,6 @@
 {
   "frames": {
-    "TREE1__A0": {
+    "tree_1__A0": {
       "frame": {
         "x": 0,
         "y": 0,
@@ -27,8 +27,8 @@
   },
   "meta": {
     "image": "sprite__tree_1.png",
-    "name": "sprite__tree_1",
-    "id": "TREE1",
+    "name": "tree_1",
+    "id": "tree_1",
     "format": "RGBA8888",
     "size": {
       "w": 434,

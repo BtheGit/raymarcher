@@ -132,7 +132,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   // NOTE: Textures are not added to the wad with dimensions. That is a mistake and with an editor would be fine. So we load the boot process and get all those values now. (We ignored it for tiles since those would always be the same size and stretched.)
   const objects: WADObjectEntity[] = wad.map.objects ?? [];
   objects.forEach((object) => {
-    const { transform, texture, states, initialState, collider, ai } = object;
+    const { transform, sprite, states, initialState, collider, ai } = object;
 
     let objectEntity = {
       transform: {
@@ -156,13 +156,11 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
       (objectEntity as ObjectEntity).ai = ai;
     }
 
-    if (texture) {
+    if (sprite) {
       (objectEntity as StaticObjectEntity) = {
         ...objectEntity,
         objectType: "object__static",
-        texture: {
-          name: texture,
-        },
+        sprite,
       };
     } else {
       if (!states || !states.length || !initialState) {

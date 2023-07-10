@@ -889,7 +889,21 @@ export class RenderSystem implements System {
         // Note: Using objectType to make typescript happy.
         const objectType = object.objectType;
         if (objectType === "object__static") {
-          texture = this.textureManager.getTexture(object.texture.name);
+          let spriteId;
+          if (object.sprite.directions === 0) {
+            // The frameId only gets us halfway there. We still need rotation. (If directions isn't 0)
+            spriteId = `${object.sprite.name}0`;
+          } else {
+            // For now, it's 0 or 8.
+            const angle = apparentDirectionAngle(
+              object.transform.position,
+              object.transform.direction,
+              this.camera.transform.position
+            );
+            const frameDirection = frameDirectionIndexByAngle(angle);
+            spriteId = `${object.sprite.name}${frameDirection}`;
+          }
+          texture = this.spriteManager.getSpriteTexture(spriteId);
         } else {
           // Uh. If we have no texture and no animation frame, should mark this object as rubbish. But just doing the check anyway.
           // TODO: For now assuming animated since we only have two types of entities.
