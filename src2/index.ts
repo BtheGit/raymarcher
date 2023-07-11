@@ -4,6 +4,7 @@ import { RaycasterSystem } from "./systems/RaycasterSystem";
 import { RenderSystem } from "./systems/RenderSystem";
 import { PhysicsSystem } from "./systems/PhysicsSystem";
 import { AIControllerSystem } from "./systems/AIControllerSystem";
+import { ProjectileSystem } from "./systems/ProjectileSystem";
 import { ECS } from "./utils/ECS/ECS";
 import {
   Vector,
@@ -26,10 +27,12 @@ import {
   WADObjectEntity,
   WAD,
 } from "./raymarcher";
+// TO Allay future confusion, event manager is not an event system. Ideally it shoudl be replaced with an event system though.
 import { EventManager } from "./EventManager/EventManager";
 import { AnimationSystem } from "./systems/AnimationSystem";
 import { SpriteManager } from "./SpriteManager/SpriteManager";
 import { AnimationManager } from "./AnimationManager/AnimationManager";
+import { Broker } from "./utils/events";
 
 const DEFAULT_SETTINGS = {
   width: 1024,
@@ -41,6 +44,7 @@ const DEFAULT_SETTINGS = {
 
 const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   const ecs = new ECS();
+  const broker = new Broker();
   const textureManager = new TextureManager();
   const spriteManager = new SpriteManager(textureManager);
   const animationManager = new AnimationManager();
@@ -107,8 +111,8 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
     plane,
     collider: {
       type: "aabb",
-      width: 0.4,
-      height: 0.4,
+      width: 0.8,
+      height: 0.8,
       solid: true,
     },
     collisions: [],
@@ -218,11 +222,15 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
 
   const UserInputSystem = SingletonInputSystem.getInstance(settings.canvasId);
 
-  ecs.systems.add(new PlayerControllerSystem(ecs, UserInputSystem));
+  ecs.systems.add(
+    new PlayerControllerSystem(ecs, broker, UserInputSystem, playerEntity)
+  );
 
-  ecs.systems.add(new AIControllerSystem(ecs, gridManager));
+  ecs.systems.add(new AIControllerSystem(ecs, broker, gridManager));
 
-  ecs.systems.add(new PhysicsSystem(ecs, gridManager));
+  ecs.systems.add(new ProjectileSystem(ecs, broker));
+
+  ecs.systems.add(new PhysicsSystem(ecs, broker, gridManager));
 
   // TODO:
   // Once again, I don't know the ideal way to separate concerns here (without huge time overhead for good event stuff), so I'm going to short term undo all my good efforts and hard connect systems. Namely the renderer and the raycaster in this case. In fact, until I get smarter, they really shouldn't be two systems at all. But oh well, the renderer will at least have other concerns like text and a HUD that have nothing to do with raycasting. So I'm going to make a very fake eventBus to pass stuff along short term.
