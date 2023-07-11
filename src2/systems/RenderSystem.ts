@@ -165,7 +165,7 @@ export class RenderSystem implements System {
       this.gameSettings.height
     );
 
-    // TODO: Support animation
+    // TODO: Should really be worried about sprites, not object
     this.objects = ecs.entityManager.with(["objectType"]);
   }
 
@@ -831,8 +831,9 @@ export class RenderSystem implements System {
   }
 
   renderObjects() {
+    const objects = this.ecs.entityManager.with(["objectType"]);
     // Sort the sprites by distance from the camera
-    const sortedObjects = this.objects.sort((a, b) => {
+    const sortedObjects = objects.sort((a, b) => {
       const aDistance =
         Math.pow(this.camera.transform.position.x - a.transform.position.x, 2) +
         Math.pow(this.camera.transform.position.y - a.transform.position.y, 2);

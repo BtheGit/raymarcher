@@ -1,7 +1,7 @@
 export class SingletonInputSystem {
   private static instance: SingletonInputSystem;
   private keysPressed: { [key: string]: boolean } = {};
-  private mousePressed: boolean = false;
+  private mousePressed: MouseEvent | null = null;
   private lastMouseX: number = 0;
   private lastMouseY: number = 0;
   private mouseDeltaX: number = 0;
@@ -77,12 +77,12 @@ export class SingletonInputSystem {
 
   private handleMouseDown(event: MouseEvent) {
     if (!this.pointerLockEnabled) return;
-    this.mousePressed = true;
+    this.mousePressed = event;
   }
 
   private handleMouseUp(event: MouseEvent) {
     if (!this.pointerLockEnabled) return;
-    this.mousePressed = false;
+    this.mousePressed = null;
   }
 
   private handleMouseMove(event: MouseEvent) {
@@ -101,8 +101,8 @@ export class SingletonInputSystem {
     return this.keysPressed[key] || false;
   }
 
-  public isMousePressed(): boolean {
-    if (!this.pointerLockEnabled) return false;
+  public activeMousedownEvent() {
+    if (!this.pointerLockEnabled) return null;
     return this.mousePressed;
   }
 

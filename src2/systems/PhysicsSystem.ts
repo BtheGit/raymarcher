@@ -1,18 +1,21 @@
 import { GridManager } from "../GridManager/GridManager";
 import { KineticEntity, ObjectEntity } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
+import { Broker } from "../utils/events";
 import { Vector } from "../utils/math";
 
 export class PhysicsSystem implements System {
   // private playerEntity: Entity;
   // private collidableEntities: Entity[];
   private ecs: ECS;
+  private broker: Broker;
   private gridManager: GridManager;
   private kineticEntities: KineticEntity[];
   private deceleration = 10;
 
-  constructor(ecs: ECS, gridManager: GridManager) {
+  constructor(ecs: ECS, broker: Broker, gridManager: GridManager) {
     this.ecs = ecs;
+    this.broker = broker;
     this.gridManager = gridManager;
     // For now only allowing one player controlled entity and it will be the camera
     // this.playerEntity = this.ecs.entityManager.with(["camera"])[0];
@@ -20,15 +23,14 @@ export class PhysicsSystem implements System {
     //   "position",
     //   "collision",
     // ]);
-
-    this.kineticEntities = this.ecs.entityManager.with([
-      "velocity",
-      "transform",
-    ]);
   }
 
   update(dt: number) {
-    for (const entity of this.kineticEntities) {
+    const kineticEntities = this.ecs.entityManager.with([
+      "velocity",
+      "transform",
+    ]);
+    for (const entity of kineticEntities) {
       const { velocity } = entity;
       const { position } = entity.transform;
       if (velocity.x === 0 && velocity.y === 0) continue;
@@ -85,69 +87,69 @@ export class PhysicsSystem implements System {
       const newPosition = new Vector(nextX, nextY);
 
       // Perform entity collision detection against other colliders
-      // TODO: Cache this value (not the filtered list though)
-      if (!entity.collider) continue;
+      // TODO: Add collision information that would support bounce effect (angle of attack namely I think).
+      if (entity.collider) {
+        const collidingEntities: ObjectEntity[] = this.ecs.entityManager
+          .with(["collider"])
+          .filter((e) => e !== entity);
 
-      const collidingEntities: ObjectEntity[] = this.ecs.entityManager
-        .with(["collider"])
-        .filter((e) => e !== entity);
+        for (const axis of ["x", "y"]) {
+          for (const collidingEntity of collidingEntities) {
+            const collidingPosition = collidingEntity.transform.position!;
+            const collidingCollider = collidingEntity.collider!;
 
-      for (const axis of ["x", "y"]) {
-        for (const collidingEntity of collidingEntities) {
-          const collidingPosition = collidingEntity.transform.position!;
-          const collidingCollider = collidingEntity.collider!;
+            // THe following logic is only for AABB to AABB collisions
+            if (
+              collidingCollider.type !== "aabb" ||
+              entity.collider.type !== "aabb"
+            )
+              continue;
 
-          // THe following logic is only for AABB to AABB collisions
-          if (
-            collidingCollider.type !== "aabb" ||
-            entity.collider.type !== "aabb"
-          )
-            continue;
+            if (
+              newPosition.x < collidingPosition.x + collidingCollider.width! &&
+              newPosition.x + entity.collider.width! > collidingPosition.x &&
+              newPosition.y < collidingPosition.y + collidingCollider.height! &&
+              newPosition.y + entity.collider.height! > collidingPosition.y
+            ) {
+              // Handle collision
+              const xOverlap = Math.min(
+                newPosition.x + entity.collider.width! - collidingPosition.x,
+                collidingPosition.x + collidingCollider.width! - newPosition.x
+              );
+              const yOverlap = Math.min(
+                newPosition.y + entity.collider.height! - collidingPosition.y,
+                collidingPosition.y + collidingCollider.height! - newPosition.y
+              );
 
-          if (
-            newPosition.x < collidingPosition.x + collidingCollider.width! &&
-            newPosition.x + entity.collider.width! > collidingPosition.x &&
-            newPosition.y < collidingPosition.y + collidingCollider.height! &&
-            newPosition.y + entity.collider.height! > collidingPosition.y
-          ) {
-            // Handle collision
-            const xOverlap = Math.min(
-              newPosition.x + entity.collider.width! - collidingPosition.x,
-              collidingPosition.x + collidingCollider.width! - newPosition.x
-            );
-            const yOverlap = Math.min(
-              newPosition.y + entity.collider.height! - collidingPosition.y,
-              collidingPosition.y + collidingCollider.height! - newPosition.y
-            );
+              // Determine the axis with the smallest overlap
+              if (xOverlap < yOverlap) {
+                // Resolve collision along the X axis
+                newPosition.x +=
+                  newPosition.x < collidingPosition.x ? -xOverlap : xOverlap;
 
-            // Determine the axis with the smallest overlap
-            if (xOverlap < yOverlap) {
-              // Resolve collision along the X axis
-              newPosition.x +=
-                newPosition.x < collidingPosition.x ? -xOverlap : xOverlap;
+                if (entity.collisions) {
+                  entity.collisions.push({
+                    entity: entity,
+                    collidedWith: collidingEntity,
+                    axis: "x",
+                    overlap: xOverlap,
+                    timestamp: Date.now(),
+                  });
+                }
+              } else {
+                // Resolve collision along the Y axis
+                newPosition.y +=
+                  newPosition.y < collidingPosition.y ? -yOverlap : yOverlap;
 
-              if (entity.collisions) {
-                entity.collisions.push({
-                  entity: entity,
-                  collidedWith: collidingEntity,
-                  axis: "x",
-                  overlap: xOverlap,
-                  timestamp: Date.now(),
-                });
-              }
-            } else {
-              // Resolve collision along the Y axis
-              newPosition.y +=
-                newPosition.y < collidingPosition.y ? -yOverlap : yOverlap;
-
-              if (entity.collisions) {
-                entity.collisions.push({
-                  entity: entity,
-                  collidedWith: collidingEntity,
-                  axis: "y",
-                  overlap: yOverlap,
-                  timestamp: Date.now(),
-                });
+                if (entity.collisions) {
+                  entity.collisions.push({
+                    entity: entity,
+                    collidedWith: collidingEntity,
+                    axis: "y",
+                    overlap: yOverlap,
+                    timestamp: Date.now(),
+                  });
+                }
               }
             }
           }

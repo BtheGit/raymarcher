@@ -40,11 +40,15 @@ export interface MovementComponent {
   rotationSpeed: number;
 }
 
-export interface TransformComponent {
+// Breaking these apart to gently deprecate rotation;
+export interface BaseTransformComponent {
   position: Vector;
-  rotation: number;
   direction: Vector;
   scale: Vector;
+}
+
+export interface TransformComponent extends BaseTransformComponent {
+  rotation: number;
 }
 
 export interface SpriteComponent {
@@ -393,4 +397,37 @@ export interface WAD {
     start: any;
     objects: WADObjectEntity[];
   };
+}
+
+export interface EventMessage {
+  type: string;
+}
+
+export interface EmitProjectileEvent extends EventMessage {
+  name: "emit_projectile";
+  emitter: "player";
+  type: string;
+  // TODO: Type of projectile and parameters and associated sprite
+  sprite: SpriteTextureComponent; // TODO: Sprite types (static animated)
+  origin: Vector;
+  direction: Vector;
+  velocity: Vector;
+  speed: 2;
+  collider: ColliderComponent;
+}
+
+export interface ProjectileEntity {
+  projectileType: string;
+}
+
+export interface BallProjectileEntity extends ProjectileEntity {
+  projectileType: "ball";
+  objectType: "object__static";
+  sprite: SpriteTextureComponent;
+  transform: BaseTransformComponent;
+  velocity: VelocityComponent;
+  lifetime: number;
+  speed: number;
+  collider: ColliderComponent;
+  collisions: CollisionReport[];
 }

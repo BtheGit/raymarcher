@@ -45,10 +45,15 @@ export class Bucket<Entity> implements Iterable<Entity> {
 
     // Shuffle pop!
     const index = this.memberMap.get(member)!;
-    const last = this.bucket.pop()!;
-    this.bucket[index] = last;
+    // Update the memberMap for the last entity in the bucket
+    const last = this.bucket[this.bucket.length - 1];
     this.memberMap.set(last, index);
 
+    // Swap the entity at index with the last entity in the bucket
+    this.bucket[index] = last;
+
+    // Remove the entity from the bucket and the memberMap
+    this.bucket.pop();
     this.memberMap.delete(member);
 
     return member;

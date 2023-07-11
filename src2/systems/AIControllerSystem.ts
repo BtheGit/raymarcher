@@ -6,17 +6,20 @@ import {
   PlayerEntity,
 } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
+import { Broker } from "../utils/events";
 import { friendlyDogAI } from "./AIFriendlyDogSystem";
 
 // NOTE: This really only exists because we can't search by aiType directly. I could come up with a few solutions, but for now, I'm just going to have a bunch of AI system's plugged in that would otherwise be independent. But, to simplify, I will have each AISystem be a single update call for now.
 export class AIControllerSystem implements System {
   private ecs: ECS;
+  private broker: Broker;
   private intelligentEntities: ObjectEntity[];
   private playerEntity: PlayerEntity;
   private gridManager: GridManager;
 
-  constructor(ecs: ECS, gridManager: GridManager) {
+  constructor(ecs: ECS, broker: Broker, gridManager: GridManager) {
     this.ecs = ecs;
+    this.broker = broker;
     this.gridManager = gridManager;
     // Hacky way to exclude the player entity while we sort out that state situation
     this.intelligentEntities = this.ecs.entityManager.with(["ai"]);

@@ -2,6 +2,7 @@ import SpriteScientist from "./images/sprites/scientist.json" assert { type: "js
 import SpriteTree_1 from "./images/sprites/tree_1.json" assert { type: "json" };
 import BananaMan from "./images/sprites/banana.json" assert { type: "json" };
 import BlueCrystal from "./images/sprites/blue_crystal.json" assert { type: "json" };
+import PurpleBall from "./images/sprites/purple_ball.json" assert { type: "json" };
 
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
@@ -22,141 +23,6 @@ import BlueCrystal from "./images/sprites/blue_crystal.json" assert { type: "jso
 // For simplicity, we'll want all images in a folder to have a unique name even if they are different extensions, to avoid
 // collisions.
 // For that matter, there is no reason, all the texture files can't go in the same hash.
-
-const sprites_old = [
-  {
-    // TODO: The type might be useless and ready for deprecation.
-    type: "prop",
-    name: "tree1",
-    spritesheet: "tree_1",
-    pos: {
-      x: 13,
-      y: 10,
-    },
-    isAnimated: false,
-    // If a sprite is multifaceted, it needs to have both a store of the locations of the
-    // textures for the various faces on the spritesheet and a separate key for direction (to calculate which
-    // face to show based on player position).
-    isMultifaceted: false,
-    isSolid: true,
-    // boundingBox is the radius from the center of the sprite that is impassable by collidable players and NPCs.
-    boundingBox: 0.2,
-
-    // EVERY sprite should have a defaultFace
-    // defaultFace: [0,0],
-    // The coordinates on the spritesheet image where the face starts.
-    // On single faceted sprites, the image should be equal to the width and height.
-    // faces: {
-    // },
-    // This is the pixels on the spritesheet to extract
-    // // TODO: For now we are just going to focus on non-relative bounding boxes.
-    // faceWidth: 100,
-    // faceHeight: 100,
-    // // This will be used to control the in-game scaling.
-    // // But we still lack an in-world unit of measurement (except grid cells). This needs to be reconsidered.
-    // spriteWidth: 1,
-    // spriteHeight: 1,
-  },
-  {
-    type: "prop",
-    name: "tree2",
-    spritesheet: "tree_1",
-    pos: {
-      x: 12,
-      y: 10.5,
-    },
-    isAnimated: false,
-    isMultifaceted: false,
-    isSolid: true,
-    boundingBox: 0.2,
-    verticalOffset: 1,
-  },
-  {
-    type: "prop",
-    name: "tree3",
-    spritesheet: "sprite__tree_2_low",
-    pos: {
-      x: 12.5,
-      y: 10.7,
-    },
-    isAnimated: false,
-    isMultifaceted: false,
-    isSolid: true,
-    boundingBox: 0.4,
-  },
-  {
-    type: "prop",
-    name: "tree4",
-    spritesheet: "tree_1",
-    pos: {
-      x: 12.75,
-      y: 11.5,
-    },
-    isAnimated: false,
-    isMultifaceted: false,
-    isSolid: true,
-    boundingBox: 0.2,
-  },
-  {
-    type: "prop",
-    name: "tree5",
-    spritesheet: "tree_1",
-    pos: {
-      x: 11.5,
-      y: 12,
-    },
-    isAnimated: false,
-    isMultifaceted: false,
-    isSolid: true,
-    boundingBox: 0.2,
-  },
-  {
-    type: "prop",
-    name: "tree6",
-    spritesheet: "sprite__palm_tree_1_high",
-    pos: {
-      x: 9.5,
-      y: 10,
-    },
-    isAnimated: false,
-    isMultifaceted: false,
-    isSolid: true,
-    boundingBox: 0.2,
-    verticalOffset: 0.95,
-  },
-  {
-    type: "prop",
-    name: "spider-man1",
-    spritesheet: "sprite__spider-man_static_1",
-    pos: {
-      x: 12,
-      y: 16,
-    },
-    isAnimated: false,
-    isMultifaceted: false,
-    isSolid: true,
-    boundingBox: 0.35,
-  },
-  {
-    type: "prop",
-    name: "spider-man2",
-    spritesheet: "sprite__spider-man_static_1",
-    pos: {
-      x: 13,
-      y: 16,
-    },
-    isAnimated: false,
-    isMultifaceted: false,
-    isSolid: true,
-    boundingBox: 0.35,
-    scale: 0.65,
-    verticalOffset: 0.35,
-    trigger: {
-      type: "showText",
-      text: "Hi!\n\nRemember to always respect the hyphen!",
-    },
-  },
-];
 
 // Maybe we don't need to define textures and animated textures separately? We'll see. Once we get back to par...
 // Probably would be useful to have texture dimensions here too.  So really a loader that reads from the directory
@@ -191,7 +57,13 @@ const textures = {
   lava: "./images/textures/lava.png",
 };
 
-const spriteDatas = [SpriteScientist, SpriteTree_1, BananaMan, BlueCrystal];
+const spriteDatas = [
+  SpriteScientist,
+  SpriteTree_1,
+  BananaMan,
+  BlueCrystal,
+  PurpleBall,
+];
 
 const spriteMaps = spriteDatas.reduce((acc, curr) => {
   acc[curr.meta.name] = curr;
@@ -1232,8 +1104,8 @@ const wad = {
         ],
         collider: {
           type: "aabb",
-          width: 1,
-          height: 1,
+          width: 0.5,
+          height: 0.5,
           solid: true,
         },
         ai: {
@@ -1276,8 +1148,8 @@ const wad = {
         ],
         collider: {
           type: "aabb",
-          width: 0.8,
-          height: 0.8,
+          width: 0.5,
+          height: 0.5,
           solid: true,
         },
         ai: {
@@ -1311,17 +1183,17 @@ const wad = {
         states: [
           {
             name: "state__idle",
-            animation: "scientist__default",
+            animation: "bananaman__wait",
           },
           {
             name: "state__wander",
-            animation: "scientist__default",
+            animation: "bananaman__walk",
           },
         ],
         collider: {
           type: "aabb",
-          width: 0.8,
-          height: 0.8,
+          width: 0.4,
+          height: 0.4,
           solid: true,
         },
         ai: {
@@ -1355,17 +1227,17 @@ const wad = {
         states: [
           {
             name: "state__idle",
-            animation: "scientist__default",
+            animation: "bananaman__wait",
           },
           {
             name: "state__wander",
-            animation: "scientist__default",
+            animation: "bananaman__walk",
           },
         ],
         collider: {
           type: "aabb",
-          width: 0.8,
-          height: 0.8,
+          width: 0.4,
+          height: 0.4,
           solid: true,
         },
         ai: {
@@ -1386,7 +1258,7 @@ const wad = {
       {
         transform: {
           position: {
-            x: 3,
+            x: 4,
             y: 3,
           },
           rotation: 0,
@@ -1408,8 +1280,8 @@ const wad = {
         ],
         collider: {
           type: "aabb",
-          width: 0.8,
-          height: 0.8,
+          width: 0.4,
+          height: 0.4,
           solid: true,
         },
         ai: {
