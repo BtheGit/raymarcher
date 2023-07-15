@@ -30,6 +30,7 @@ import PurpleBall from "./images/sprites/purple_ball.json" assert { type: "json"
 
 const textures = {
   background__trees1: "./images/textures/background__trees1.jpg",
+  grass1: "./images/textures/retro_texture_pack_9/GRASS_1A.png",
   // hedge1: "./images/textures/hedge1.jpg",
   // floor_grass1: "./images/textures/floor_grass1.jpg",
   // floor_carpet1: "./images/textures/floor_carpet1.jpg",
@@ -189,7 +190,7 @@ const floor_default = {
   accessible: true,
   texture: {
     type: "texture",
-    textureName: "default",
+    textureName: "grass1",
   },
 };
 
