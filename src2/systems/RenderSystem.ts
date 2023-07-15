@@ -231,6 +231,7 @@ export class RenderSystem implements System {
         // TODO: This bit of code might be the trick to stop using direction and start using rotation.
         const { x, y } = this.camera.transform.direction;
         const angle = Math.atan2(x, y);
+        // const angle = Math.atan2(x, y) * (180 / Math.PI) >> 0; // Less precise. To one degree
         let degrees = angle > 0 ? toDegrees(angle) : 360 + toDegrees(angle);
         // degrees = degrees - 30 >= 0 ? degrees - 30 : 360 + degrees - 30;
         const sampleWidth = backgroundImage.width / 6; // 1/3 of image because FOV / 180
@@ -342,7 +343,9 @@ export class RenderSystem implements System {
         // TODO: I tried to support brightness for wall colors previously, but I don't think I actually did the calculation correctly. Should try again soon.
         switch (surface) {
           case "color":
-            this.worldCtx.fillStyle = color!.color;
+            this.worldCtx.fillStyle = `rgb(${color!.r},${color!.g},${
+              color!.b
+            })`;
             this.worldCtx.beginPath();
             this.worldCtx.fillRect(i, top, 1, columnHeight);
             this.worldCtx.closePath();
@@ -484,8 +487,7 @@ export class RenderSystem implements System {
 
               // TODO: Here is a big breaking assumption. ALL floor colors are hex!
               // TODO: Preprocess wads to coerce all color values into RGB (or require it from the get go, to save stuff like this). Can do this immediately.
-              const color = gridCell.floorTile.color;
-              const { r, g, b } = hexToRGB(color);
+              const { r, g, b } = gridCell.floorTile.color!;
 
               const index = (y * this.gameSettings.width + x) * 4;
               this.floorCeilingPixelData.data[index] = r * brightnessModifier;
@@ -557,9 +559,7 @@ export class RenderSystem implements System {
           const ceilingSurface = ceiling.surface;
           switch (ceilingSurface) {
             case "color":
-              const ceilingColor = ceiling.color!.color;
-              // TODO: Here is a big breaking assumption. ALL floor colors are hex!
-              const { r, g, b } = hexToRGB(ceilingColor);
+              const { r, g, b } = ceiling.color!;
 
               const index =
                 ((this.gameSettings.height - y) * this.gameSettings.width + x) *
@@ -748,9 +748,7 @@ export class RenderSystem implements System {
         const ceilingSurface = ceiling.surface;
         switch (ceilingSurface) {
           case "color":
-            const ceilingColor = ceiling.color!.color;
-            // TODO: Here is a big breaking assumption. ALL floor colors are hex!
-            const { r, g, b } = hexToRGB(ceilingColor);
+            const { r, g, b } = ceiling.color!;
 
             const index =
               ((this.gameSettings.height - y) * this.gameSettings.width + x) *
@@ -1000,12 +998,12 @@ export class RenderSystem implements System {
     this.renderSkybox();
     // TODO: Render World (Walls, Floors, Ceilings, Sprites)
     // this.renderFloors();
-    console.time("render world");
+    // console.time("render world");
     this.renderWorld();
-    console.timeEnd("render world");
-    console.time("render objects");
+    // console.timeEnd("render world");
+    // console.time("render objects");
     this.renderObjects();
-    console.timeEnd("render objects");
+    // console.timeEnd("render objects");
     // TODO: Render HUD (MapOverlay, Text, etc)
 
     // TODO: Combine all the buffers into a single offscreen buffer.

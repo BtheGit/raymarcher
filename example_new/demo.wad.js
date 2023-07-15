@@ -189,8 +189,14 @@ const floor_default = {
   type: "floor",
   accessible: true,
   texture: {
-    type: "texture",
-    textureName: "grass1",
+    type: "color",
+    color: {
+      r: 0,
+      g: 0,
+      b: 200,
+    },
+    // type: "texture",
+    // textureName: "grass1",
   },
 };
 
@@ -198,8 +204,14 @@ const wall_default = {
   type: "wall",
   accessible: false,
   texture: {
-    type: "texture",
-    textureName: "light_brick1",
+    type: "color",
+    color: {
+      r: 50,
+      g: 200,
+      b: 200,
+    },
+    // type: "texture",
+    // textureName: "light_brick1",
   },
 };
 

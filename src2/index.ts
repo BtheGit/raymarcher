@@ -269,14 +269,15 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   // TODO: Performance.now gives me ever increasing numbers versus the delta between times, which I need for modifying calculations between frames.
   let lastTime = Date.now(); // performance.now();
   const tick = () => {
+    requestAnimationFrame(tick);
     /* Determine deltatime */
     const time = Date.now(); // performance.now();
     const dt = time - lastTime; // / 1000;
-    lastTime = time;
+    if (dt >= 1000 / 30) {
+      lastTime = time;
 
-    ecs.update(dt);
-
-    requestAnimationFrame(tick);
+      ecs.update(dt);
+    }
   };
 
   tick();
