@@ -143,6 +143,10 @@ export class RenderSystem implements System {
       this.gameSettings.canvasId
     ) as HTMLCanvasElement;
     this.ctx = this.canvas.getContext("2d")!;
+    this.ctx.imageSmoothingEnabled = false;
+    this.spriteCtx.imageSmoothingEnabled = false;
+    this.offscreenCtx.imageSmoothingEnabled = false;
+    this.worldCtx.imageSmoothingEnabled = false;
 
     this.canvas.width =
       this.offscreenCanvas.width =
@@ -996,8 +1000,12 @@ export class RenderSystem implements System {
     this.renderSkybox();
     // TODO: Render World (Walls, Floors, Ceilings, Sprites)
     // this.renderFloors();
+    console.time("render world");
     this.renderWorld();
+    console.timeEnd("render world");
+    console.time("render objects");
     this.renderObjects();
+    console.timeEnd("render objects");
     // TODO: Render HUD (MapOverlay, Text, etc)
 
     // TODO: Combine all the buffers into a single offscreen buffer.
