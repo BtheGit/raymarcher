@@ -194,7 +194,9 @@ export interface SpriteTextureComponent {
 
 // Component to store the color information for the grid tile face
 export interface TileColorComponent {
-  color: string; // Hex color code or color name
+  r: number;
+  g: number;
+  b: number;
 }
 
 // Component to store the animated texture information for the grid tile face
@@ -317,17 +319,28 @@ export interface SpriteFrameData {
   // Add additional frame data properties as needed
 }
 
+export interface WADTexture {
+  type: "texture" | "color";
+}
+
+export interface WADTextureTexture extends WADTexture {
+  type: "texture";
+  textureName: string;
+}
+export interface WADTextureColor extends WADTexture {
+  type: "color";
+  color: {
+    r: number;
+    g: number;
+    b: number;
+  };
+}
+
 export interface WADGridCell {
   type: "floor" | "wall";
   accessible: boolean;
-  texture: {
-    type: "texture";
-    textureName?: string;
-  };
-  ceiling?: {
-    type: "texture";
-    textureName?: string;
-  };
+  texture: WADTextureColor | WADTextureTexture;
+  ceiling?: WADTextureColor | WADTextureTexture;
   wallFaces?: [];
 }
 

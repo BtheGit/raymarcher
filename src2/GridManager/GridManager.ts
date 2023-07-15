@@ -41,22 +41,43 @@ export class GridManager {
         };
 
         if (type === "floor") {
-          entity.floorTile = {
-            surface: texture.type,
-            texture: { name: texture.textureName! },
-          };
-
-          if (ceiling) {
-            entity.floorTile.ceiling = {
-              surface: ceiling.type,
-              texture: { name: ceiling.textureName! },
+          if (texture.type === "color") {
+            entity.floorTile = {
+              surface: texture.type,
+              color: texture.color,
+            };
+          } else {
+            entity.floorTile = {
+              surface: texture.type,
+              texture: { name: texture.textureName! },
             };
           }
+
+          if (ceiling) {
+            if (ceiling.type === "color") {
+              entity.floorTile.ceiling = {
+                surface: ceiling.type,
+                color: ceiling.color,
+              };
+            } else {
+              entity.floorTile.ceiling = {
+                surface: ceiling.type,
+                texture: { name: ceiling.textureName! },
+              };
+            }
+          }
         } else if (type === "wall") {
-          entity.wallTile = {
-            surface: texture.type,
-            texture: { name: texture.textureName! },
-          };
+          if (texture.type === "color") {
+            entity.wallTile = {
+              surface: texture.type,
+              color: texture.color,
+            };
+          } else {
+            entity.wallTile = {
+              surface: texture.type,
+              texture: { name: texture.textureName! },
+            };
+          }
 
           // TODO: wallFaces
           if (wallFaces && wallFaces.length) {
