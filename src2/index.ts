@@ -35,8 +35,8 @@ import { AnimationManager } from "./AnimationManager/AnimationManager";
 import { Broker } from "./utils/events";
 
 const DEFAULT_SETTINGS = {
-  width: 1024,
-  height: 768,
+  width: 768,
+  height: 512,
   canvasId: "raymarcher-display",
 };
 

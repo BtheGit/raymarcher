@@ -10,6 +10,7 @@ export class TextureBuffer {
     this._canvas.width = image.width;
     this._canvas.height = image.height;
     this.context = this._canvas.getContext("2d", { willReadFrequently: true })!;
+    this.context.imageSmoothingEnabled = false;
     this.context.drawImage(image, 0, 0);
     this._imageData = this.context.getImageData(
       0,
