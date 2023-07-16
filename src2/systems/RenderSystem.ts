@@ -25,6 +25,40 @@ import { apparentDirectionAngle, toDegrees, lerp } from "../utils/math";
 import { hexToRGB } from "../utils/image";
 import { SpriteManager } from "../SpriteManager/SpriteManager";
 
+export function adjustBrightness(canvas, brightness) {
+  const adjustedCanvas = document.createElement("canvas");
+  const ctx = adjustedCanvas.getContext("2d")!;
+
+  // Set the adjusted canvas dimensions to match the original texture
+  adjustedCanvas.width = canvas.width;
+  adjustedCanvas.height = canvas.height;
+
+  // Get the image data from the original canvas
+  const imageData = canvas
+    .getContext("2d")
+    .getImageData(0, 0, canvas.width, canvas.height);
+  const data = imageData.data;
+
+  // Adjust the brightness of each pixel
+  for (let i = 0; i < data.length; i += 4) {
+    // Modify the RGB values based on the brightness factor
+    data[i] *= brightness; // Red channel
+    data[i + 1] *= brightness; // Green channel
+    data[i + 2] *= brightness; // Blue channel
+    // The alpha channel (data[i + 3]) remains unchanged
+
+    // Ensure the RGB values stay within the valid range (0-255)
+    data[i] = Math.min(255, data[i]);
+    data[i + 1] = Math.min(255, data[i + 1]);
+    data[i + 2] = Math.min(255, data[i + 2]);
+  }
+
+  // Put the adjusted image data back to the canvas
+  ctx.putImageData(imageData, 0, 0);
+
+  return adjustedCanvas;
+}
+
 export const frameDirectionIndexByAngle = (angle: number) => {
   // The following are both sort of solutions. But since I really don't want to worry about other directional counts. Let's be smart and just be stupid. Which means less math, more lookups.
 
@@ -991,6 +1025,11 @@ export class RenderSystem implements System {
         const drawStartX = Math.floor(-spriteWidth / 2 + spriteScreenX);
         const drawEndX = spriteWidth / 2 + spriteScreenX;
 
+        // Darkened sprites! But at great frame rate cost (20ms to 50-60ms for this call)
+        const brightness =
+          this.lookupWallBrightnessModifier[Math.floor(transformY)];
+        const adjustedCanvas = adjustBrightness(texture!.canvas, brightness);
+
         // Draw sprite in vertical strips.
         for (let stripe = drawStartX; stripe < drawEndX; stripe++) {
           const texX =
@@ -1012,7 +1051,7 @@ export class RenderSystem implements System {
             transformY < zBuffer[stripe]
           ) {
             this.offscreenCtx.drawImage(
-              texture!.canvas,
+              adjustedCanvas,
               texX,
               0,
               1,
