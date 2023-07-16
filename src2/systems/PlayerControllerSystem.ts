@@ -39,7 +39,7 @@ export class PlayerControllerSystem implements System {
     const incrementalModifier = 1; // NOTE: NO need to artificially slow it down when we're barely chugging along as it is. dt / 1000;
     const mouseSensitivity = 0.05;
     // TODO: Base this on run or walk state (or key press)
-    const walkSpeed = 0.01;
+    const walkSpeed = this.player.movement.speed;
     // const runSpeed = 0.015;
     const rotationSpeed = 0.03;
     for (const entity of this.playerEntities) {
@@ -142,8 +142,8 @@ export class PlayerControllerSystem implements System {
         // Do we need this with velocity?
         direction: this.player.transform.direction,
         // We should probably determine velocity? Would it be conditional on the player or just the projectile type (well, press and hold to throw, definitely player).
-        velocity: this.player.transform.direction.scale(5),
-        speed: 100,
+        velocity: this.player.transform.direction,
+        speed: 0.0075,
         sprite: {
           name: "purple_ball__A",
           directions: 0,

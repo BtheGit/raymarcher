@@ -129,8 +129,9 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
     // FUTURE: Just change velocity with keys and let collision detection reconcile movement?
     // TODO: Not using right now. Main player settings should really be a base setting.
     movement: {
-      walkSpeed: 0.15,
-      rotationSpeed: 0.12,
+      speed: startingPosition.walkSpeed,
+      // walkSpeed: 0.15,
+      // rotationSpeed: 0.12,
     },
     state: {
       // TODO: For the main player, we'll have to worry about this later. I'm more concerned with NPCs
@@ -144,7 +145,8 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   // NOTE: Textures are not added to the wad with dimensions. That is a mistake and with an editor would be fine. So we load the boot process and get all those values now. (We ignored it for tiles since those would always be the same size and stretched.)
   const objects: WADObjectEntity[] = wad.map.objects ?? [];
   objects.forEach((object) => {
-    const { transform, sprite, states, initialState, collider, ai } = object;
+    const { transform, sprite, states, initialState, collider, ai, movement } =
+      object;
 
     let objectEntity = {
       transform: {
@@ -156,6 +158,9 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
         elevation: transform.elevation,
       },
       velocity: new Vector2(0, 0),
+      movement: movement ?? {
+        speed: 0,
+      },
     };
 
     if (collider) {

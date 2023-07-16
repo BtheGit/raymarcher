@@ -32,17 +32,18 @@ export class PhysicsSystem implements System {
       "velocity",
       "transform",
     ]);
+    const decelerationRate = this.deceleration * dt;
+
     for (const entity of kineticEntities) {
       const { velocity } = entity;
       const { position } = entity.transform;
+      const { speed } = entity.movement;
+
       if (velocity.x === 0 && velocity.y === 0) continue;
 
-      // TODO: Base this on running or walking.
-      const maxSpeed = 0.003;
-      const decelerationRate = this.deceleration * dt;
-
       // Limit velocity to maximum speed
-      let newVelocity = velocity.clampMagnitude(0, maxSpeed);
+      // TODO: Instead of maxSpeed, maybe base speed. Dunno.
+      let newVelocity = velocity.clampMagnitude(0, speed);
 
       // Apply velocity to update position
       const deltaPosition = newVelocity.scale(dt);

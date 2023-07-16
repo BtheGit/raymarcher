@@ -38,7 +38,9 @@ export class ProjectileSystem implements System {
       velocity: event.velocity,
       sprite: event.sprite,
       lifetime: 2000,
-      speed: event.speed,
+      movement: {
+        speed: event.speed,
+      },
       collider: event.collider,
       collisions: [],
       collisionLayer: {
@@ -70,7 +72,7 @@ export class ProjectileSystem implements System {
         // }
         projectile.lifetime -= dt;
         const velocity = new Vector2(0, 0).add(
-          projectile.transform.direction.scale(projectile.speed)
+          projectile.transform.direction.scale(projectile.movement.speed)
         );
         if (!velocity.equals(projectile.velocity)) {
           this.ecs.entityManager.updateEntity(projectile, { velocity });
