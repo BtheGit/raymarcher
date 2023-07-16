@@ -7,7 +7,7 @@ import { AIControllerSystem } from "./systems/AIControllerSystem";
 import { ProjectileSystem } from "./systems/ProjectileSystem";
 import { ECS } from "./utils/ECS/ECS";
 import {
-  Vector,
+  Vector2,
   directionVectorFromRotation,
   planeVectorFromRotation,
   toRadians,
@@ -39,6 +39,7 @@ const DEFAULT_SETTINGS = {
   width: 768,
   height: 512,
   canvasId: "raymarcher-display",
+  tileSize: 256, // TODO: Make this defined in the WAD (since the wad will define world objects relative to this... or, just use this forever since this is a toy project after all. :) )
 };
 
 // TODO: Default Wad
@@ -57,6 +58,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
       width: settings.width,
       height: settings.height,
       canvasId: settings.canvasId,
+      tileSize: settings.tileSize,
     },
   };
 
@@ -101,13 +103,14 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
       isControlled: true,
     },
     transform: {
-      position: new Vector(
+      position: new Vector2(
         startingPosition.position.x,
         startingPosition.position.y
       ),
       direction,
       rotation: startingPosition.rotation, // TODO: Get rid of
-      scale: new Vector(1, 1),
+      height: 192, // I hope this isnt being used right now
+      // scale: new Vector(1, 1),
     },
     plane,
     collider: {
@@ -120,7 +123,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
     collisionLayer: {
       layer: CollisionLayer.Player,
     },
-    velocity: new Vector(0, 0),
+    velocity: new Vector2(0, 0),
     // TODO: Use movement speed to port old code.
     // FUTURE: Just change velocity with keys and let collision detection reconcile movement?
     // TODO: Not using right now. Main player settings should really be a base setting.
@@ -144,13 +147,14 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
 
     let objectEntity = {
       transform: {
-        position: new Vector(transform.position.x, transform.position.y),
+        position: new Vector2(transform.position.x, transform.position.y),
         // TODO: Deprecate roation if the math is more work
         rotation: transform.rotation,
         direction: directionVectorFromRotation(transform.rotation),
-        scale: new Vector(transform.scale.x, transform.scale.y),
+        height: transform.height,
+        // scale: new Vector(transform.scale.x, transform.scale.y),
       },
-      velocity: new Vector(0, 0),
+      velocity: new Vector2(0, 0),
     };
 
     if (collider) {

@@ -221,12 +221,14 @@ const objects = [
       position: {
         x: 7,
         y: 5,
+        z: 0,
       },
       rotation: 0,
-      scale: {
-        x: 1,
-        y: 1,
-      },
+      // scale: {
+      //   x: 1,
+      //   y: 1,
+      // },
+      height: 64,
     },
     sprite: {
       name: "blue_crystal__A",
@@ -245,12 +247,14 @@ const objects = [
       position: {
         x: 7,
         y: 3,
+        z: 0,
       },
       rotation: 0,
-      scale: {
-        x: 1,
-        y: 1,
-      },
+      // scale: {
+      //   x: 1,
+      //   y: 1,
+      // },
+      height: 256,
     },
     sprite: {
       name: "tree_1__A",
@@ -269,12 +273,14 @@ const objects = [
       position: {
         x: 15,
         y: 20,
+        z: 0,
       },
       rotation: 0,
-      scale: {
-        x: 1,
-        y: 1,
-      },
+      height: 256,
+      // scale: {
+      //   x: 1,
+      //   y: 1,
+      // },
     },
     sprite: {
       name: "tree_1__A",
@@ -292,12 +298,14 @@ const objects = [
       position: {
         x: 10,
         y: 10,
+        z: 0,
       },
       rotation: 90,
-      scale: {
-        x: 1,
-        y: 1,
-      },
+      height: 192,
+      // scale: {
+      //   x: 1,
+      //   y: 1,
+      // },
     },
     initialState: "state__idle",
     states: [
@@ -336,12 +344,10 @@ const objects = [
       position: {
         x: 6,
         y: 8,
+        z: 0,
       },
       rotation: 120,
-      scale: {
-        x: 1,
-        y: 1,
-      },
+      height: 192,
     },
     initialState: "state__idle",
     states: [
@@ -380,12 +386,10 @@ const objects = [
       position: {
         x: 5,
         y: 7,
+        z: 0,
       },
       rotation: 215,
-      scale: {
-        x: 1,
-        y: 1,
-      },
+      height: 192,
     },
     initialState: "state__idle",
     states: [
@@ -424,12 +428,10 @@ const objects = [
       position: {
         x: 6,
         y: 10,
+        z: 0,
       },
       rotation: 0,
-      scale: {
-        x: 1,
-        y: 1,
-      },
+      height: 64,
     },
     initialState: "state__idle",
     states: [
@@ -468,12 +470,10 @@ const objects = [
       position: {
         x: 4,
         y: 3,
+        z: 0,
       },
       rotation: 0,
-      scale: {
-        x: 1,
-        y: 1,
-      },
+      height: 128,
     },
     initialState: "state__idle",
     states: [
@@ -515,6 +515,9 @@ const wad = {
   animations,
   textureAnimations,
   map: {
+    settings: {
+      tileSize: 256, // World units to subdivide grid tiles for anything more granular. TODO:
+    },
     grid: [
       [
         wall_default,
@@ -1311,6 +1314,7 @@ const wad = {
       position: {
         x: 2,
         y: 2.5,
+        z: 0,
       },
       rotation: 0,
       fov: 130,

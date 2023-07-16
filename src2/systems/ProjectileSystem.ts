@@ -2,7 +2,7 @@ import { BallProjectileEntity, EmitProjectileEvent } from "../raymarcher";
 import { CollisionLayer } from "../enums";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
-import { Vector } from "../utils/math";
+import { Vector2 } from "../utils/math";
 
 export class ProjectileSystem implements System {
   private ecs: ECS;
@@ -32,7 +32,8 @@ export class ProjectileSystem implements System {
       transform: {
         position: event.origin,
         direction: event.direction, // I think this is unnecessary with projectiles, they should always have a velocity
-        scale: new Vector(0.1, 0.1),
+        // scale: new Vector(0.1, 0.1),
+        height: 64,
       },
       velocity: event.velocity,
       sprite: event.sprite,
@@ -68,7 +69,7 @@ export class ProjectileSystem implements System {
         //   continue;
         // }
         projectile.lifetime -= dt;
-        const velocity = new Vector(0, 0).add(
+        const velocity = new Vector2(0, 0).add(
           projectile.transform.direction.scale(projectile.speed)
         );
         if (!velocity.equals(projectile.velocity)) {

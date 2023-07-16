@@ -6,7 +6,7 @@ import {
   PlayerEntity,
 } from "../raymarcher";
 import { ECS } from "../utils/ECS/ECS";
-import { Vector } from "../utils/math";
+import { Vector2 } from "../utils/math";
 
 const WALK_SPEED = 0.05;
 
@@ -28,19 +28,19 @@ export const friendlyDogAI = (
     entity.transform.position
   );
 
-  if (distanceToPlayer <= 3) {
+  if (distanceToPlayer <= 2) {
     // Clear the path and target, and switch to idle state
     entity.ai.seekPath.path = null;
     entity.ai.seekTarget.target = null;
-    const direction = Vector.normalize(
-      new Vector(
+    const direction = Vector2.normalize(
+      new Vector2(
         player.transform.position.x,
         player.transform.position.y
       ).subtract(entity.transform.position)
     );
 
     entity.transform.direction = direction;
-    entity.velocity = new Vector(0, 0);
+    entity.velocity = new Vector2(0, 0);
     entity.state.currentState = "state__idle";
     return;
   }
@@ -66,7 +66,7 @@ export const friendlyDogAI = (
       throw new Error("Ahhh, map has no accessible locations!");
     }
 
-    target = entity.ai.seekTarget.target = new Vector(
+    target = entity.ai.seekTarget.target = new Vector2(
       newTarget.gridLocation.x,
       newTarget.gridLocation.y
     );
@@ -107,9 +107,9 @@ export const friendlyDogAI = (
     }
 
     // Calculate the direction towards the destination
-    const direction = Vector.normalize(
+    const direction = Vector2.normalize(
       // TODO: This is madness. When I have time clean up all this type transformation
-      new Vector(destination.x, destination.y).subtract(
+      new Vector2(destination.x, destination.y).subtract(
         entity.transform.position
       )
     );
@@ -127,8 +127,8 @@ export const friendlyDogAI = (
 };
 
 function calculateDistance(
-  positionA: Vector | GridNode,
-  positionB: Vector | GridNode
+  positionA: Vector2 | GridNode,
+  positionB: Vector2 | GridNode
 ): number {
   const dx = positionB.x - positionA.x;
   const dy = positionB.y - positionA.y;

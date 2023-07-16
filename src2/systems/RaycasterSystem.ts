@@ -3,7 +3,7 @@
  * Primarily distance to the nearest wall in the direction of the ray (relative to the player position). We are going to go a step further and include information about the wall as well, even though it's more the provenance of the renderer. The goal with that is to port the bulk of the rendering engine from the non-ECS immplementation.
  */
 
-import { Vector } from "../utils/math";
+import { Vector2 } from "../utils/math";
 import { EventManager } from "../EventManager/EventManager";
 import { GridManager } from "../GridManager/GridManager";
 import { Entity, GridTileEntity, PlayerEntity, Ray } from "../raymarcher";

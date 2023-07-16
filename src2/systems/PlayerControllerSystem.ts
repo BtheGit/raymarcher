@@ -1,4 +1,4 @@
-import { Vector } from "../utils/math";
+import { Vector2 } from "../utils/math";
 import { Entity, PlayerEntity } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
 import SingletonInputSystem from "./SingletonInputSystem";
@@ -47,12 +47,12 @@ export class PlayerControllerSystem implements System {
         // Since this property might be flipped instead of removed.
         continue;
       }
-      const direction = new Vector(
+      const direction = new Vector2(
         entity.transform.direction.x,
         entity.transform.direction.y
       );
-      const plane = new Vector(entity.plane.x, entity.plane.y);
-      let velocity = new Vector(0, 0);
+      const plane = new Vector2(entity.plane.x, entity.plane.y);
+      let velocity = new Vector2(0, 0);
 
       // TODO: NO COLLISION DETECTION PORTED YET
       if (
