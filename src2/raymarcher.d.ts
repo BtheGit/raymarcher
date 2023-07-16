@@ -44,6 +44,8 @@ export interface MovementComponent {
 // Breaking these apart to gently deprecate rotation;
 export interface BaseTransformComponent {
   position: Vector2;
+  elevation: number; // Already regretting not using a second component for object dimensions. Come back to that ASAP. This is what would the third axis in 3d. It will allow us to position in 3d space, but I'm concerned about just using vector3's for everything since the plane and direction of the camera will never move on that axis(unless I really want tilt, but nah) and 8 directional sprites don't have directions for those angles either. So really, this just lets things jump up and down, but not angle in a third dimension. It opens up gravity too of course.
+  // We'll probably want to get smart and use it for collisions as well so things can go over other things heads. Height will be very helpful there.
   direction: Vector2;
   // scale: Vector;
   height: number;
@@ -362,7 +364,6 @@ export interface WADObjectEntity {
     position: {
       x: number;
       y: number;
-      z: number;
     };
     rotation: number;
     // scale: {
@@ -370,6 +371,7 @@ export interface WADObjectEntity {
     //   y: number;
     // };
     height: number;
+    elevation: number;
   };
   sprite?: {
     name: string;

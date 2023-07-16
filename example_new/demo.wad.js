@@ -221,7 +221,6 @@ const objects = [
       position: {
         x: 7,
         y: 5,
-        z: 0,
       },
       rotation: 0,
       // scale: {
@@ -229,6 +228,7 @@ const objects = [
       //   y: 1,
       // },
       height: 64,
+      elevation: 0,
     },
     sprite: {
       name: "blue_crystal__A",
@@ -247,7 +247,6 @@ const objects = [
       position: {
         x: 7,
         y: 3,
-        z: 0,
       },
       rotation: 0,
       // scale: {
@@ -255,6 +254,7 @@ const objects = [
       //   y: 1,
       // },
       height: 256,
+      elevation: 0,
     },
     sprite: {
       name: "tree_1__A",
@@ -273,14 +273,10 @@ const objects = [
       position: {
         x: 15,
         y: 20,
-        z: 0,
       },
       rotation: 0,
       height: 256,
-      // scale: {
-      //   x: 1,
-      //   y: 1,
-      // },
+      elevation: 0,
     },
     sprite: {
       name: "tree_1__A",
@@ -298,14 +294,10 @@ const objects = [
       position: {
         x: 10,
         y: 10,
-        z: 0,
       },
       rotation: 90,
       height: 192,
-      // scale: {
-      //   x: 1,
-      //   y: 1,
-      // },
+      elevation: 0,
     },
     initialState: "state__idle",
     states: [
@@ -344,10 +336,10 @@ const objects = [
       position: {
         x: 6,
         y: 8,
-        z: 0,
       },
       rotation: 120,
       height: 192,
+      elevation: 0,
     },
     initialState: "state__idle",
     states: [
@@ -386,10 +378,10 @@ const objects = [
       position: {
         x: 5,
         y: 7,
-        z: 0,
       },
       rotation: 215,
       height: 192,
+      elevation: 0,
     },
     initialState: "state__idle",
     states: [
@@ -428,10 +420,10 @@ const objects = [
       position: {
         x: 6,
         y: 10,
-        z: 0,
       },
       rotation: 0,
       height: 64,
+      elevation: 0,
     },
     initialState: "state__idle",
     states: [
@@ -470,10 +462,10 @@ const objects = [
       position: {
         x: 4,
         y: 3,
-        z: 0,
       },
       rotation: 0,
       height: 128,
+      elevation: 0,
     },
     initialState: "state__idle",
     states: [
@@ -1314,10 +1306,10 @@ const wad = {
       position: {
         x: 2,
         y: 2.5,
-        z: 0,
       },
       rotation: 0,
       fov: 130,
+      elevation: 0,
     },
     objects,
   },

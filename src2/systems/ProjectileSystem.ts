@@ -32,8 +32,8 @@ export class ProjectileSystem implements System {
       transform: {
         position: event.origin,
         direction: event.direction, // I think this is unnecessary with projectiles, they should always have a velocity
-        // scale: new Vector(0.1, 0.1),
-        height: 64,
+        height: 32,
+        elevation: 96,
       },
       velocity: event.velocity,
       sprite: event.sprite,
