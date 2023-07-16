@@ -299,6 +299,9 @@ const objects = [
       height: 192,
       elevation: 0,
     },
+    movement: {
+      speed: 0.003,
+    },
     initialState: "state__idle",
     states: [
       {
@@ -340,6 +343,9 @@ const objects = [
       rotation: 120,
       height: 192,
       elevation: 0,
+    },
+    movement: {
+      speed: 0.003,
     },
     initialState: "state__idle",
     states: [
@@ -383,6 +389,9 @@ const objects = [
       height: 192,
       elevation: 0,
     },
+    movement: {
+      speed: 0.003,
+    },
     initialState: "state__idle",
     states: [
       {
@@ -425,6 +434,9 @@ const objects = [
       height: 64,
       elevation: 0,
     },
+    movement: {
+      speed: 0.0001,
+    },
     initialState: "state__idle",
     states: [
       {
@@ -466,6 +478,9 @@ const objects = [
       rotation: 0,
       height: 128,
       elevation: 0,
+    },
+    movement: {
+      speed: 0.001,
     },
     initialState: "state__idle",
     states: [
@@ -573,8 +588,8 @@ const wad = {
           type: "floor",
           accessible: false,
           texture: {
-            type: "texture",
-            textureName: "sparkle",
+            type: "animatedTexture",
+            textureName: "anim_lava_1",
           },
           ceiling: {
             type: "texture",
@@ -661,22 +676,9 @@ const wad = {
         floor_default,
         floor_default,
         floor_default,
-        {
-          type: "floor",
-          accessible: false,
-          texture: {
-            type: "animatedTexture",
-            textureName: "anim_lava_1",
-          },
-        },
-        {
-          type: "floor",
-          accessible: false,
-          texture: {
-            type: "animatedTexture",
-            textureName: "anim_lava_1",
-          },
-        },
+        floor_default,
+        floor_default,
+
         floor_default,
         floor_default,
         floor_default,
@@ -701,22 +703,9 @@ const wad = {
         floor_default,
         floor_default,
         floor_default,
-        {
-          type: "floor",
-          accessible: false,
-          texture: {
-            type: "animatedTexture",
-            textureName: "anim_lava_1",
-          },
-        },
-        {
-          type: "floor",
-          accessible: false,
-          texture: {
-            type: "animatedTexture",
-            textureName: "anim_lava_1",
-          },
-        },
+        floor_default,
+        floor_default,
+
         floor_default,
         floor_default,
         floor_default,
@@ -1310,6 +1299,7 @@ const wad = {
       rotation: 0,
       fov: 130,
       elevation: 0,
+      walkSpeed: 0.003, // TODO: Uh, can I use less fractional units?
     },
     objects,
   },

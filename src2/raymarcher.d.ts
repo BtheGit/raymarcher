@@ -37,8 +37,9 @@ export interface VelocityComponent extends Vector2 {}
 
 // TODO: Hard code for now.
 export interface MovementComponent {
-  walkSpeed: number;
-  rotationSpeed: number;
+  speed: number;
+  // walkSpeed: number;
+  // rotationSpeed: number;
 }
 
 // Breaking these apart to gently deprecate rotation;
@@ -157,6 +158,7 @@ export type AIComponent = DogAIComponent;
 export interface BaseObjectEntity {
   objectType: string;
   transform: TransformComponent;
+  movement: MovementComponent;
   velocity: VelocityComponent;
   ai?: AIComponent;
 }
@@ -390,6 +392,7 @@ export interface WADObjectEntity {
     height?: number;
     solid: boolean;
   };
+  movement?: MovementComponent;
   collisionLayer?: number;
   ai?: any;
 }
@@ -457,7 +460,7 @@ export interface BallProjectileEntity extends ProjectileEntity {
   transform: BaseTransformComponent;
   velocity: VelocityComponent;
   lifetime: number;
-  speed: number;
+  movement: MovementComponent;
   collider: ColliderComponent;
   collisions: CollisionReport[];
   collisionLayer: CollisionLayerComponent;
