@@ -118,6 +118,7 @@ export class RenderSystem implements System {
   private lookupCurrentDist: { [offset: number]: number };
   private lookupFloorBrightnessModifier: { [height: number]: number };
   private lookupWallBrightnessModifier: number[];
+  private lookupDistanceOffset: number[];
 
   // Visible Pixels
   canvas: HTMLCanvasElement;
@@ -157,6 +158,7 @@ export class RenderSystem implements System {
 
   maxRenderDistance: number;
   projectionPlane: number;
+  scaledToScreen: number; // Grid tile units are not equivalent to screen pixel height, so we need to scale accordingly
 
   constructor(
     ecs: ECS,
@@ -203,9 +205,11 @@ export class RenderSystem implements System {
     this.projectionPlane = projectionPlane;
     const maxDistance = projectionPlane / Math.cos(this.camera.camera.fov / 2);
     this.maxRenderDistance = maxDistance;
+    this.scaledToScreen = this.gameSettings.height / this.gameSettings.tileSize; // NOTE: If we had more than one tile height we'd have to scale accordingly.
     this.generateCurrentDistLookupTable();
     this.generateFloorBrightnessModifierLookupTable();
     this.generateWallBrightnessModifierLookupTable();
+    this.generateDistanceOffsetLookupTable();
 
     this.floorCeilingPixelData = this.floorCeilingCtx.createImageData(
       this.gameSettings.width,
@@ -225,6 +229,23 @@ export class RenderSystem implements System {
     }
     this.lookupCurrentDist = table;
     return table;
+  }
+
+  private generateDistanceOffsetLookupTable() {
+    const table: number[] = [];
+    // Max render difference is the same as the center of the screen. However, it is not measured in world units, so that's an issue.
+    // TODO: I need to change the coordinate system to be in world units and not fractions of gridTiles. That will impact a lot of this stuff. I don't want to spend too much time mucking about until then. Just enoguh to MVp fix the offset issues of scaled sprites.
+
+    // TODO: Implement when the coordinate system is stabilized.
+    // const step = 1;
+    // for (let distance = 0; distance < this.maxRenderDistance; distance++) {
+    //   const relativeDistance = distance / this.maxRenderDistance;
+    //   const projectionPlaneHeight =
+    //     this.gameSettings.height - Math.tan(1.1 / 2) * distance;
+    //   // Now we know what percentage up the screen we are. Though the true offset wouldn't start at the bottom of the screen since the fov means it will be even further than that.
+    //   table.push(projectionPlaneHeight);
+    // }
+    this.lookupDistanceOffset = table;
   }
 
   private generateWallBrightnessModifierLookupTable() {
@@ -758,20 +779,10 @@ export class RenderSystem implements System {
         // TADA! Cheapest frustum culling of sprites yet. Ha.
         // Why 100? completely made up, to acount for sprites overlap, but sprites shouldnt really be that wide (2 x100). Still, this shoudl be enough to avoid pop-in with the current sprites that dont really exceed one tile width.
         if (
-          spriteScreenX < -100 ||
-          spriteScreenX > this.gameSettings.width + 100
+          spriteScreenX < -200 ||
+          spriteScreenX > this.gameSettings.width + 200
         )
           continue;
-
-        // using "transformY" instead of the real distance prevents fisheye
-        const scale = object.transform.scale;
-        const spriteHeight = Math.abs(
-          Math.floor(this.gameSettings.height / transformY) * scale.y
-        );
-
-        // calculate lowest and highest pixel to fill in current stripe
-        const drawStartY = Math.floor(-spriteHeight / 2 + this.projectionPlane);
-        const drawEndY = spriteHeight + drawStartY;
 
         // If an object has a texture field, we wont check for animation frames. So, be warned, for now, it's one or the other! And no multiple states for static textures.
         let texture;
@@ -826,14 +837,50 @@ export class RenderSystem implements System {
         // For now this shouldn't be possible. Let's see it error before we uncomment.
         // if (!texture) continue;
 
+        // using "transformY" instead of the real distance prevents fisheye
+        // const scale = object.transform.scale;
+        // const spriteHeight = Math.abs(
+        //   Math.floor(this.gameSettings.height / transformY) * scale.y
+        // );
+
+        const spriteDistance = Math.sqrt(
+          (object.transform.position.x - this.camera.transform.position.x) **
+            2 +
+            (object.transform.position.y - this.camera.transform.position.y) **
+              2
+        );
+
+        // Max offset would be a sprite of height 1, drawn at a distance of 0, halved. Essentially, the bottom of a wall when you are up against it.
+
+        // This is the height of a wall tile (ie, the tileSize (256) in pixels) at a given distance.
+        // We could precalculate this in the lookup.
+        const columnHeight = Math.ceil(
+          this.gameSettings.height / spriteDistance
+        );
+
+        // This is where the bottom of that wall tile would start (ie, the floor)
+        const floor = this.projectionPlane + columnHeight / 2;
+        // Now, we need to know the proportional size of the sprite to this.
+        const spriteHeight = ~~(
+          (object.transform.height / this.gameSettings.tileSize) *
+          columnHeight
+        );
+
+        const drawEndY = floor;
+        const drawStartY = floor - spriteHeight;
+
         //calculate width of the sprite
         // The width ratio ensures the sprite is not stretched horizontally.
-        const widthRatio = (texture.width / texture.height) * scale.x;
+        const widthRatio = texture.width / texture.height;
         const spriteWidth = Math.abs(
-          Math.floor((this.gameSettings.height / transformY) * widthRatio)
+          Math.floor((object.transform.height / transformY) * widthRatio)
         );
+
         const drawStartX = Math.floor(-spriteWidth / 2 + spriteScreenX);
         const drawEndX = spriteWidth / 2 + spriteScreenX;
+
+        // const drawStartX = Math.floor(spriteScreenX - spriteWidth / 2);
+        // const drawEndX = Math.floor(spriteScreenX + spriteWidth / 2);
 
         // Darkened sprites! But at great frame rate cost (20ms to 50-60ms for this call)
         const brightness =
@@ -844,11 +891,8 @@ export class RenderSystem implements System {
         for (let stripe = drawStartX; stripe < drawEndX; stripe++) {
           const texX =
             Math.floor(
-              (256 *
-                (stripe - (-spriteWidth / 2 + spriteScreenX)) *
-                texture.width) /
-                spriteWidth
-            ) / 256;
+              (256 * (stripe - drawStartX) * texture.width) / spriteWidth
+            ) >> 8; // Note, shifting 8 here is the same as diving by 256.
           //the conditions in the if are:
           //1) it's in front of camera plane so you don't see things behind you
           //2) it's on the screen (left)
@@ -892,9 +936,9 @@ export class RenderSystem implements System {
     // console.time("render world");
     this.renderWorld();
     // console.timeEnd("render world");
-    // console.time("render objects");
+    console.time("render objects");
     this.renderObjects();
-    // console.timeEnd("render objects");
+    console.timeEnd("render objects");
     // TODO: Render HUD (MapOverlay, Text, etc)
 
     // TODO: Combine all the buffers into a single offscreen buffer.

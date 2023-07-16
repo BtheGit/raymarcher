@@ -4,7 +4,7 @@ import { CollisionLayer } from "../enums";
 
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
-import { Vector } from "../utils/math";
+import { Vector2 } from "../utils/math";
 
 export class PhysicsSystem implements System {
   // private playerEntity: Entity;
@@ -55,10 +55,10 @@ export class PhysicsSystem implements System {
       const potentialPosition = position.add(deltaPosition);
 
       // Slow down!
-      if (newVelocity.magnitude(newVelocity) > 0) {
+      if (Vector2.magnitude(newVelocity) > 0) {
         const clampedMagnitude = Math.max(
           0,
-          newVelocity.magnitude(newVelocity) - decelerationRate
+          Vector2.magnitude(newVelocity) - decelerationRate
         );
         newVelocity = newVelocity.clampMagnitude(
           clampedMagnitude,
@@ -86,7 +86,7 @@ export class PhysicsSystem implements System {
       let nextX = nextXTile?.accessible ? potentialPosition.x : position.x;
       let nextY = nextYTile?.accessible ? potentialPosition.y : position.y;
 
-      const newPosition = new Vector(nextX, nextY);
+      const newPosition = new Vector2(nextX, nextY);
 
       // Perform entity collision detection against other colliders
       // TODO: Add collision information that would support bounce effect (angle of attack namely I think).
@@ -175,7 +175,7 @@ export class PhysicsSystem implements System {
       this.ecs.entityManager.updateEntity(entity, {
         transform: {
           ...entity.transform,
-          position: new Vector(newPosition.x, newPosition.y),
+          position: new Vector2(newPosition.x, newPosition.y),
         },
       });
     }

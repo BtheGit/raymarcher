@@ -1,4 +1,4 @@
-export class Vector {
+export class Vector2 {
   x: number;
   y: number;
 
@@ -7,12 +7,16 @@ export class Vector {
     this.y = y;
   }
 
-  static normalize(vector: Vector) {
+  static normalize(vector: Vector2) {
     const magnitude = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
     if (magnitude === 0) {
-      return new Vector(0, 0);
+      return new Vector2(0, 0);
     }
-    return new Vector(vector.x / magnitude, vector.y / magnitude);
+    return new Vector2(vector.x / magnitude, vector.y / magnitude);
+  }
+
+  static magnitude(vector): number {
+    return Math.sqrt(vector.x ** 2 + vector.y ** 2);
   }
 
   equals(vector) {
@@ -20,15 +24,15 @@ export class Vector {
   }
 
   add(vector) {
-    return new Vector(this.x + vector.x, this.y + vector.y);
+    return new Vector2(this.x + vector.x, this.y + vector.y);
   }
 
   subtract(vector) {
-    return new Vector(this.x - vector.x, this.y - vector.y);
+    return new Vector2(this.x - vector.x, this.y - vector.y);
   }
 
   scale(scalar) {
-    return new Vector(this.x * scalar, this.y * scalar);
+    return new Vector2(this.x * scalar, this.y * scalar);
   }
 
   cross(vector) {}
@@ -37,16 +41,12 @@ export class Vector {
     return this.x * vector.x + this.y * vector.y;
   }
 
-  magnitude(vector): number {
-    return Math.sqrt(vector.x ** 2 + vector.y ** 2);
-  }
-
   magnitudeProduct(vector) {
-    return this.magnitude(this) * this.magnitude(vector);
+    return Vector2.magnitude(this) * Vector2.magnitude(vector);
   }
 
   map(callback) {
-    return new Vector(callback(this.x), callback(this.y));
+    return new Vector2(callback(this.x), callback(this.y));
   }
 
   angle(vector) {
@@ -66,8 +66,8 @@ export class Vector {
     this.y = newY;
   }
 
-  clampMagnitude(min: number, max: number): Vector {
-    const currentMagnitude = this.magnitude(this);
+  clampMagnitude(min: number, max: number): Vector2 {
+    const currentMagnitude = Vector2.magnitude(this);
     if (currentMagnitude < min) {
       return this.scale(min / currentMagnitude);
     } else if (currentMagnitude > max) {
@@ -82,16 +82,16 @@ export const toRadians = (degrees: number) => degrees * (Math.PI / 180);
 export const toDegrees = (radians) => (radians * 180) / Math.PI;
 
 export const directionVectorFromRotation = (rotation: number) =>
-  new Vector(Math.cos(toRadians(rotation)), Math.sin(toRadians(rotation)));
+  new Vector2(Math.cos(toRadians(rotation)), Math.sin(toRadians(rotation)));
 
 export const planeVectorFromRotation = (rotation: number) =>
-  new Vector(-Math.sin(toRadians(rotation)), Math.cos(toRadians(rotation)));
+  new Vector2(-Math.sin(toRadians(rotation)), Math.cos(toRadians(rotation)));
 
 export const apparentDirectionVector = (
-  objectPosition: Vector,
-  objectDirection: Vector,
-  cameraPosition: Vector
-): Vector => {
+  objectPosition: Vector2,
+  objectDirection: Vector2,
+  cameraPosition: Vector2
+): Vector2 => {
   const angle = apparentDirectionAngle(
     objectPosition,
     objectDirection,
@@ -99,15 +99,15 @@ export const apparentDirectionVector = (
   );
 
   // Calculate the rotated direction vector based on the angle
-  const rotatedDirection = new Vector(Math.cos(angle), Math.sin(angle));
+  const rotatedDirection = new Vector2(Math.cos(angle), Math.sin(angle));
 
   return rotatedDirection;
 };
 
 export const apparentDirectionAngle = (
-  objectPosition: Vector,
-  objectDirection: Vector,
-  cameraPosition: Vector
+  objectPosition: Vector2,
+  objectDirection: Vector2,
+  cameraPosition: Vector2
 ) => {
   // Calculate the vector from the object to the camera
   const cameraToObject = objectPosition.subtract(cameraPosition);

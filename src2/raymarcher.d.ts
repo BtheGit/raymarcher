@@ -1,4 +1,4 @@
-import { Vector } from "./utils/math";
+import { Vector2 } from "./utils/math";
 import { CollisionLayer } from "./enums";
 
 export type Entity = any;
@@ -13,8 +13,8 @@ export type Ray = {
   wallOrientation: "horizontal" | "vertical"; // This is derived too since wallFace tells us the same thing.
   wallFace: "north" | "south" | "east" | "west" | undefined;
   wallIntersection: number;
-  rayDirection: Vector;
-  activeCell: Vector;
+  rayDirection: Vector2;
+  activeCell: Vector2;
 };
 
 // TODO: Oh man. Uh. Sort term gonna just stick a flag on player, then we figure out how to make the camera jump around for freeview and stuff.
@@ -27,13 +27,13 @@ export interface UserControlledComponent {
   isControlled: boolean;
 }
 
-export interface PositionComponent extends Vector {}
+export interface PositionComponent extends Vector2 {}
 
 export interface RotationComponent {
   angle: number; // Player's facing direction in radians // TODO: Match the existing setup
 }
 
-export interface VelocityComponent extends Vector {}
+export interface VelocityComponent extends Vector2 {}
 
 // TODO: Hard code for now.
 export interface MovementComponent {
@@ -43,9 +43,10 @@ export interface MovementComponent {
 
 // Breaking these apart to gently deprecate rotation;
 export interface BaseTransformComponent {
-  position: Vector;
-  direction: Vector;
-  scale: Vector;
+  position: Vector2;
+  direction: Vector2;
+  // scale: Vector;
+  height: number;
 }
 
 export interface TransformComponent extends BaseTransformComponent {
@@ -130,7 +131,7 @@ export interface BaseAIComponent {
 }
 
 export interface SeekTargetComponent {
-  target: Vector | null;
+  target: Vector2 | null;
 }
 
 export interface SeekPathComponent {
@@ -253,7 +254,7 @@ export interface PlayerEntity {
   transform: TransformComponent;
   // position: PositionComponent;
   // direction: Vector;
-  plane: Vector;
+  plane: Vector2;
   velocity: VelocityComponent;
   movement: MovementComponent;
   // sprite: SpriteComponent;
@@ -271,6 +272,7 @@ export interface GameSettingsComponent {
   width: number;
   height: number;
   canvasId: string;
+  tileSize: number;
 }
 
 export interface GameSettingsEntity {
@@ -360,12 +362,14 @@ export interface WADObjectEntity {
     position: {
       x: number;
       y: number;
+      z: number;
     };
     rotation: number;
-    scale: {
-      x: number;
-      y: number;
-    };
+    // scale: {
+    //   x: number;
+    //   y: number;
+    // };
+    height: number;
   };
   sprite?: {
     name: string;
@@ -432,9 +436,9 @@ export interface EmitProjectileEvent extends EventMessage {
   type: string;
   // TODO: Type of projectile and parameters and associated sprite
   sprite: SpriteTextureComponent; // TODO: Sprite types (static animated)
-  origin: Vector;
-  direction: Vector;
-  velocity: Vector;
+  origin: Vector2;
+  direction: Vector2;
+  velocity: Vector2;
   speed: 2;
   collider: ColliderComponent;
   collisionLayer: CollisionLayerComponent;
