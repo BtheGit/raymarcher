@@ -1,4 +1,5 @@
 import { BallProjectileEntity, EmitProjectileEvent } from "../raymarcher";
+import { CollisionLayer } from "../enums";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 import { Vector } from "../utils/math";
@@ -39,6 +40,9 @@ export class ProjectileSystem implements System {
       speed: event.speed,
       collider: event.collider,
       collisions: [],
+      collisionLayer: {
+        layer: CollisionLayer.Player,
+      },
     };
     this.ecs.entityManager.add(newEntity);
   };
