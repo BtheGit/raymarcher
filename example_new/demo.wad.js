@@ -189,14 +189,14 @@ const floor_default = {
   type: "floor",
   accessible: true,
   texture: {
-    type: "color",
-    color: {
-      r: 0,
-      g: 0,
-      b: 200,
-    },
-    // type: "texture",
-    // textureName: "grass1",
+    // type: "color",
+    // color: {
+    //   r: 0,
+    //   g: 0,
+    //   b: 200,
+    // },
+    type: "texture",
+    textureName: "grass1",
   },
 };
 
@@ -204,16 +204,310 @@ const wall_default = {
   type: "wall",
   accessible: false,
   texture: {
-    type: "color",
-    color: {
-      r: 50,
-      g: 200,
-      b: 200,
-    },
-    // type: "texture",
-    // textureName: "light_brick1",
+    // type: "color",
+    // color: {
+    //   r: 50,
+    //   g: 200,
+    //   b: 200,
+    // },
+    type: "texture",
+    textureName: "light_brick1",
   },
 };
+
+const objects = [
+  {
+    transform: {
+      position: {
+        x: 7,
+        y: 5,
+      },
+      rotation: 0,
+      scale: {
+        x: 1,
+        y: 1,
+      },
+    },
+    sprite: {
+      name: "blue_crystal__A",
+      directions: 8,
+    },
+    collider: {
+      type: "aabb",
+      width: 0.8,
+      height: 0.8,
+      solid: true,
+    },
+    // If no state, then no animation (default state)
+  },
+  {
+    transform: {
+      position: {
+        x: 7,
+        y: 3,
+      },
+      rotation: 0,
+      scale: {
+        x: 1,
+        y: 1,
+      },
+    },
+    sprite: {
+      name: "tree_1__A",
+      directions: 0,
+    },
+    collider: {
+      type: "aabb",
+      width: 0.8,
+      height: 0.8,
+      solid: true,
+    },
+    // If no state, then no animation (default state)
+  },
+  {
+    transform: {
+      position: {
+        x: 15,
+        y: 20,
+      },
+      rotation: 0,
+      scale: {
+        x: 1,
+        y: 1,
+      },
+    },
+    sprite: {
+      name: "tree_1__A",
+      directions: 0,
+    },
+    collider: {
+      type: "aabb",
+      width: 0.8,
+      height: 0.8,
+      solid: true,
+    },
+  },
+  {
+    transform: {
+      position: {
+        x: 10,
+        y: 10,
+      },
+      rotation: 90,
+      scale: {
+        x: 1,
+        y: 1,
+      },
+    },
+    initialState: "state__idle",
+    states: [
+      {
+        name: "state__idle",
+        animation: "scientist__default",
+      },
+      {
+        name: "state__wander",
+        animation: "scientist__default",
+      },
+    ],
+    collider: {
+      type: "aabb",
+      width: 0.5,
+      height: 0.5,
+      solid: true,
+    },
+    ai: {
+      aiType: "dog_friendly",
+      playRadius: 1,
+      swarmRadius: 5,
+      idleDurationRange: [1, 3],
+      idleTimer: 0,
+      seekTarget: {
+        target: null,
+      },
+      seekPath: {
+        path: null,
+        currentIndex: 0,
+      },
+    },
+  },
+  {
+    transform: {
+      position: {
+        x: 6,
+        y: 8,
+      },
+      rotation: 120,
+      scale: {
+        x: 1,
+        y: 1,
+      },
+    },
+    initialState: "state__idle",
+    states: [
+      {
+        name: "state__idle",
+        animation: "scientist__default",
+      },
+      {
+        name: "state__wander",
+        animation: "scientist__default",
+      },
+    ],
+    collider: {
+      type: "aabb",
+      width: 0.5,
+      height: 0.5,
+      solid: true,
+    },
+    ai: {
+      aiType: "dog_friendly",
+      playRadius: 1,
+      swarmRadius: 5,
+      idleDurationRange: [1, 3],
+      idleTimer: 0,
+      seekTarget: {
+        target: null,
+      },
+      seekPath: {
+        path: null,
+        currentIndex: 0,
+      },
+    },
+  },
+  {
+    transform: {
+      position: {
+        x: 5,
+        y: 7,
+      },
+      rotation: 215,
+      scale: {
+        x: 1,
+        y: 1,
+      },
+    },
+    initialState: "state__idle",
+    states: [
+      {
+        name: "state__idle",
+        animation: "bananaman__wait",
+      },
+      {
+        name: "state__wander",
+        animation: "bananaman__walk",
+      },
+    ],
+    collider: {
+      type: "aabb",
+      width: 0.4,
+      height: 0.4,
+      solid: true,
+    },
+    ai: {
+      aiType: "dog_friendly",
+      playRadius: 1,
+      swarmRadius: 5,
+      idleDurationRange: [1, 3],
+      idleTimer: 0,
+      seekTarget: {
+        target: null,
+      },
+      seekPath: {
+        path: null,
+        currentIndex: 0,
+      },
+    },
+  },
+  {
+    transform: {
+      position: {
+        x: 6,
+        y: 10,
+      },
+      rotation: 0,
+      scale: {
+        x: 1,
+        y: 1,
+      },
+    },
+    initialState: "state__idle",
+    states: [
+      {
+        name: "state__idle",
+        animation: "bananaman__wait",
+      },
+      {
+        name: "state__wander",
+        animation: "bananaman__walk",
+      },
+    ],
+    collider: {
+      type: "aabb",
+      width: 0.4,
+      height: 0.4,
+      solid: true,
+    },
+    ai: {
+      aiType: "dog_friendly",
+      playRadius: 1,
+      swarmRadius: 5,
+      idleDurationRange: [1, 3],
+      idleTimer: 0,
+      seekTarget: {
+        target: null,
+      },
+      seekPath: {
+        path: null,
+        currentIndex: 0,
+      },
+    },
+  },
+  {
+    transform: {
+      position: {
+        x: 4,
+        y: 3,
+      },
+      rotation: 0,
+      scale: {
+        x: 1,
+        y: 1,
+      },
+    },
+    initialState: "state__idle",
+    states: [
+      {
+        name: "state__idle",
+        animation: "bananaman__wait",
+      },
+      {
+        name: "state__wander",
+        animation: "bananaman__walk",
+      },
+    ],
+    collider: {
+      type: "aabb",
+      width: 0.4,
+      height: 0.4,
+      solid: true,
+    },
+    ai: {
+      aiType: "dog_friendly",
+      playRadius: 1,
+      swarmRadius: 5,
+      idleDurationRange: [1, 3],
+      idleTimer: 0,
+      seekTarget: {
+        target: null,
+      },
+      seekPath: {
+        path: null,
+        currentIndex: 0,
+      },
+    },
+  },
+];
 
 const wad = {
   textures,
@@ -1021,299 +1315,7 @@ const wad = {
       rotation: 0,
       fov: 130,
     },
-    objects: [
-      {
-        transform: {
-          position: {
-            x: 7,
-            y: 5,
-          },
-          rotation: 0,
-          scale: {
-            x: 1,
-            y: 1,
-          },
-        },
-        sprite: {
-          name: "blue_crystal__A",
-          directions: 8,
-        },
-        collider: {
-          type: "aabb",
-          width: 0.8,
-          height: 0.8,
-          solid: true,
-        },
-        // If no state, then no animation (default state)
-      },
-      {
-        transform: {
-          position: {
-            x: 7,
-            y: 3,
-          },
-          rotation: 0,
-          scale: {
-            x: 1,
-            y: 1,
-          },
-        },
-        sprite: {
-          name: "tree_1__A",
-          directions: 0,
-        },
-        collider: {
-          type: "aabb",
-          width: 0.8,
-          height: 0.8,
-          solid: true,
-        },
-        // If no state, then no animation (default state)
-      },
-      {
-        transform: {
-          position: {
-            x: 15,
-            y: 20,
-          },
-          rotation: 0,
-          scale: {
-            x: 1,
-            y: 1,
-          },
-        },
-        sprite: {
-          name: "tree_1__A",
-          directions: 0,
-        },
-        collider: {
-          type: "aabb",
-          width: 0.8,
-          height: 0.8,
-          solid: true,
-        },
-      },
-      {
-        transform: {
-          position: {
-            x: 10,
-            y: 10,
-          },
-          rotation: 90,
-          scale: {
-            x: 1,
-            y: 1,
-          },
-        },
-        initialState: "state__idle",
-        states: [
-          {
-            name: "state__idle",
-            animation: "scientist__default",
-          },
-          {
-            name: "state__wander",
-            animation: "scientist__default",
-          },
-        ],
-        collider: {
-          type: "aabb",
-          width: 0.5,
-          height: 0.5,
-          solid: true,
-        },
-        ai: {
-          aiType: "dog_friendly",
-          playRadius: 1,
-          swarmRadius: 5,
-          idleDurationRange: [1, 3],
-          idleTimer: 0,
-          seekTarget: {
-            target: null,
-          },
-          seekPath: {
-            path: null,
-            currentIndex: 0,
-          },
-        },
-      },
-      {
-        transform: {
-          position: {
-            x: 6,
-            y: 8,
-          },
-          rotation: 120,
-          scale: {
-            x: 1,
-            y: 1,
-          },
-        },
-        initialState: "state__idle",
-        states: [
-          {
-            name: "state__idle",
-            animation: "scientist__default",
-          },
-          {
-            name: "state__wander",
-            animation: "scientist__default",
-          },
-        ],
-        collider: {
-          type: "aabb",
-          width: 0.5,
-          height: 0.5,
-          solid: true,
-        },
-        ai: {
-          aiType: "dog_friendly",
-          playRadius: 1,
-          swarmRadius: 5,
-          idleDurationRange: [1, 3],
-          idleTimer: 0,
-          seekTarget: {
-            target: null,
-          },
-          seekPath: {
-            path: null,
-            currentIndex: 0,
-          },
-        },
-      },
-      {
-        transform: {
-          position: {
-            x: 5,
-            y: 7,
-          },
-          rotation: 215,
-          scale: {
-            x: 1,
-            y: 1,
-          },
-        },
-        initialState: "state__idle",
-        states: [
-          {
-            name: "state__idle",
-            animation: "bananaman__wait",
-          },
-          {
-            name: "state__wander",
-            animation: "bananaman__walk",
-          },
-        ],
-        collider: {
-          type: "aabb",
-          width: 0.4,
-          height: 0.4,
-          solid: true,
-        },
-        ai: {
-          aiType: "dog_friendly",
-          playRadius: 1,
-          swarmRadius: 5,
-          idleDurationRange: [1, 3],
-          idleTimer: 0,
-          seekTarget: {
-            target: null,
-          },
-          seekPath: {
-            path: null,
-            currentIndex: 0,
-          },
-        },
-      },
-      {
-        transform: {
-          position: {
-            x: 6,
-            y: 10,
-          },
-          rotation: 0,
-          scale: {
-            x: 1,
-            y: 1,
-          },
-        },
-        initialState: "state__idle",
-        states: [
-          {
-            name: "state__idle",
-            animation: "bananaman__wait",
-          },
-          {
-            name: "state__wander",
-            animation: "bananaman__walk",
-          },
-        ],
-        collider: {
-          type: "aabb",
-          width: 0.4,
-          height: 0.4,
-          solid: true,
-        },
-        ai: {
-          aiType: "dog_friendly",
-          playRadius: 1,
-          swarmRadius: 5,
-          idleDurationRange: [1, 3],
-          idleTimer: 0,
-          seekTarget: {
-            target: null,
-          },
-          seekPath: {
-            path: null,
-            currentIndex: 0,
-          },
-        },
-      },
-      {
-        transform: {
-          position: {
-            x: 4,
-            y: 3,
-          },
-          rotation: 0,
-          scale: {
-            x: 1,
-            y: 1,
-          },
-        },
-        initialState: "state__idle",
-        states: [
-          {
-            name: "state__idle",
-            animation: "bananaman__wait",
-          },
-          {
-            name: "state__wander",
-            animation: "bananaman__walk",
-          },
-        ],
-        collider: {
-          type: "aabb",
-          width: 0.4,
-          height: 0.4,
-          solid: true,
-        },
-        ai: {
-          aiType: "dog_friendly",
-          playRadius: 1,
-          swarmRadius: 5,
-          idleDurationRange: [1, 3],
-          idleTimer: 0,
-          seekTarget: {
-            target: null,
-          },
-          seekPath: {
-            path: null,
-            currentIndex: 0,
-          },
-        },
-      },
-    ],
+    objects,
   },
 };
 
