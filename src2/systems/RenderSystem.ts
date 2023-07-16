@@ -116,7 +116,7 @@ export class RenderSystem implements System {
 
   // Precalculated Tables For quicker rendering (some may need to be recalculated when we start to handle screen size changes (if ever))
   private lookupCurrentDist: { [offset: number]: number };
-  private lookupFloorBrightnessModifier: { [height: number]: number };
+  private lookupFloorBrightnessModifier: number[];
   private lookupWallBrightnessModifier: number[];
   private lookupDistanceOffset: number[];
 
@@ -262,7 +262,7 @@ export class RenderSystem implements System {
   }
 
   private generateFloorBrightnessModifierLookupTable() {
-    const table: { [height: number]: number } = {};
+    const table: number[] = [];
     // Since we know dead center of the screen is the darkest possible and we want a fall off, we can use
     // an inverse square law.
     // Let's say that the maximum drop off is 50% brightness. That means brightness is 1 / dist.
@@ -272,9 +272,9 @@ export class RenderSystem implements System {
       const normalizedDistance =
         (i - screenCenter) / (this.gameSettings.height - screenCenter);
       const distanceFromPlayer = normalizedDistance;
-      const easedValue = distanceFromPlayer * 1.4; //Math.pow(distanceFromPlayer, 2);
+      const easedValue = Math.min(distanceFromPlayer * 4, 1); //  Math.pow(distanceFromPlayer, 2); // distanceFromPlayer * 2; //Math.pow(distanceFromPlayer, 2);
       const brightnessModifier = easedValue;
-      table[i] = brightnessModifier;
+      table.push(brightnessModifier);
     }
     this.lookupFloorBrightnessModifier = table;
     return table;
@@ -575,7 +575,8 @@ export class RenderSystem implements System {
 
           // Let's dim the floor
           // TODO: Better dropoff curve.
-          const brightnessModifier = this.lookupFloorBrightnessModifier[y];
+          const brightnessModifier =
+            this.lookupFloorBrightnessModifier[y - 256];
 
           const { surface } = gridCell.floorTile;
 
@@ -653,7 +654,10 @@ export class RenderSystem implements System {
 
           // Let's dim the ceiling more than the floor.
           // TODO: Better dropoff curve.
-          const ceilingBrightnessModifier = brightnessModifier - 0.2;
+          const ceilingBrightnessModifier = Math.max(
+            brightnessModifier - 0.2,
+            0
+          );
 
           const ceilingSurface = ceiling.surface;
           switch (ceilingSurface) {
