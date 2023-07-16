@@ -3,6 +3,7 @@ import SpriteTree_1 from "./images/sprites/tree_1.json" assert { type: "json" };
 import BananaMan from "./images/sprites/banana.json" assert { type: "json" };
 import BlueCrystal from "./images/sprites/blue_crystal.json" assert { type: "json" };
 import PurpleBall from "./images/sprites/purple_ball.json" assert { type: "json" };
+import GreenFlame from "./images/sprites/green_flame.json" assert { type: "json" };
 
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
@@ -65,6 +66,7 @@ const spriteDatas = [
   BananaMan,
   BlueCrystal,
   PurpleBall,
+  GreenFlame,
 ];
 
 const spriteMaps = spriteDatas.reduce((acc, curr) => {
@@ -168,6 +170,73 @@ const animations = [
     looping: true,
     frameDuration: 125,
   },
+  {
+    name: "green_flame_default",
+    looping: true,
+    frameDuration: 250,
+    frames: [
+      {
+        frameId: "TONWA",
+        directions: 0,
+      },
+      {
+        frameId: "TONWB",
+        directions: 0,
+      },
+      {
+        frameId: "TONWC",
+        directions: 0,
+      },
+      {
+        frameId: "TONWD",
+        directions: 0,
+      },
+      {
+        frameId: "TONWE",
+        directions: 0,
+      },
+      {
+        frameId: "TONWF",
+        directions: 0,
+      },
+      {
+        frameId: "TONWH",
+        directions: 0,
+      },
+      {
+        frameId: "TONWI",
+        directions: 0,
+      },
+      {
+        frameId: "TONWJ",
+        directions: 0,
+      },
+      {
+        frameId: "TONWK",
+        directions: 0,
+      },
+      {
+        frameId: "TONWL",
+        directions: 0,
+      },
+      {
+        frameId: "TONWM",
+        directions: 0,
+      },
+      {
+        frameId: "TONWN",
+        directions: 0,
+      },
+      {
+        frameId: "TONWO",
+        directions: 0,
+      },
+      {
+        frameId: "TONWP",
+        directions: 0,
+      },
+    ],
+  },
 ];
 
 const textureAnimations = [
@@ -234,6 +303,32 @@ const objects = [
       name: "blue_crystal__A",
       directions: 8,
     },
+    collider: {
+      type: "aabb",
+      width: 0.8,
+      height: 0.8,
+      solid: true,
+    },
+    // If no state, then no animation (default state)
+  },
+  {
+    transform: {
+      position: {
+        x: 6,
+        y: 3,
+      },
+      rotation: 0,
+
+      height: 192,
+      elevation: 0,
+    },
+    initialState: "state__on",
+    states: [
+      {
+        name: "state__on",
+        animation: "green_flame_default",
+      },
+    ],
     collider: {
       type: "aabb",
       width: 0.8,
