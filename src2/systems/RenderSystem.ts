@@ -863,7 +863,10 @@ export class RenderSystem implements System {
         );
 
         // This is where the bottom of that wall tile would start (ie, the floor)
-        const floor = this.projectionPlane + columnHeight / 2;
+        // Now we have elevation which means we need to offset the offset!
+        const offset =
+          (object.transform.elevation * this.scaledToScreen) / spriteDistance;
+        const floor = this.projectionPlane - offset + columnHeight / 2;
         // Now, we need to know the proportional size of the sprite to this.
         const spriteHeight = ~~(
           (object.transform.height / this.gameSettings.tileSize) *

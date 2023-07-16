@@ -107,6 +107,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
         startingPosition.position.x,
         startingPosition.position.y
       ),
+      elevation: startingPosition.elevation,
       direction,
       rotation: startingPosition.rotation, // TODO: Get rid of
       height: 192, // I hope this isnt being used right now
@@ -152,7 +153,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
         rotation: transform.rotation,
         direction: directionVectorFromRotation(transform.rotation),
         height: transform.height,
-        // scale: new Vector(transform.scale.x, transform.scale.y),
+        elevation: transform.elevation,
       },
       velocity: new Vector2(0, 0),
     };
