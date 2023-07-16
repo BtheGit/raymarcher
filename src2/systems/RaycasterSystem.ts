@@ -41,9 +41,6 @@ export class RaycasterSystem implements System {
     const activeCell = this.camera.transform.position.map(Math.floor);
 
     // The distance from the nearest cell walls
-    // Lode uses the following. I would like to verify its the same:
-    // double deltaDistX = sqrt(1 + (rayDirY * rayDirY) / (rayDirX * rayDirX));
-    // double deltaDistY = sqrt(1 + (rayDirX * rayDirX) / (rayDirY * rayDirY));
     const distanceDelta = rayDirection.map((scalar) => Math.abs(1 / scalar));
     // Which way we're going.
     const stepX = rayDirection.x < 0 ? -1 : 1;
