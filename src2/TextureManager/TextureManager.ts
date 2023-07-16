@@ -117,6 +117,45 @@ export class TextureManager {
     return TextureBuffer.fromImage(croppedCanvas);
   }
 
+  public getCroppedTexturePixels(
+    key: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    mirrored = false
+  ): Uint8ClampedArray | null {
+    const textureBuffer = this.textureBuffers[key];
+    if (!textureBuffer) return null;
+
+    const imageData = textureBuffer.getImageData();
+    const croppedPixelData = new Uint8ClampedArray(width * height * 4);
+    const targetIndexOffset = mirrored ? width - 1 : 0;
+
+    for (let offsetY = 0; offsetY < height; offsetY++) {
+      const sourceIndex =
+        ((y + offsetY) * textureBuffer.canvas.width + x + targetIndexOffset) *
+        4;
+      const targetIndex = offsetY * width * 4;
+
+      for (let offsetX = 0; offsetX < width; offsetX++) {
+        const sourcePixelIndex =
+          sourceIndex + (mirrored ? -offsetX : offsetX) * 4;
+        const targetPixelIndex = targetIndex + offsetX * 4;
+
+        croppedPixelData[targetPixelIndex] = imageData.data[sourcePixelIndex]; // Red channel
+        croppedPixelData[targetPixelIndex + 1] =
+          imageData.data[sourcePixelIndex + 1]; // Green channel
+        croppedPixelData[targetPixelIndex + 2] =
+          imageData.data[sourcePixelIndex + 2]; // Blue channel
+        croppedPixelData[targetPixelIndex + 3] =
+          imageData.data[sourcePixelIndex + 3]; // Alpha channel
+      }
+    }
+
+    return croppedPixelData;
+  }
+
   // TODO: This is bad. We should be able to get any texture, animated or otherwise without knowing the difference.
   // For now though, since it's late but I haven't run out of excuses, I'm going to make it incumbent ont he render call to decide which type of texture to grab (extra yuck). FIX LATER PLEASE
   getAnimatedTexture = (name: string) => {

@@ -273,7 +273,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
     /* Determine deltatime */
     const time = Date.now(); // performance.now();
     const dt = time - lastTime; // / 1000;
-    if (dt >= 1000 / 30) {
+    if (dt >= 1000 / 60) {
       lastTime = time;
 
       ecs.update(dt);

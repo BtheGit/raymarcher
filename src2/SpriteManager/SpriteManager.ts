@@ -84,6 +84,34 @@ export class SpriteManager {
     );
   }
 
+  // public getSpriteTexture(
+  //   frameId: string,
+  //   brightnessLookupTable: number[]
+  // ): Uint8ClampedArray | null {
+  //   const spriteFrame = this.getSpriteFrame(frameId);
+  //   if (!spriteFrame) return null;
+
+  //   const { textureName, frame, mirrored } = spriteFrame;
+
+  //   const pixelStrip = this.textureManager.getCroppedTexturePixels(
+  //     textureName,
+  //     frame.x,
+  //     frame.y,
+  //     frame.w,
+  //     frame.h,
+  //     mirrored
+  //   );
+
+  //   if (!pixelStrip) return null;
+
+  //   // const adjustedPixelStrip = pixelStrip.map((value) => {
+  //   //   // Perform brightness adjustment calculation using the lookup table.
+  //   //   return brightnessLookupTable[value];
+  //   // });
+
+  //   return pixelStrip; // new Uint8ClampedArray(adjustedPixelStrip);
+  // }
+
   public getSpriteFrame(frameId: string): SpriteData | null {
     return this.sprites[frameId] || null;
   }

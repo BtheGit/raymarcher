@@ -21,7 +21,7 @@ import {
   AnimatedObjectEntity,
 } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
-import { apparentDirectionAngle, toDegrees } from "../utils/math";
+import { apparentDirectionAngle, toDegrees, lerp } from "../utils/math";
 import { hexToRGB } from "../utils/image";
 import { SpriteManager } from "../SpriteManager/SpriteManager";
 
@@ -83,6 +83,7 @@ export class RenderSystem implements System {
   // Precalculated Tables For quicker rendering (some may need to be recalculated when we start to handle screen size changes (if ever))
   private lookupCurrentDist: { [offset: number]: number };
   private lookupFloorBrightnessModifier: { [height: number]: number };
+  private lookupWallBrightnessModifier: number[];
 
   // Visible Pixels
   canvas: HTMLCanvasElement;
@@ -119,6 +120,9 @@ export class RenderSystem implements System {
   // pixel data directly. (TODO: reverse for ceiling). Keeping those values here is simplest.
   // TODO: Generate an array of all the modifiers precalced and simply merge the two. Floor and ceiling distance are consistent to y values (unlike walls), so we really only need to do it once. Yes the brightness modifier table mostly serves for this, but maybe there is a more efficient operation? Explore.
   floorCeilingPixelData: ImageData;
+
+  maxRenderDistance: number;
+  projectionPlane: number;
 
   constructor(
     ecs: ECS,
@@ -161,8 +165,13 @@ export class RenderSystem implements System {
       this.worldCanvas.height =
         this.gameSettings.height;
 
+    const projectionPlane = this.gameSettings.height / 2;
+    this.projectionPlane = projectionPlane;
+    const maxDistance = projectionPlane / Math.cos(this.camera.camera.fov / 2);
+    this.maxRenderDistance = maxDistance;
     this.generateCurrentDistLookupTable();
     this.generateFloorBrightnessModifierLookupTable();
+    this.generateWallBrightnessModifierLookupTable();
 
     this.floorCeilingPixelData = this.floorCeilingCtx.createImageData(
       this.gameSettings.width,
@@ -176,11 +185,7 @@ export class RenderSystem implements System {
   // TODO: Memoize and make sure its rerun on screen size chagnes.
   private generateCurrentDistLookupTable() {
     const table: { [offset: number]: number } = {};
-    for (
-      let i = this.gameSettings.height / 2;
-      i < this.gameSettings.height;
-      i++
-    ) {
+    for (let i = this.projectionPlane; i < this.gameSettings.height; i++) {
       table[i] =
         this.gameSettings.height / (2.0 * i - this.gameSettings.height);
     }
@@ -188,17 +193,32 @@ export class RenderSystem implements System {
     return table;
   }
 
+  private generateWallBrightnessModifierLookupTable() {
+    // If we want more granularity we can add more values to the table than just the ones available. We'll start with just the base maxDistance as our range. (Finer detail may reduce banding).
+    const wallBrightness: number[] = [];
+
+    for (let i = 0; i < this.maxRenderDistance; i++) {
+      const normalizedDistance = i / this.maxRenderDistance;
+      const brightness = 1 - normalizedDistance * 15; // Apply easing
+      wallBrightness.push(brightness);
+    }
+
+    this.lookupWallBrightnessModifier = wallBrightness;
+  }
+
   private generateFloorBrightnessModifierLookupTable() {
     const table: { [height: number]: number } = {};
     // Since we know dead center of the screen is the darkest possible and we want a fall off, we can use
     // an inverse square law.
     // Let's say that the maximum drop off is 50% brightness. That means brightness is 1 / dist.
-    const screenCenter = Math.floor(this.gameSettings.height / 2);
+    const screenCenter = Math.floor(this.projectionPlane);
     for (let i = screenCenter; i < this.gameSettings.height; i++) {
       // TODO: This is too linear, should be exponential for a nicer effect imho.
-      const distanceFromPlayer =
-        ((this.gameSettings.height - i) / screenCenter) * 1.2;
-      const brightnessModifier = 1 / Math.pow(2, distanceFromPlayer);
+      const normalizedDistance =
+        (i - screenCenter) / (this.gameSettings.height - screenCenter);
+      const distanceFromPlayer = normalizedDistance;
+      const easedValue = distanceFromPlayer * 1.4; //Math.pow(distanceFromPlayer, 2);
+      const brightnessModifier = easedValue;
       table[i] = brightnessModifier;
     }
     this.lookupFloorBrightnessModifier = table;
@@ -219,7 +239,7 @@ export class RenderSystem implements System {
           0,
           0,
           this.gameSettings.width,
-          this.gameSettings.height / 2
+          this.projectionPlane
         );
         break;
       case "texture":
@@ -257,7 +277,7 @@ export class RenderSystem implements System {
             0,
             0,
             seamPoint,
-            this.gameSettings.height / 2
+            this.projectionPlane
           );
           this.skyCtx.drawImage(
             backgroundImage.canvas,
@@ -268,7 +288,7 @@ export class RenderSystem implements System {
             seamPoint,
             0,
             this.gameSettings.width - seamPoint,
-            this.gameSettings.height / 2
+            this.projectionPlane
           );
         } else {
           this.skyCtx.drawImage(
@@ -280,7 +300,7 @@ export class RenderSystem implements System {
             0,
             0,
             this.gameSettings.width,
-            this.gameSettings.height / 2
+            this.projectionPlane
           );
         }
 
@@ -317,101 +337,125 @@ export class RenderSystem implements System {
         wallFace,
       } = ray;
 
+      // TODO: Should I round this properly?
       const columnHeight = Math.ceil(
         this.gameSettings.height / normalizedDistance
       );
-      const top = this.gameSettings.height / 2 - columnHeight / 2;
-      const VIEW_DISTANCE = 25;
-      const brightnessMultiplier = 1.3;
-      const darknessMultiplier = 0.9;
-      const brightness =
-        ((VIEW_DISTANCE - normalizedDistance * brightnessMultiplier) /
-          VIEW_DISTANCE) *
-          40 +
-        10; // clamps the brightness between 10 and 50.
+      const top = this.projectionPlane - columnHeight / 2;
+
+      // This is funcky without the unnormalized distance. But still working on that...
+      const brightnessIndex =
+        (normalizedDistance / this.maxRenderDistance) * this.projectionPlane;
+      const indexFloor = Math.floor(brightnessIndex);
+      const fractionalDifference = brightnessIndex - indexFloor;
+      const a = this.lookupWallBrightnessModifier[indexFloor];
+      const b = this.lookupWallBrightnessModifier[indexFloor + 1];
+      const brightness = lerp(a, b, fractionalDifference);
+      // Old way, just in case
+      // const VIEW_DISTANCE = 18;
+      // const darknessMultiplier = 0.9;
+      // const brightnessMultiplier = 1.3;
+      // const brightness =
+      //   ((VIEW_DISTANCE - normalizedDistance * brightnessMultiplier) /
+      //     VIEW_DISTANCE) *
+      //     40 +
+      //   10; // clamps the brightness between 10 and 50.
+
+      // Quickest out is if we're over the max viewDistance (in this case illumination falloff really) we just paint black pixels. No messing with colors or textures. But since that's way more than the world we are testing in, let's just use the brightest, so we clamp it at .2, anything below = 0;
 
       // ## WALL
-      try {
-        // Check if there is a face specific config (Bjorn Strastroup says this is better than a map of directions)
-        const face = wall!.wallTile?.wallFaces?.find(
-          (face) => face.wallFace === wallFace
-        );
-
-        const wallTextureConfig = face ? face : wall!.wallTile!;
-        const { surface, color, texture } = wallTextureConfig;
-
-        // TODO: I tried to support brightness for wall colors previously, but I don't think I actually did the calculation correctly. Should try again soon.
-        switch (surface) {
-          case "color":
-            this.worldCtx.fillStyle = `rgb(${color!.r},${color!.g},${
-              color!.b
-            })`;
-            this.worldCtx.beginPath();
-            this.worldCtx.fillRect(i, top, 1, columnHeight);
-            this.worldCtx.closePath();
-            break;
-          case "animatedTexture":
-          case "texture":
-            const wallTextureImageBuffer =
-              surface === "texture"
-                ? this.textureManager.getTexture(texture!.name)
-                : this.textureManager.getAnimatedTexture(texture!.name);
-            const wallTexture = wallTextureImageBuffer!.canvas;
-
-            const textureWidth = wallTexture.width;
-
-            let wallIntersectionOffset;
-            if (wallOrientation === "horizontal") {
-              if (this.camera.transform.direction.y > 0) {
-                wallIntersectionOffset =
-                  wallIntersection - Math.floor(wallIntersection);
-              } else {
-                wallIntersectionOffset =
-                  1 - (wallIntersection - Math.floor(wallIntersection));
-              }
-            } else {
-              if (this.camera.transform.direction.x < 0) {
-                wallIntersectionOffset =
-                  wallIntersection - Math.floor(wallIntersection);
-              } else {
-                wallIntersectionOffset =
-                  1 - (wallIntersection - Math.floor(wallIntersection));
-              }
-            }
-            let textureStripLeft = Math.floor(
-              wallIntersectionOffset * textureWidth
-            );
-            this.worldCtx.drawImage(
-              wallTexture,
-              textureStripLeft,
-              0,
-              1,
-              wallTexture.height,
-              i,
-              top,
-              1,
-              columnHeight
-            );
-
-            // TODO: Change this to color shift the pixels directly instead of messing with a semi-opaque overlay.
-            this.worldCtx.fillStyle = "black";
-            this.worldCtx.globalAlpha =
-              1 -
-              (VIEW_DISTANCE - normalizedDistance * darknessMultiplier) /
-                VIEW_DISTANCE;
-            this.worldCtx.fillRect(i, top, 1, columnHeight);
-            this.worldCtx.globalAlpha = 1;
-            break;
-        }
-      } catch (err) {
-        console.warn(err);
-        console.warn("Error loading wall texture, using fallback");
-        const wallHue = 0; // Anything without a fallback hue will be crazy red and obvious.
-        const hsl = `hsl(${wallHue}, 100%, ${brightness}%)`;
-        this.worldCtx.fillStyle = hsl;
+      // This is pointless in small spaces. Saving for big areas to test using unnormalized distance when I have it.
+      if (brightness < 0) {
+        const rgb = `rgb(0,0,0)`;
+        this.worldCtx.fillStyle = rgb;
         this.worldCtx.beginPath();
         this.worldCtx.fillRect(i, top, 1, columnHeight);
         this.worldCtx.closePath();
+      } else {
+        try {
+          // Check if there is a face specific config (Bjorn Strastroup says this is better than a map of directions :) )
+          const face = wall!.wallTile?.wallFaces?.find(
+            (face) => face.wallFace === wallFace
+          );
+
+          const wallTextureConfig = face ? face : wall!.wallTile!;
+          const { surface, color, texture } = wallTextureConfig;
+
+          // TODO: I tried to support brightness for wall colors previously, but I don't think I actually did the calculation correctly. Should try again soon.
+          switch (surface) {
+            case "color":
+              this.worldCtx.fillStyle = `rgb(${color!.r},${color!.g},${
+                color!.b
+              })`;
+              this.worldCtx.beginPath();
+              this.worldCtx.fillRect(i, top, 1, columnHeight);
+              this.worldCtx.closePath();
+              break;
+            case "animatedTexture":
+            case "texture":
+              const wallTextureImageBuffer =
+                surface === "texture"
+                  ? this.textureManager.getTexture(texture!.name)
+                  : this.textureManager.getAnimatedTexture(texture!.name);
+              const wallTexture = wallTextureImageBuffer!.canvas;
+
+              const textureWidth = wallTexture.width;
+
+              let wallIntersectionOffset;
+              if (wallOrientation === "horizontal") {
+                if (this.camera.transform.direction.y > 0) {
+                  wallIntersectionOffset =
+                    wallIntersection - Math.floor(wallIntersection);
+                } else {
+                  wallIntersectionOffset =
+                    1 - (wallIntersection - Math.floor(wallIntersection));
+                }
+              } else {
+                if (this.camera.transform.direction.x < 0) {
+                  wallIntersectionOffset =
+                    wallIntersection - Math.floor(wallIntersection);
+                } else {
+                  wallIntersectionOffset =
+                    1 - (wallIntersection - Math.floor(wallIntersection));
+                }
+              }
+              let textureStripLeft = Math.floor(
+                wallIntersectionOffset * textureWidth
+              );
+              this.worldCtx.drawImage(
+                wallTexture,
+                textureStripLeft,
+                0,
+                1,
+                wallTexture.height,
+                i,
+                top,
+                1,
+                columnHeight
+              );
+
+              // TODO: Change this to color shift the pixels directly instead of messing with a semi-opaque overlay.
+              this.worldCtx.fillStyle = "black";
+              this.worldCtx.globalAlpha = 1 - brightness;
+              // this.worldCtx.globalAlpha =
+              //   1 -
+              //   (VIEW_DISTANCE - normalizedDistance * darknessMultiplier) /
+              //     VIEW_DISTANCE;
+              this.worldCtx.fillRect(i, top, 1, columnHeight);
+              this.worldCtx.globalAlpha = 1;
+              break;
+          }
+        } catch (err) {
+          console.warn(err);
+          console.warn("Error loading wall texture, using fallback");
+          const wallHue = 0; // Anything without a fallback hue will be crazy red and obvious.
+          // const hsl = `hsl(${wallHue}, 100%, ${brightness}%)`;
+          const hsl = `hsl(${wallHue}, 100%, 50%)`;
+          this.worldCtx.fillStyle = hsl;
+          this.worldCtx.beginPath();
+          this.worldCtx.fillRect(i, top, 1, columnHeight);
+          this.worldCtx.closePath();
+        }
       }
 
       // This creates artificial shading on half the vertices to give them extra three dimensional feel.
@@ -635,202 +679,202 @@ export class RenderSystem implements System {
   }
 
   // NOT WORKING FOR NOW
-  renderFloors() {
-    // FLOOR CASTING
-    for (let y = 0; y < this.gameSettings.height; y++) {
-      // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
-      const rayDirX0 = this.camera.transform.direction.x - this.camera.plane.x;
-      const rayDirY0 = this.camera.transform.direction.y - this.camera.plane.y;
-      const rayDirX1 = this.camera.transform.direction.x + this.camera.plane.x;
-      const rayDirY1 = this.camera.transform.direction.y + this.camera.plane.y;
+  // renderFloors() {
+  //   // FLOOR CASTING
+  //   for (let y = 0; y < this.gameSettings.height; y++) {
+  //     // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
+  //     const rayDirX0 = this.camera.transform.direction.x - this.camera.plane.x;
+  //     const rayDirY0 = this.camera.transform.direction.y - this.camera.plane.y;
+  //     const rayDirX1 = this.camera.transform.direction.x + this.camera.plane.x;
+  //     const rayDirY1 = this.camera.transform.direction.y + this.camera.plane.y;
 
-      // Current y position compared to the center of the screen (the horizon)
-      const p = y - this.gameSettings.height / 2;
+  //     // Current y position compared to the center of the screen (the horizon)
+  //     const p = y - this.projectionPlane;
 
-      // Vertical position of the camera.
-      const posZ = 0.5 * this.gameSettings.height;
+  //     // Vertical position of the camera.
+  //     const posZ = 0.5 * this.gameSettings.height;
 
-      // Horizontal distance from the camera to the floor for the current row.
-      // 0.5 is the z position exactly in the middle between floor and ceiling.
-      const rowDistance = posZ / p;
+  //     // Horizontal distance from the camera to the floor for the current row.
+  //     // 0.5 is the z position exactly in the middle between floor and ceiling.
+  //     const rowDistance = posZ / p;
 
-      // calculate the real world step vector we have to add for each x (parallel to camera plane)
-      // adding step by step avoids multiplications with a weight in the inner loop
-      const floorStepX =
-        (rowDistance * (rayDirX1 - rayDirX0)) / this.gameSettings.width;
-      const floorStepY =
-        (rowDistance * (rayDirY1 - rayDirY0)) / this.gameSettings.width;
+  //     // calculate the real world step vector we have to add for each x (parallel to camera plane)
+  //     // adding step by step avoids multiplications with a weight in the inner loop
+  //     const floorStepX =
+  //       (rowDistance * (rayDirX1 - rayDirX0)) / this.gameSettings.width;
+  //     const floorStepY =
+  //       (rowDistance * (rayDirY1 - rayDirY0)) / this.gameSettings.width;
 
-      // real world coordinates of the leftmost column. This will be updated as we step to the right.
-      let floorX = this.camera.transform.position.x + rowDistance * rayDirX0;
-      let floorY = this.camera.transform.position.y + rowDistance * rayDirY0;
+  //     // real world coordinates of the leftmost column. This will be updated as we step to the right.
+  //     let floorX = this.camera.transform.position.x + rowDistance * rayDirX0;
+  //     let floorY = this.camera.transform.position.y + rowDistance * rayDirY0;
 
-      for (let x = 0; x < this.gameSettings.width; ++x) {
-        // the cell coord is simply got from the integer parts of floorX and floorY
-        const cellX = Math.floor(floorX);
-        const cellY = Math.floor(floorY);
+  //     for (let x = 0; x < this.gameSettings.width; ++x) {
+  //       // the cell coord is simply got from the integer parts of floorX and floorY
+  //       const cellX = Math.floor(floorX);
+  //       const cellY = Math.floor(floorY);
 
-        const gridCell = this.gridManager.getGridTile(cellX, cellY);
-        if (gridCell == undefined || gridCell.floorTile == undefined) {
-          continue;
-        }
+  //       const gridCell = this.gridManager.getGridTile(cellX, cellY);
+  //       if (gridCell == undefined || gridCell.floorTile == undefined) {
+  //         continue;
+  //       }
 
-        floorX += floorStepX;
-        floorY += floorStepY;
+  //       floorX += floorStepX;
+  //       floorY += floorStepY;
 
-        const brightnessModifier = this.lookupFloorBrightnessModifier[y];
-        const { surface } = gridCell.floorTile;
+  //       const brightnessModifier = this.lookupFloorBrightnessModifier[y];
+  //       const { surface } = gridCell.floorTile;
 
-        switch (surface) {
-          case "color":
-            // TODO: This is going to be a bit of a slow down. We should require floors to be hex?
-            // const color = getWallColor(gridCell.textureConfig, brightness);
+  //       switch (surface) {
+  //         case "color":
+  //           // TODO: This is going to be a bit of a slow down. We should require floors to be hex?
+  //           // const color = getWallColor(gridCell.textureConfig, brightness);
 
-            // TODO: Here is a big breaking assumption. ALL floor colors are hex!
-            // TODO: Preprocess wads to coerce all color values into RGB (or require it from the get go, to save stuff like this). Can do this immediately.
-            const color = gridCell.floorTile.color;
-            const { r, g, b } = hexToRGB(color);
+  //           // TODO: Here is a big breaking assumption. ALL floor colors are hex!
+  //           // TODO: Preprocess wads to coerce all color values into RGB (or require it from the get go, to save stuff like this). Can do this immediately.
+  //           const color = gridCell.floorTile.color;
+  //           const { r, g, b } = hexToRGB(color);
 
-            const index = (y * this.gameSettings.width + x) * 4;
-            this.floorCeilingPixelData.data[index] = r * brightnessModifier;
-            this.floorCeilingPixelData.data[index + 1] = g * brightnessModifier;
-            this.floorCeilingPixelData.data[index + 2] = b * brightnessModifier;
-            this.floorCeilingPixelData.data[index + 3] = 255;
-            break;
-          case "texture":
-            // TODO: Handle gradients. This will fail on gradients.
-            const textureName = gridCell.floorTile.texture!.name;
-            const floorTexture = this.textureManager.getTexture(textureName)!;
+  //           const index = (y * this.gameSettings.width + x) * 4;
+  //           this.floorCeilingPixelData.data[index] = r * brightnessModifier;
+  //           this.floorCeilingPixelData.data[index + 1] = g * brightnessModifier;
+  //           this.floorCeilingPixelData.data[index + 2] = b * brightnessModifier;
+  //           this.floorCeilingPixelData.data[index + 3] = 255;
+  //           break;
+  //         case "texture":
+  //           // TODO: Handle gradients. This will fail on gradients.
+  //           const textureName = gridCell.floorTile.texture!.name;
+  //           const floorTexture = this.textureManager.getTexture(textureName)!;
 
-            // // TODO: Temp, to have a floor while textures are missing
-            // if (floorTextureName === undefined || floorTexture == null) {
-            //   floorTexture = fallBackTexture_Rainbow;
-            // }
+  //           // // TODO: Temp, to have a floor while textures are missing
+  //           // if (floorTextureName === undefined || floorTexture == null) {
+  //           //   floorTexture = fallBackTexture_Rainbow;
+  //           // }
 
-            // ### DRAW FLOOR
-            if (floorTexture != null) {
-              const floorTexturePixels = floorTexture.getImageData();
-              // get the texture coordinate from the fractional part
-              // const tx = ((floorX - cellX) * texWidth) & (texWidth - 1);
-              // const ty = ((floorY - cellY) * texHeight) & (texHeight - 1);
-              const floorTexX =
-                Math.floor(floorX * floorTexture.width) % floorTexture.width;
-              const floorTexY =
-                Math.floor(floorY * floorTexture.height) % floorTexture.height;
-              const textureIndex =
-                (floorTexY * floorTexture.width + floorTexX) * 4;
+  //           // ### DRAW FLOOR
+  //           if (floorTexture != null) {
+  //             const floorTexturePixels = floorTexture.getImageData();
+  //             // get the texture coordinate from the fractional part
+  //             // const tx = ((floorX - cellX) * texWidth) & (texWidth - 1);
+  //             // const ty = ((floorY - cellY) * texHeight) & (texHeight - 1);
+  //             const floorTexX =
+  //               Math.floor(floorX * floorTexture.width) % floorTexture.width;
+  //             const floorTexY =
+  //               Math.floor(floorY * floorTexture.height) % floorTexture.height;
+  //             const textureIndex =
+  //               (floorTexY * floorTexture.width + floorTexX) * 4;
 
-              const red =
-                floorTexturePixels.data[textureIndex] * brightnessModifier;
-              const green =
-                floorTexturePixels.data[textureIndex + 1] * brightnessModifier;
-              const blue =
-                floorTexturePixels.data[textureIndex + 2] * brightnessModifier;
-              const alpha = floorTexturePixels.data[textureIndex + 3];
+  //             const red =
+  //               floorTexturePixels.data[textureIndex] * brightnessModifier;
+  //             const green =
+  //               floorTexturePixels.data[textureIndex + 1] * brightnessModifier;
+  //             const blue =
+  //               floorTexturePixels.data[textureIndex + 2] * brightnessModifier;
+  //             const alpha = floorTexturePixels.data[textureIndex + 3];
 
-              const index = (y * this.gameSettings.width + x) * 4;
-              this.floorCeilingPixelData.data[index] = red;
-              this.floorCeilingPixelData.data[index + 1] = green;
-              this.floorCeilingPixelData.data[index + 2] = blue;
-              this.floorCeilingPixelData.data[index + 3] = alpha;
-            }
+  //             const index = (y * this.gameSettings.width + x) * 4;
+  //             this.floorCeilingPixelData.data[index] = red;
+  //             this.floorCeilingPixelData.data[index + 1] = green;
+  //             this.floorCeilingPixelData.data[index + 2] = blue;
+  //             this.floorCeilingPixelData.data[index + 3] = alpha;
+  //           }
 
-            break;
-        }
+  //           break;
+  //       }
 
-        const ceiling = gridCell.floorTile.ceiling;
-        if (!ceiling) continue;
+  //       const ceiling = gridCell.floorTile.ceiling;
+  //       if (!ceiling) continue;
 
-        // Let's dim the ceiling more than the floor.
-        // TODO: Better dropoff curve.
-        const ceilingBrightnessModifier = brightnessModifier - 0.2;
+  //       // Let's dim the ceiling more than the floor.
+  //       // TODO: Better dropoff curve.
+  //       const ceilingBrightnessModifier = brightnessModifier - 0.2;
 
-        const ceilingSurface = ceiling.surface;
-        switch (ceilingSurface) {
-          case "color":
-            const { r, g, b } = ceiling.color!;
+  //       const ceilingSurface = ceiling.surface;
+  //       switch (ceilingSurface) {
+  //         case "color":
+  //           const { r, g, b } = ceiling.color!;
 
-            const index =
-              ((this.gameSettings.height - y) * this.gameSettings.width + x) *
-              4;
-            this.floorCeilingPixelData.data[index] =
-              r * ceilingBrightnessModifier;
-            this.floorCeilingPixelData.data[index + 1] =
-              g * ceilingBrightnessModifier;
-            this.floorCeilingPixelData.data[index + 2] =
-              b * ceilingBrightnessModifier;
-            this.floorCeilingPixelData.data[index + 3] = 255;
-            break;
-          case "texture":
-            // TODO: Handle gradients.
-            const ceilingTextureName = ceiling.texture!.name;
-            let ceilingTexture =
-              this.textureManager.getTexture(ceilingTextureName)!;
+  //           const index =
+  //             ((this.gameSettings.height - y) * this.gameSettings.width + x) *
+  //             4;
+  //           this.floorCeilingPixelData.data[index] =
+  //             r * ceilingBrightnessModifier;
+  //           this.floorCeilingPixelData.data[index + 1] =
+  //             g * ceilingBrightnessModifier;
+  //           this.floorCeilingPixelData.data[index + 2] =
+  //             b * ceilingBrightnessModifier;
+  //           this.floorCeilingPixelData.data[index + 3] = 255;
+  //           break;
+  //         case "texture":
+  //           // TODO: Handle gradients.
+  //           const ceilingTextureName = ceiling.texture!.name;
+  //           let ceilingTexture =
+  //             this.textureManager.getTexture(ceilingTextureName)!;
 
-            if (ceilingTexture != null) {
-              const ceilingTexturePixels = ceilingTexture.getImageData();
+  //           if (ceilingTexture != null) {
+  //             const ceilingTexturePixels = ceilingTexture.getImageData();
 
-              const ceilTexX =
-                Math.floor(floorX * ceilingTexture.width) %
-                ceilingTexture.width;
-              const ceilTexY =
-                Math.floor(
-                  (this.gameSettings.height - floorY) * ceilingTexture.height
-                ) % ceilingTexture.height;
-              const textureIndex =
-                (ceilTexY * ceilingTexture.width + ceilTexX) * 4;
+  //             const ceilTexX =
+  //               Math.floor(floorX * ceilingTexture.width) %
+  //               ceilingTexture.width;
+  //             const ceilTexY =
+  //               Math.floor(
+  //                 (this.gameSettings.height - floorY) * ceilingTexture.height
+  //               ) % ceilingTexture.height;
+  //             const textureIndex =
+  //               (ceilTexY * ceilingTexture.width + ceilTexX) * 4;
 
-              const red =
-                ceilingTexturePixels.data[textureIndex] *
-                ceilingBrightnessModifier;
-              const green =
-                ceilingTexturePixels.data[textureIndex + 1] *
-                ceilingBrightnessModifier;
-              const blue =
-                ceilingTexturePixels.data[textureIndex + 2] *
-                ceilingBrightnessModifier;
-              const alpha = ceilingTexturePixels.data[textureIndex + 3];
+  //             const red =
+  //               ceilingTexturePixels.data[textureIndex] *
+  //               ceilingBrightnessModifier;
+  //             const green =
+  //               ceilingTexturePixels.data[textureIndex + 1] *
+  //               ceilingBrightnessModifier;
+  //             const blue =
+  //               ceilingTexturePixels.data[textureIndex + 2] *
+  //               ceilingBrightnessModifier;
+  //             const alpha = ceilingTexturePixels.data[textureIndex + 3];
 
-              const index =
-                ((this.gameSettings.height - y) * this.gameSettings.width + x) *
-                4;
-              this.floorCeilingPixelData.data[index] = red;
-              this.floorCeilingPixelData.data[index + 1] = green;
-              this.floorCeilingPixelData.data[index + 2] = blue;
-              this.floorCeilingPixelData.data[index + 3] = alpha;
-            }
+  //             const index =
+  //               ((this.gameSettings.height - y) * this.gameSettings.width + x) *
+  //               4;
+  //             this.floorCeilingPixelData.data[index] = red;
+  //             this.floorCeilingPixelData.data[index + 1] = green;
+  //             this.floorCeilingPixelData.data[index + 2] = blue;
+  //             this.floorCeilingPixelData.data[index + 3] = alpha;
+  //           }
 
-            break;
-        }
+  //           break;
+  //       }
 
-        // // choose texture and draw the pixel
-        // const floorTexture = 3;
-        // const ceilingTexture = 6;
-        // let color: number;
+  //       // // choose texture and draw the pixel
+  //       // const floorTexture = 3;
+  //       // const ceilingTexture = 6;
+  //       // let color: number;
 
-        // // floor
-        // color = texture[floorTexture][texWidth * ty + tx];
-        // color = (color >> 1) & 8355711; // make a bit darker
-        // buffer[y][x] = color;
+  //       // // floor
+  //       // color = texture[floorTexture][texWidth * ty + tx];
+  //       // color = (color >> 1) & 8355711; // make a bit darker
+  //       // buffer[y][x] = color;
 
-        // // ceiling (symmetrical, at screenHeight - y - 1 instead of y)
-        // color = texture[ceilingTexture][texWidth * ty + tx];
-        // color = (color >> 1) & 8355711; // make a bit darker
-        // buffer[screenHeight - y - 1][x] = color;
-      }
-    }
+  //       // // ceiling (symmetrical, at screenHeight - y - 1 instead of y)
+  //       // color = texture[ceilingTexture][texWidth * ty + tx];
+  //       // color = (color >> 1) & 8355711; // make a bit darker
+  //       // buffer[screenHeight - y - 1][x] = color;
+  //     }
+  //   }
 
-    // ## Floor Rendering.
-    // We don't need to put image data on each ray, it makes sense to blit once per frame. We're just calculating on the same pass as the wall.
-    this.floorCeilingCtx.putImageData(this.floorCeilingPixelData, 0, 0);
-    this.offscreenCtx.drawImage(this.floorCeilingCanvas, 0, 0);
-    // TODO: This is a very inefficient way to clear the pixel data I think.
-    this.floorCeilingPixelData = this.floorCeilingCtx.createImageData(
-      this.gameSettings.width,
-      this.gameSettings.height
-    );
-    this.offscreenCtx.drawImage(this.worldCanvas, 0, 0);
-  }
+  //   // ## Floor Rendering.
+  //   // We don't need to put image data on each ray, it makes sense to blit once per frame. We're just calculating on the same pass as the wall.
+  //   this.floorCeilingCtx.putImageData(this.floorCeilingPixelData, 0, 0);
+  //   this.offscreenCtx.drawImage(this.floorCeilingCanvas, 0, 0);
+  //   // TODO: This is a very inefficient way to clear the pixel data I think.
+  //   this.floorCeilingPixelData = this.floorCeilingCtx.createImageData(
+  //     this.gameSettings.width,
+  //     this.gameSettings.height
+  //   );
+  //   this.offscreenCtx.drawImage(this.worldCanvas, 0, 0);
+  // }
 
   renderObjects() {
     const objects = this.ecs.entityManager.with(["objectType"]);
@@ -882,9 +926,7 @@ export class RenderSystem implements System {
         );
 
         // calculate lowest and highest pixel to fill in current stripe
-        const drawStartY = Math.floor(
-          -spriteHeight / 2 + this.gameSettings.height / 2
-        );
+        const drawStartY = Math.floor(-spriteHeight / 2 + this.projectionPlane);
         const drawEndY = spriteHeight + drawStartY;
 
         // If an object has a texture field, we wont check for animation frames. So, be warned, for now, it's one or the other! And no multiple states for static textures.
@@ -1001,9 +1043,9 @@ export class RenderSystem implements System {
     // console.time("render world");
     this.renderWorld();
     // console.timeEnd("render world");
-    // console.time("render objects");
+    console.time("render objects");
     this.renderObjects();
-    // console.timeEnd("render objects");
+    console.timeEnd("render objects");
     // TODO: Render HUD (MapOverlay, Text, etc)
 
     // TODO: Combine all the buffers into a single offscreen buffer.
