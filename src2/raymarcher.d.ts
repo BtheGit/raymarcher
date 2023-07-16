@@ -1,4 +1,5 @@
 import { Vector } from "./utils/math";
+import { CollisionLayer } from "./enums";
 
 export type Entity = any;
 
@@ -97,6 +98,11 @@ export interface EntityStateComponent {
   };
 }
 
+// Keeping it here to make turning it into an array potentially easier.
+export interface CollisionLayerComponent {
+  layer: CollisionLayer;
+}
+
 export interface ColliderComponent {
   type: "aabb" | "circle";
   radius?: number;
@@ -158,6 +164,7 @@ export interface StaticObjectEntity extends BaseObjectEntity {
   sprite: SpriteTextureComponent;
   collider?: ColliderComponent;
   collisions?: CollisionReport[];
+  collisionLayer?: CollisionLayerComponent;
 }
 
 export interface AnimatedObjectEntity extends BaseObjectEntity {
@@ -165,6 +172,7 @@ export interface AnimatedObjectEntity extends BaseObjectEntity {
   state: EntityStateComponent;
   collider?: ColliderComponent;
   collisions?: CollisionReport[];
+  collisionLayer?: CollisionLayerComponent;
 }
 
 export interface FriendlyDogEntity extends AnimatedObjectEntity {
@@ -251,6 +259,7 @@ export interface PlayerEntity {
   // sprite: SpriteComponent;
   collider: ColliderComponent;
   collisions: CollisionReport[];
+  collisionLayer: CollisionLayerComponent;
   state: PlayerStateComponent;
 }
 
@@ -375,6 +384,7 @@ export interface WADObjectEntity {
     height?: number;
     solid: boolean;
   };
+  collisionLayer?: number;
   ai?: any;
 }
 
@@ -427,6 +437,7 @@ export interface EmitProjectileEvent extends EventMessage {
   velocity: Vector;
   speed: 2;
   collider: ColliderComponent;
+  collisionLayer: CollisionLayerComponent;
 }
 
 export interface ProjectileEntity {
@@ -443,4 +454,5 @@ export interface BallProjectileEntity extends ProjectileEntity {
   speed: number;
   collider: ColliderComponent;
   collisions: CollisionReport[];
+  collisionLayer: CollisionLayerComponent;
 }

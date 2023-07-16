@@ -27,6 +27,7 @@ import {
   WADObjectEntity,
   WAD,
 } from "./raymarcher";
+import { CollisionLayer } from "./enums";
 // TO Allay future confusion, event manager is not an event system. Ideally it shoudl be replaced with an event system though.
 import { EventManager } from "./EventManager/EventManager";
 import { AnimationSystem } from "./systems/AnimationSystem";
@@ -116,6 +117,9 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
       solid: true,
     },
     collisions: [],
+    collisionLayer: {
+      layer: CollisionLayer.Player,
+    },
     velocity: new Vector(0, 0),
     // TODO: Use movement speed to port old code.
     // FUTURE: Just change velocity with keys and let collision detection reconcile movement?

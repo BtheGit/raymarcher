@@ -161,6 +161,6 @@ export class PlayerControllerSystem implements System {
   update(dt: number) {
     this.updatePlayerMovement();
     // Temp disable projectile while figuring out positioning bugs
-    // this.handlePlayerActions();
+    this.handlePlayerActions();
   }
 }
