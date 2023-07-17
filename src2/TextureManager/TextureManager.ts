@@ -239,7 +239,7 @@ export class TextureManager {
   update(_dt: number) {
     const time = Date.now();
     const dt = time - this.lastFrameTime;
-    if (dt >= 1000 / 10) {
+    if (dt >= 1000 / 12) {
       this.lastFrameTime = time;
     } else {
       return;

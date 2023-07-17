@@ -5,6 +5,7 @@ import { RenderSystem } from "./systems/RenderSystem";
 import { PhysicsSystem } from "./systems/PhysicsSystem";
 import { AIControllerSystem } from "./systems/AIControllerSystem";
 import { ProjectileSystem } from "./systems/ProjectileSystem";
+import { HUDSystem } from "./systems/HUDSystem";
 import { ECS } from "./utils/ECS/ECS";
 import {
   Vector2,
@@ -46,6 +47,16 @@ const DEFAULT_SETTINGS = {
 // TODO: Default Wad
 
 const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
+  const screenCanvas = document.getElementById(
+    settings.canvasId
+  ) as HTMLCanvasElement;
+  screenCanvas.width = settings.width;
+  screenCanvas.height = settings.height;
+  // Under teh hood, every call to get context after the first one returns the same reference, but I prefer the explicitness of doing it this way since that may not be known to many.
+  const screenContext = screenCanvas.getContext("2d", {
+    willReadFrequently: true,
+  });
+
   const ecs = new ECS();
   const broker = new Broker();
   const textureManager = new TextureManager();
@@ -280,6 +291,8 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
 
   ecs.systems.add(
     new RenderSystem(
+      screenCanvas,
+      screenContext!,
       ecs,
       gameSettingsEntity,
       textureManager,
@@ -288,6 +301,25 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
       eventManager,
       playerEntity,
       skyboxEntity
+    )
+  );
+
+  // One kind of thing very convenient about my barebones ECS implementation is that the order in which systems are added
+  // is the order in which they are called during the update pipeline. So, i can simply run the HUD after the game (since I want everything in the hud to overlay the world).
+  // All that means is that the main screen canvas will need to be initialized here instead of in the render system, so it can be shared.
+  // I could do all of this more cleanly sharing components or with an event system or ... but I want to start over on the next one with a more robust system. So I'm going to consider this walkawayable soon. And the next time I come back to it, I can worry about refactoring and making it better. All code is debt!
+  ecs.systems.add(
+    new HUDSystem(
+      screenCanvas,
+      screenContext!,
+      ecs,
+      gameSettingsEntity,
+      textureManager,
+      spriteManager,
+      gridManager,
+      eventManager,
+      playerEntity,
+      UserInputSystem
     )
   );
 
