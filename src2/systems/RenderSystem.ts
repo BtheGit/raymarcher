@@ -886,9 +886,7 @@ export class RenderSystem implements System {
         //calculate width of the sprite
         // The width ratio ensures the sprite is not stretched horizontally.
         const widthRatio = texture.width / texture.height;
-        const spriteWidth = Math.abs(
-          Math.floor((object.transform.height / transformY) * widthRatio)
-        );
+        const spriteWidth = Math.abs(Math.floor(spriteHeight * widthRatio));
 
         const drawStartX = Math.floor(-spriteWidth / 2 + spriteScreenX);
         const drawEndX = spriteWidth / 2 + spriteScreenX;
