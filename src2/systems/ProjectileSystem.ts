@@ -44,7 +44,7 @@ export class ProjectileSystem implements System {
       collider: event.collider,
       collisions: [],
       collisionLayer: {
-        layer: CollisionLayer.Player,
+        layer: CollisionLayer.PlayerProjectile,
       },
     };
     this.ecs.entityManager.add(newEntity);
@@ -65,11 +65,11 @@ export class ProjectileSystem implements System {
         }
         // Short term, destroy on collision with anything. (Obviously lots of issues with short sprites and such. Someday a z axis...)
         // NOTE: This barely works, entity's bounding boxes are all over teh place. will need to figure out how to visualize those.
-        // if (projectile.collisions.length) {
-        //   // Destroy the entity.
-        //   this.ecs.entityManager.remove(projectile);
-        //   continue;
-        // }
+        if (projectile.collisions.length) {
+          // Destroy the entity.
+          this.ecs.entityManager.remove(projectile);
+          continue;
+        }
         projectile.lifetime -= dt;
         const velocity = new Vector2(0, 0).add(
           projectile.transform.direction.scale(projectile.movement.speed)

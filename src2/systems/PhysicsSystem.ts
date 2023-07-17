@@ -84,8 +84,38 @@ export class PhysicsSystem implements System {
         potentialPosition.y
       )!;
 
-      let nextX = nextXTile?.accessible ? potentialPosition.x : position.x;
-      let nextY = nextYTile?.accessible ? potentialPosition.y : position.y;
+      // SO: Right now I'm not actually detecting wall collisions.
+      if (entity.collisions && nextXTile && !nextXTile.accessible) {
+        // Hit the wall.
+        entity.collisions.push({
+          entity: entity,
+          collidedWith: nextXTile,
+          axis: "x",
+          overlap: 0,
+          timestamp: Date.now(),
+        });
+
+        // TODO: We are still seeing projectiles skid off walls and sprites for a few frames before they react to teh collision. We need to stop updating the position immediately. Probably a friction thing in other games. Here I think I want to create materials, bounce, stop, slide... to simplify the wall interactions. Short term though. We'll just check if it's a projectile and early exit to prevent position updates.
+        if (entity?.collisionLayer?.layer === CollisionLayer.PlayerProjectile) {
+          continue;
+        }
+      }
+      if (entity.collisions && nextYTile && !nextYTile.accessible) {
+        // Hit the wall.
+        entity.collisions.push({
+          entity: entity,
+          collidedWith: nextYTile,
+          axis: "y",
+          overlap: 0,
+          timestamp: Date.now(),
+        });
+        if (entity?.collisionLayer?.layer === CollisionLayer.PlayerProjectile) {
+          continue;
+        }
+      }
+
+      const nextX = nextXTile?.accessible ? potentialPosition.x : position.x;
+      const nextY = nextYTile?.accessible ? potentialPosition.y : position.y;
 
       const newPosition = new Vector2(nextX, nextY);
 
@@ -104,9 +134,16 @@ export class PhysicsSystem implements System {
           const collidingCollisionLayer =
             collidingEntity.collisionLayer?.layer ?? CollisionLayer.None;
 
+          // Player Projectiles should not hit player.
+          if (
+            collisionLayer === CollisionLayer.PlayerProjectile &&
+            collidingCollisionLayer === CollisionLayer.Player
+          ) {
+            continue;
+          }
           if (
             collisionLayer === CollisionLayer.Player &&
-            collidingCollisionLayer === CollisionLayer.Player
+            collidingCollisionLayer === CollisionLayer.PlayerProjectile
           ) {
             continue;
           }
@@ -140,8 +177,6 @@ export class PhysicsSystem implements System {
             // Determine the axis with the smallest overlap
             if (xOverlap < yOverlap) {
               // Resolve collision along the X axis
-              newPosition.x +=
-                newPosition.x < collidingPosition.x ? -xOverlap : xOverlap;
 
               if (entity.collisions) {
                 entity.collisions.push({
@@ -152,10 +187,17 @@ export class PhysicsSystem implements System {
                   timestamp: Date.now(),
                 });
               }
+              if (
+                entity?.collisionLayer?.layer ===
+                CollisionLayer.PlayerProjectile
+              ) {
+                continue;
+              }
+
+              newPosition.x +=
+                newPosition.x < collidingPosition.x ? -xOverlap : xOverlap;
             } else {
               // Resolve collision along the Y axis
-              newPosition.y +=
-                newPosition.y < collidingPosition.y ? -yOverlap : yOverlap;
 
               if (entity.collisions) {
                 entity.collisions.push({
@@ -166,6 +208,16 @@ export class PhysicsSystem implements System {
                   timestamp: Date.now(),
                 });
               }
+
+              if (
+                entity?.collisionLayer?.layer ===
+                CollisionLayer.PlayerProjectile
+              ) {
+                continue;
+              }
+
+              newPosition.y +=
+                newPosition.y < collidingPosition.y ? -yOverlap : yOverlap;
             }
           }
           // }
