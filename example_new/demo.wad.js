@@ -4,6 +4,7 @@ import BananaMan from "./images/sprites/banana.json" assert { type: "json" };
 import BlueCrystal from "./images/sprites/blue_crystal.json" assert { type: "json" };
 import PurpleBall from "./images/sprites/purple_ball.json" assert { type: "json" };
 import GreenFlame from "./images/sprites/green_flame.json" assert { type: "json" };
+import KoopaTroopa from "./images/sprites/koopa_troopa.json" assert { type: "json" };
 
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
@@ -67,6 +68,7 @@ const spriteDatas = [
   BlueCrystal,
   PurpleBall,
   GreenFlame,
+  KoopaTroopa,
 ];
 
 const spriteMaps = spriteDatas.reduce((acc, curr) => {
@@ -81,6 +83,51 @@ for (const spriteData of spriteDatas) {
 
 const animations = [
   // TODO: I haven't been smart enough to support static sprites/textures
+  {
+    name: "koopa_troopa__idle",
+    looping: true,
+    frameDuration: 125,
+    frames: [
+      {
+        frameId: "MKOPA",
+        directions: 8,
+      },
+    ],
+  },
+  {
+    name: "koopa_troopa__walk",
+    looping: true,
+    frameDuration: 250,
+    frames: [
+      {
+        frameId: "MKOPA",
+        directions: 8,
+      },
+      {
+        frameId: "MKOPB",
+        directions: 8,
+      },
+      {
+        frameId: "MKOPC",
+        directions: 8,
+      },
+      {
+        frameId: "MKOPD",
+        directions: 8,
+      },
+    ],
+  },
+  {
+    name: "koopa_troopa__shell",
+    looping: true,
+    frameDuration: 1000,
+    frames: [
+      {
+        frameId: "SHLLA",
+        directions: 8,
+      },
+    ],
+  },
   {
     name: "scientist__default",
     frames: [
@@ -395,7 +442,7 @@ const objects = [
       elevation: 0,
     },
     movement: {
-      speed: 0.003,
+      speed: 0.001,
     },
     initialState: "state__idle",
     states: [
@@ -440,7 +487,7 @@ const objects = [
       elevation: 0,
     },
     movement: {
-      speed: 0.003,
+      speed: 0.001,
     },
     initialState: "state__idle",
     states: [
@@ -587,6 +634,55 @@ const objects = [
         name: "state__wander",
         animation: "bananaman__walk",
       },
+    ],
+    collider: {
+      type: "aabb",
+      width: 0.4,
+      height: 0.4,
+      solid: true,
+    },
+    ai: {
+      aiType: "dog_friendly",
+      playRadius: 1,
+      swarmRadius: 5,
+      idleDurationRange: [1, 3],
+      idleTimer: 0,
+      seekTarget: {
+        target: null,
+      },
+      seekPath: {
+        path: null,
+        currentIndex: 0,
+      },
+    },
+  },
+  {
+    transform: {
+      position: {
+        x: 4,
+        y: 4,
+      },
+      rotation: 0,
+      height: 256,
+      elevation: 0,
+    },
+    movement: {
+      speed: 0.001,
+    },
+    initialState: "state__idle",
+    states: [
+      {
+        name: "state__idle",
+        animation: "koopa_troopa__idle",
+      },
+      {
+        name: "state__wander",
+        animation: "koopa_troopa__walk",
+      },
+      // {
+      //   name: "state__hit",
+      //   animation: "koopa_troopa__shell",
+      // },
     ],
     collider: {
       type: "aabb",
@@ -1363,7 +1459,7 @@ const wad = {
       ],
     ],
     sky: {
-      // TODO: Only support texture right now for everything
+      // TODO: Add gradients and colors for sky
       type: "texture",
       texture: {
         name: "background__trees1",
