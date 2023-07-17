@@ -743,7 +743,7 @@ const objects = [
     ],
     collider: {
       type: "aabb",
-      width: 0.2,
+      width: 0.4,
       height: 0.2,
       solid: true,
     },
@@ -839,10 +839,6 @@ const wad = {
             type: "animatedTexture",
             textureName: "anim_lava_1",
           },
-          ceiling: {
-            type: "animatedTexture",
-            textureName: "animated_water_1",
-          },
         },
         floor_default,
         floor_default,
@@ -899,8 +895,22 @@ const wad = {
         floor_default,
         floor_default,
         floor_default,
-        floor_default,
-        floor_default,
+        {
+          type: "floor",
+          accessible: false,
+          texture: {
+            type: "animatedTexture",
+            textureName: "animated_water_1",
+          },
+        },
+        {
+          type: "floor",
+          accessible: false,
+          texture: {
+            type: "animatedTexture",
+            textureName: "animated_water_1",
+          },
+        },
         floor_default,
         floor_default,
         floor_default,
@@ -925,8 +935,23 @@ const wad = {
         floor_default,
         floor_default,
         floor_default,
+        {
+          type: "floor",
+          accessible: false,
+          texture: {
+            type: "animatedTexture",
+            textureName: "animated_water_1",
+          },
+        },
+        {
+          type: "floor",
+          accessible: false,
+          texture: {
+            type: "animatedTexture",
+            textureName: "animated_water_1",
+          },
+        },
         floor_default,
-
         floor_default,
         floor_default,
         floor_default,
@@ -938,8 +963,7 @@ const wad = {
         floor_default,
         floor_default,
         floor_default,
-        floor_default,
-        floor_default,
+        wall_default,
         wall_default,
       ],
       [
