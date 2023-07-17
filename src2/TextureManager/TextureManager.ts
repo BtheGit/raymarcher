@@ -6,6 +6,7 @@ export class TextureManager {
   private textureMap: Record<string, string> = {};
   private defaultTexture: TextureBuffer;
   private animatedTextures = new Map<string, AnimatedTexture>();
+  private lastFrameTime = Date.now();
 
   // TODO: Support adding textures after. For now, we need them on load and that's it.
   /// TODO:  Support lazy loading textures. Right now we want it blocking just in case. And we want it to load
@@ -187,8 +188,14 @@ export class TextureManager {
     }
   };
 
-  update(dt: number) {
-    // TODO: Constrain to frame rate
+  update(_dt: number) {
+    const time = Date.now();
+    const dt = time - this.lastFrameTime;
+    if (dt >= 1000 / 10) {
+      this.lastFrameTime = time;
+    } else {
+      return;
+    }
     for (const animatedTexture of this.animatedTextures) {
       animatedTexture[1].advanceFrame();
     }
