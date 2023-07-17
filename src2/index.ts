@@ -225,7 +225,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
           currentState: initialState,
           previousState: null,
           initialState,
-          timeElapsedInState: 0,
+          lastStateChange: 0,
           states: entityStates,
         },
       };

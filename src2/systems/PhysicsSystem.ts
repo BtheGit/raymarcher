@@ -177,7 +177,7 @@ export class PhysicsSystem implements System {
             // Determine the axis with the smallest overlap
             if (xOverlap < yOverlap) {
               // Resolve collision along the X axis
-
+              // These really need to be events so that either entity's controller can be subscribed and the physics system goes back to reporting. (With maybe some mechanism for whitelisting certain entity entity collisions)
               if (entity.collisions) {
                 entity.collisions.push({
                   entity: entity,
@@ -187,6 +187,16 @@ export class PhysicsSystem implements System {
                   timestamp: Date.now(),
                 });
               }
+              // TODO: Static objects are having their collisions array filling up with no handlers. Should start emiting events, can then look at sound handler that look for collisions and read sound based on entity sound component (from wad)
+              // if (collidingEntity.collisions) {
+              //   collidingEntity.collisions.push({
+              //     entity: collidingEntity,
+              //     collidedWith: entity,
+              //     axis: "x",
+              //     overlap: xOverlap,
+              //     timestamp: Date.now(),
+              //   });
+              // }
               if (
                 entity?.collisionLayer?.layer ===
                 CollisionLayer.PlayerProjectile
@@ -198,7 +208,6 @@ export class PhysicsSystem implements System {
                 newPosition.x < collidingPosition.x ? -xOverlap : xOverlap;
             } else {
               // Resolve collision along the Y axis
-
               if (entity.collisions) {
                 entity.collisions.push({
                   entity: entity,
@@ -208,7 +217,15 @@ export class PhysicsSystem implements System {
                   timestamp: Date.now(),
                 });
               }
-
+              // if (collidingEntity.collisions) {
+              //   collidingEntity.collisions.push({
+              //     entity: collidingEntity,
+              //     collidedWith: entity,
+              //     axis: "y",
+              //     overlap: xOverlap,
+              //     timestamp: Date.now(),
+              //   });
+              // }
               if (
                 entity?.collisionLayer?.layer ===
                 CollisionLayer.PlayerProjectile

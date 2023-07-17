@@ -7,7 +7,7 @@ import {
 } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
-import { friendlyDogAI } from "./AIFriendlyDogSystem";
+import { AIFriendlyDogSystem } from "./AIFriendlyDogSystem";
 
 // NOTE: This really only exists because we can't search by aiType directly. I could come up with a few solutions, but for now, I'm just going to have a bunch of AI system's plugged in that would otherwise be independent. But, to simplify, I will have each AISystem be a single update call for now.
 export class AIControllerSystem implements System {
@@ -16,6 +16,7 @@ export class AIControllerSystem implements System {
   private intelligentEntities: ObjectEntity[];
   private playerEntity: PlayerEntity;
   private gridManager: GridManager;
+  private aiSystems = new Map<string, any>();
 
   constructor(ecs: ECS, broker: Broker, gridManager: GridManager) {
     this.ecs = ecs;
@@ -28,20 +29,24 @@ export class AIControllerSystem implements System {
     this.playerEntity = this.ecs.entityManager.with([
       "camera",
     ])[0] as PlayerEntity;
+
+    this.aiSystems.set(
+      "dog_friendly",
+      new AIFriendlyDogSystem(
+        this.ecs,
+        this.broker,
+        this.gridManager,
+        this.playerEntity
+      )
+    );
   }
 
   update(dt: number) {
     for (const entity of this.intelligentEntities) {
       const { aiType } = entity.ai!;
-      // TODO: Switch or Map or AI Manager or...
-      if (aiType === "dog_friendly") {
-        friendlyDogAI(
-          dt,
-          this.ecs,
-          this.gridManager,
-          entity as FriendlyDogEntity,
-          this.playerEntity
-        );
+      const aiSystem = this.aiSystems.get(aiType);
+      if (aiSystem) {
+        aiSystem.update(dt, entity);
       }
     }
   }
