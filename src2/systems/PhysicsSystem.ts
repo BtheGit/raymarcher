@@ -158,6 +158,18 @@ export class PhysicsSystem implements System {
           )
             continue;
 
+          // Vertical collision check. Fun to feel like it's not all on a flat plane. Wait till we have birds! oooh
+          const isOverhead =
+            entity.transform.elevation >
+            collidingEntity.transform.elevation +
+              collidingEntity.transform.height;
+          const isUnderfoot =
+            entity.transform.elevation + entity.transform.height <
+            collidingEntity.transform.elevation;
+          if (isOverhead || isUnderfoot) {
+            continue;
+          }
+
           if (
             newPosition.x < collidingPosition.x + collidingCollider.width! &&
             newPosition.x + entity.collider.width! > collidingPosition.x &&
