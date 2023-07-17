@@ -738,6 +738,7 @@ const objects = [
       {
         name: "state__hit",
         animation: "koopa_troopa__shell",
+        height: 64,
       },
     ],
     collider: {

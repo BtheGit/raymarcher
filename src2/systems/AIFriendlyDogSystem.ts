@@ -50,11 +50,16 @@ export class AIFriendlyDogSystem {
   // TODO: This is a stand-in for a generic state change mechanism, specifically in this case to allow us to reset time in state
   updateState = (entity, newState: string) => {
     const stateComponent = entity.state;
-    const { currentState } = stateComponent;
+    const { currentState, states } = stateComponent;
 
     if (newState === currentState) {
       return;
     }
+
+    // We should really be broadcasting this so the AI isn't responsible for manipulating the transformation of the
+    // object directly. But oh well. I want to be able to opt in height change by state. Since heights are currently attached to objects, I'm optionally adding a height property to state objects. It's opt-in, but will be set on intiialization. Let's stuff like a kooopa troopa retreating to his shell look better.
+    const stateObject = states[newState];
+    entity.transform.height = stateObject.height;
 
     entity.state.previousState = currentState;
     entity.state.currentState = newState;
