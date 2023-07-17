@@ -153,6 +153,17 @@ const animations = [
     // Animation duration?
   },
   {
+    name: "scientist__hit",
+    looping: false,
+    frameDuration: 1000,
+    frames: [
+      {
+        frameId: "SCIENTIST__A",
+        directions: 8,
+      },
+    ],
+  },
+  {
     name: "bananaman__stand",
     frames: [
       {
@@ -361,8 +372,8 @@ const objects = [
   {
     transform: {
       position: {
-        x: 6,
-        y: 3,
+        x: 5.5,
+        y: 2.5,
       },
       rotation: 0,
 
@@ -454,6 +465,10 @@ const objects = [
         name: "state__wander",
         animation: "scientist__default",
       },
+      {
+        name: "state__hit",
+        animation: "scientist__hit",
+      },
     ],
     collider: {
       type: "aabb",
@@ -498,6 +513,10 @@ const objects = [
       {
         name: "state__wander",
         animation: "scientist__default",
+      },
+      {
+        name: "state__hit",
+        animation: "scientist__hit",
       },
     ],
     collider: {
@@ -544,6 +563,10 @@ const objects = [
         name: "state__wander",
         animation: "bananaman__walk",
       },
+      {
+        name: "state__hit",
+        animation: "bananaman__stand",
+      },
     ],
     collider: {
       type: "aabb",
@@ -588,6 +611,10 @@ const objects = [
       {
         name: "state__wander",
         animation: "bananaman__walk",
+      },
+      {
+        name: "state__hit",
+        animation: "bananaman__stand",
       },
     ],
     collider: {
@@ -634,6 +661,10 @@ const objects = [
         name: "state__wander",
         animation: "bananaman__walk",
       },
+      {
+        name: "state__hit",
+        animation: "bananaman__stand",
+      },
     ],
     collider: {
       type: "aabb",
@@ -663,7 +694,7 @@ const objects = [
         y: 4,
       },
       rotation: 0,
-      height: 256,
+      height: 128,
       elevation: 0,
     },
     movement: {
@@ -679,10 +710,10 @@ const objects = [
         name: "state__wander",
         animation: "koopa_troopa__walk",
       },
-      // {
-      //   name: "state__hit",
-      //   animation: "koopa_troopa__shell",
-      // },
+      {
+        name: "state__hit",
+        animation: "koopa_troopa__shell",
+      },
     ],
     collider: {
       type: "aabb",

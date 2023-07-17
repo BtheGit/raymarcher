@@ -943,9 +943,9 @@ export class RenderSystem implements System {
     // console.time("render world");
     this.renderWorld();
     // console.timeEnd("render world");
-    console.time("render objects");
+    // console.time("render objects");
     this.renderObjects();
-    console.timeEnd("render objects");
+    // console.timeEnd("render objects");
     // TODO: Render HUD (MapOverlay, Text, etc)
 
     // TODO: Combine all the buffers into a single offscreen buffer.
