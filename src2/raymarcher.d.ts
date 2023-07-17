@@ -65,6 +65,7 @@ export interface SpriteComponent {
 export interface EntityState {
   name: string;
   animation: AnimationState;
+  height?: number; // To optionally let me resize objects during different states. Should be opt in to avoid overwork
   sound?: SoundComponent; // Some entities should play a sound continuously during a certain state.
 }
 
@@ -384,6 +385,7 @@ export interface WADObjectEntity {
   states?: Array<{
     name: string;
     animation: string;
+    height?: number;
     sound?: any;
   }>;
   collider?: {

@@ -204,7 +204,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
       const entityStates = states.reduce((acc, state) => {
         // TODO: Here we are doing what should be a world object initialization/spawn bit. Need to move this to a spawner
         // or something.
-        const { name, animation: animationKey, sound } = state;
+        const { name, animation: animationKey, sound, height } = state;
         // TODO: Animation Manager has no real purpose at this juncture
         const animationConfiguration =
           animationManager.getAnimation(animationKey)!; // TODO: Handle missing animation
@@ -222,6 +222,8 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
         if (sound) {
           entityState.sound = sound;
         }
+
+        entityState.height = height ?? objectEntity.transform.height;
 
         acc[name] = entityState;
         return acc;
