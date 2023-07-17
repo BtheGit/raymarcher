@@ -98,6 +98,14 @@ export class GridManager {
     return this._columns;
   }
 
+  get height() {
+    return this._rows;
+  }
+
+  get width() {
+    return this._columns;
+  }
+
   isTileAccessible(x: number, y: number) {
     return this.getGridTile(x, y)?.accessible;
   }
