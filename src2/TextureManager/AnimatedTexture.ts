@@ -1,5 +1,6 @@
 import { TextureBuffer } from "./TextureBuffer";
 import { sine } from "../utils/flatWarp";
+// NOTE: This is a dynamically (math) animated texture. Sprites are a different class.
 
 // TODO: I may have gone a bit in several directions on textures, sprites, animations...
 // To that end, I want to keep the code for this as far to a leaf as possible so we can reorganize easier as needed. (Stuff like even frustum culling if off screen etc is not gonna be a consideration).

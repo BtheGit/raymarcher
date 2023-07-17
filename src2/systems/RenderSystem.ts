@@ -299,7 +299,10 @@ export class RenderSystem implements System {
         break;
       case "texture":
         const textureName = skybox.texture!.name;
-        const backgroundImage = this.textureManager.getTexture(textureName)!;
+        const backgroundImage = this.textureManager.getTexture(
+          textureName,
+          skybox.surface
+        )!;
         // We need to have an origin for the image
         // We need to find the offset from that origin in the FOV and then sample 1/6 of the image
         // from that point then draw it to the background.
@@ -446,12 +449,14 @@ export class RenderSystem implements System {
               this.worldCtx.fillRect(i, top, 1, columnHeight);
               this.worldCtx.closePath();
               break;
+            case "spriteTexture":
             case "animatedTexture":
             case "texture":
-              const wallTextureImageBuffer =
-                surface === "texture"
-                  ? this.textureManager.getTexture(texture!.name)
-                  : this.textureManager.getAnimatedTexture(texture!.name);
+              const wallTextureImageBuffer = this.textureManager.getTexture(
+                texture!.name,
+                surface
+              );
+
               const wallTexture = wallTextureImageBuffer!.canvas;
 
               const textureWidth = wallTexture.width;
@@ -597,14 +602,15 @@ export class RenderSystem implements System {
                 b * brightnessModifier;
               this.floorCeilingPixelData.data[index + 3] = 255;
               break;
+            case "spriteTexture":
             case "animatedTexture":
             case "texture":
               // TODO: Handle gradients. This will fail on gradients.
               const textureName = gridCell.floorTile.texture!.name;
-              const floorTexture =
-                surface === "texture"
-                  ? this.textureManager.getTexture(textureName)
-                  : this.textureManager.getAnimatedTexture(textureName);
+              const floorTexture = this.textureManager.getTexture(
+                textureName,
+                surface
+              );
 
               // // TODO: Temp, to have a floor while textures are missing
               // if (floorTextureName === undefined || floorTexture == null) {
@@ -675,14 +681,15 @@ export class RenderSystem implements System {
                 b * ceilingBrightnessModifier;
               this.floorCeilingPixelData.data[index + 3] = 255;
               break;
+            case "spriteTexture":
             case "animatedTexture":
             case "texture":
               // TODO: Handle gradients.
               const ceilingTextureName = ceiling.texture!.name;
-              let ceilingTexture =
-                ceilingSurface === "texture"
-                  ? this.textureManager.getTexture(ceilingTextureName)!
-                  : this.textureManager.getAnimatedTexture(ceilingTextureName);
+              let ceilingTexture = this.textureManager.getTexture(
+                ceilingTextureName,
+                ceilingSurface
+              );
 
               if (ceilingTexture != null) {
                 const ceilingTexturePixels = ceilingTexture.getImageData();

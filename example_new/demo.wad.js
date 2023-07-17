@@ -5,6 +5,7 @@ import BlueCrystal from "./images/sprites/blue_crystal.json" assert { type: "jso
 import PurpleBall from "./images/sprites/purple_ball.json" assert { type: "json" };
 import GreenFlame from "./images/sprites/green_flame.json" assert { type: "json" };
 import KoopaTroopa from "./images/sprites/koopa_troopa.json" assert { type: "json" };
+import AnimatedWater1 from "./images/sprites/animated_water_1.json" assert { type: "json" };
 
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
@@ -69,12 +70,13 @@ const spriteDatas = [
   PurpleBall,
   GreenFlame,
   KoopaTroopa,
+  AnimatedWater1,
 ];
 
-const spriteMaps = spriteDatas.reduce((acc, curr) => {
-  acc[curr.meta.name] = curr;
-  return acc;
-}, {});
+// const spriteMaps = spriteDatas.reduce((acc, curr) => {
+//   acc[curr.meta.name] = curr;
+//   return acc;
+// }, {});
 
 // Add spritesheets to textures (maybe we can just make this a texture again)
 for (const spriteData of spriteDatas) {
@@ -301,9 +303,32 @@ const textureAnimations = [
   {
     name: "anim_lava_1",
     animationType: "flat_warp",
-    frameCount: 10,
+    // Zero frameCount stops animation
+    frameCount: 1,
     // frameDuration: 100,
     texture: "lava",
+  },
+  {
+    name: "animated_water_1",
+    animationType: "sprite",
+    frames: [
+      "animated_water_1__1",
+      "animated_water_1__2",
+      "animated_water_1__3",
+      "animated_water_1__4",
+      "animated_water_1__5",
+      "animated_water_1__6",
+      "animated_water_1__7",
+      "animated_water_1__8",
+      "animated_water_1__9",
+      "animated_water_1__10",
+      "animated_water_1__11",
+      "animated_water_1__12",
+      "animated_water_1__13",
+      "animated_water_1__14",
+      "animated_water_1__15",
+      "animated_water_1__16",
+    ],
   },
 ];
 
@@ -814,8 +839,8 @@ const wad = {
             textureName: "anim_lava_1",
           },
           ceiling: {
-            type: "texture",
-            textureName: "sparkle",
+            type: "animatedTexture",
+            textureName: "animated_water_1",
           },
         },
         floor_default,

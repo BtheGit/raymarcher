@@ -1,11 +1,17 @@
 import { AnimatedTexture } from "./AnimatedTexture";
-import { WADTextureAnimation } from "../raymarcher";
+import { SpriteTexture } from "./SpriteTexture";
+import {
+  WADTextureAnimation,
+  WADTextureAnimationFlatWarp,
+  WADTextureAnimationSprite,
+} from "../raymarcher";
 import { TextureBuffer } from "./TextureBuffer";
+import { SpriteManager } from "../SpriteManager/SpriteManager";
 export class TextureManager {
   private textureBuffers: Record<string, TextureBuffer> = {};
   private textureMap: Record<string, string> = {};
   private defaultTexture: TextureBuffer;
-  private animatedTextures = new Map<string, AnimatedTexture>();
+  private animatedTextures = new Map<string, AnimatedTexture | SpriteTexture>();
   private lastFrameTime = Date.now();
 
   // TODO: Support adding textures after. For now, we need them on load and that's it.
@@ -50,9 +56,23 @@ export class TextureManager {
     }
   }
 
-  public getTexture(key: string): TextureBuffer | null {
+  public getTexture(key: string, type = "texture"): TextureBuffer | null {
     if (key === "default") return this.defaultTexture;
 
+    let texture;
+    switch (type) {
+      case "spriteTexture":
+      case "animatedTexture":
+        texture = this.getAnimatedTexture(key);
+        break;
+      case "texture":
+        texture = this.getStandardTexture(key);
+        break;
+    }
+    return texture;
+  }
+
+  private getStandardTexture = (key: string) => {
     let texture = this.textureBuffers[key];
 
     if (!texture) {
@@ -65,7 +85,7 @@ export class TextureManager {
 
     // TODO: Always return at least the default texture buffer
     return texture || null;
-  }
+  };
 
   public getTextureDimensions(
     key: string
@@ -160,14 +180,14 @@ export class TextureManager {
   // TODO: This is bad. We should be able to get any texture, animated or otherwise without knowing the difference.
   // For now though, since it's late but I haven't run out of excuses, I'm going to make it incumbent ont he render call to decide which type of texture to grab (extra yuck). FIX LATER PLEASE
   getAnimatedTexture = (name: string) => {
-    return this.animatedTextures.get(name);
+    const texture = this.animatedTextures.get(name);
+    return texture;
   };
 
-  loadTextureAnimation = (wadTileAnimation: WADTextureAnimation) => {
-    // MVP, only support one type, which is preloaded texture based.
-    // Also, temporarily, only going to support flat warping :)
-    const { frameCount, name, texture, animationType } = wadTileAnimation;
+  // TODO: Let Animated Texture Figure Out How to load itself? Or Have different types extending a base?
+  loadFlatWarpTexture = (wadTileAnimation: WADTextureAnimationFlatWarp) => {
     // Get the pixel data from the original texture buffer.
+    const { frameCount, name, texture, animationType } = wadTileAnimation;
     const textureBuffer = this.getTexture(texture);
     if (!textureBuffer) {
       throw new Error("Texture buffer does not exist");
@@ -175,11 +195,39 @@ export class TextureManager {
 
     const animatedTile = new AnimatedTexture(
       textureBuffer,
-      animationType,
+      "flat_warp",
       name,
       frameCount
     );
     this.animatedTextures.set(name, animatedTile);
+  };
+
+  loadSpriteTexture = (
+    spriteManager: SpriteManager,
+    wadTileAnimation: WADTextureAnimationSprite
+  ) => {
+    const { name, frames } = wadTileAnimation;
+    const animatedTile = new SpriteTexture(spriteManager, name, frames);
+    this.animatedTextures.set(name, animatedTile);
+  };
+
+  loadSpriteTextures = (
+    spriteManager: SpriteManager,
+    wadTextureAnimations: WADTextureAnimationSprite[]
+  ) => {
+    for (const wadTextureAnimation of wadTextureAnimations) {
+      this.loadSpriteTexture(spriteManager, wadTextureAnimation);
+    }
+  };
+
+  loadTextureAnimation = (wadTileAnimation: WADTextureAnimation) => {
+    // MVP, only support one type, which is preloaded texture based.
+    // Also, temporarily, only going to support flat warping :)
+    const { animationType } = wadTileAnimation;
+    if (animationType === "flat_warp") {
+      this.loadFlatWarpTexture(wadTileAnimation);
+      return;
+    }
   };
 
   loadTextureAnimations = (wadTextureAnimations: WADTextureAnimation[]) => {
@@ -197,6 +245,7 @@ export class TextureManager {
       return;
     }
     for (const animatedTexture of this.animatedTextures) {
+      // Could pass DT for math based visualizations.
       animatedTexture[1].advanceFrame();
     }
   }
