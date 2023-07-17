@@ -233,7 +233,7 @@ const animations = [
   {
     name: "green_flame_default",
     looping: true,
-    frameDuration: 250,
+    frameDuration: 125,
     frames: [
       {
         frameId: "TONWA",
