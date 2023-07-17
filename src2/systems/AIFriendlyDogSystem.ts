@@ -70,7 +70,9 @@ export class AIFriendlyDogSystem {
 
     if (currentState === "state__hit") {
       const elapsedTime = Date.now() - lastStateChange;
-      if (elapsedTime < 1000) {
+      // For fun and more visceral feedback, let's spin these fellas.
+      entity.transform.direction.rotate(dt);
+      if (elapsedTime < 2000) {
         return;
       }
 
