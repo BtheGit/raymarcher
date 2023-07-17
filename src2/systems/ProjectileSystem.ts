@@ -25,6 +25,17 @@ export class ProjectileSystem implements System {
     }
   };
 
+  emitCollisionEvent = (collision) => {
+    this.broker.emit("projectile_collision", {
+      name: "projectile_collision",
+      projectileType: "ball",
+      emitter: "player",
+      timestamp: Date.now(), // Since this isn't the same exact event as the initial collision, probabl ya  new timestamp?
+      collidedWith: collision.collidedWith, // This reference shoudl still be there, but the ball won't be, so we need to include pertinent information. If there were physics we'd include that kind of stuff, but not right now.
+      collisionLayer: CollisionLayer.PlayerProjectile, // TODO: Support NPC projectiles?
+    });
+  };
+
   newBallEntity = (event: EmitProjectileEvent) => {
     const newEntity: BallProjectileEntity = {
       objectType: "object__static",
@@ -55,6 +66,16 @@ export class ProjectileSystem implements System {
       "projectileType",
     ]);
     for (const projectile of projectiles) {
+      if (projectile.collisions.length) {
+        // TODO: ? Ok, so I've been having trouble resolving projectile collisions with enemies because the enemies lose their reference to the projectile when it's removed, before they act on it. There are lots of solutions. But really, I like event systems anyway, so I'd rather move in that direction. Even if it's not appropriate. So we're going to publish an event on projectile collision with an entity. Later we can worry about layers, but right now, meh. Let the different controllers listen and determine if they care. Now, because I'm doing it this way, I can just pass the entity reference. Not ideal but, stop me. I'm sleepy and I want this feature. :) I could be doing this right in the physics system as well of course... But this preserves order of operations at least I guess. As in, the bullet detects the hit and then hits the character in turn.
+        for (const collision of projectile.collisions) {
+          this.emitCollisionEvent(collision);
+        }
+
+        // Destroy the entity.
+        this.ecs.entityManager.remove(projectile);
+        continue;
+      }
       // TODO: I'd lvoe to bounce off walls (and ground), but short term I'm just going to destroy on collision.
       // TODO: Different animation played at destroy (will need to make stationary, remove collider, and play animation before destroying entity. (or just particle effect entity?))
       if (projectile.projectileType === "ball") {
@@ -65,11 +86,7 @@ export class ProjectileSystem implements System {
         }
         // Short term, destroy on collision with anything. (Obviously lots of issues with short sprites and such. Someday a z axis...)
         // NOTE: This barely works, entity's bounding boxes are all over teh place. will need to figure out how to visualize those.
-        if (projectile.collisions.length) {
-          // Destroy the entity.
-          this.ecs.entityManager.remove(projectile);
-          continue;
-        }
+
         projectile.lifetime -= dt;
         const velocity = new Vector2(0, 0).add(
           projectile.transform.direction.scale(projectile.movement.speed)

@@ -96,7 +96,7 @@ export interface EntityStateComponent {
   currentState: string;
   previousState: string | null;
   initialState: string;
-  timeElapsedInState: number;
+  lastStateChange: number;
   states: {
     [state: string]: EntityState;
   };
@@ -127,6 +127,7 @@ export interface CollisionReport {
   // surfaceMaterial: string;
   // contactForce: number;
   // ...
+  // TODO: Unfortunately, I need to rethink how to do projectile impacts when the colliding entity is removed. Maybe I need to schedule dead entities for deletion so that references aren't immediately lost. That would be a short term hack.
 }
 
 export interface BaseAIComponent {
