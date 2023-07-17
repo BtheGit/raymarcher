@@ -26,6 +26,7 @@ import {
   WADGridCell,
   WADObjectEntity,
   WAD,
+  WADTextureAnimationSprite,
 } from "./raymarcher";
 import { CollisionLayer } from "./enums";
 // TO Allay future confusion, event manager is not an event system. Ideally it shoudl be replaced with an event system though.
@@ -75,9 +76,17 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
       return textureManager.loadTexture(key, path);
     })
   );
-  textureManager.loadTextureAnimations(wad.textureAnimations);
+  textureManager.loadTextureAnimations(
+    wad.textureAnimations.filter((e) => e.animationType !== "sprite")
+  );
 
   wad.sprites.forEach((spriteData) => spriteManager.loadSprites(spriteData));
+  textureManager.loadSpriteTextures(
+    spriteManager,
+    wad.textureAnimations.filter(
+      (e) => e.animationType === "sprite"
+    ) as WADTextureAnimationSprite[]
+  );
   animationManager.loadAnimations(wad.animations);
 
   // TODO: Some kind of default fallback map and textures.

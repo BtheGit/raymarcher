@@ -221,7 +221,7 @@ export interface TileAnimatedTextureComponent {
 }
 
 export interface TileSurfaceComponent {
-  surface: "color" | "texture" | "animatedTexture";
+  surface: "color" | "texture" | "animatedTexture" | "spriteTexture";
   texture?: TileTextureComponent;
   color?: TileColorComponent;
   animatedTexture?: TileAnimatedTextureComponent;
@@ -411,13 +411,25 @@ export interface WADAnimation {
 }
 
 // TODO: This is really only one type of animation. Will support others.
-export interface WADTextureAnimation {
-  animationType: "flat_warp";
+export interface WADTextureAnimationBase {
+  animationType: string;
   name: string;
   frameCount: number; // TODO: Maybe only support a fwe different frame lengths if I'm going to pregenerate.
   // frameDuration: number; // For now all animated tiles are on the same frame rate..
+}
+
+export interface WADTextureAnimationFlatWarp extends WADTextureAnimationBase {
+  animationType: "flat_warp";
   texture: string;
 }
+export interface WADTextureAnimationSprite extends WADTextureAnimationBase {
+  animationType: "sprite";
+  frames: string[];
+}
+
+export type WADTextureAnimation =
+  | WADTextureAnimationFlatWarp
+  | WADTextureAnimationSprite;
 
 export interface WAD {
   textures: any;
