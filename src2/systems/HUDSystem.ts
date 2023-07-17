@@ -219,8 +219,10 @@ export class HUDSystem implements System {
   update(dt: number) {
     // TODO: Render HUD (MapOverlay, Text, etc)
 
-    this.renderMiniMap();
+    if (this.inputSystem.isKeyPressed("`")) {
+      this.renderMiniMap();
 
-    this.draw();
+      this.draw();
+    }
   }
 }
