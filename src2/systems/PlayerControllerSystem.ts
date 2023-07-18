@@ -1,13 +1,16 @@
 import { Vector2 } from "../utils/math";
-import { Entity, PlayerEntity } from "../raymarcher";
+import { AnimationState, Entity, PlayerEntity } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
 import SingletonInputSystem from "./SingletonInputSystem";
 import { Broker } from "../utils/events";
+import { WeaponAssetManger } from "../WeaponAssetManager/WeaponAssetManager";
+import { EquipableWeapon, EquipableWeaponState } from "../enums";
 
 export class PlayerControllerSystem implements System {
   private inputSystem: SingletonInputSystem;
   private ecs: ECS;
   private broker: Broker;
+  private weaponAssetManager: WeaponAssetManger;
   private playerEntities: PlayerEntity[];
   private player: PlayerEntity;
   // TEMP: Throttle balls to prevent system brainfartage.
@@ -18,12 +21,14 @@ export class PlayerControllerSystem implements System {
     ecs: ECS,
     broker: Broker,
     inputSystem: SingletonInputSystem,
-    player: PlayerEntity
+    player: PlayerEntity,
+    weaponAssetManager: WeaponAssetManger
   ) {
     // TODO: As below, we don't need to store the world here if we have a query that is live updated without our knowledge. So ocne that exists, we're golden to stop holding this reference.
     this.ecs = ecs;
     this.broker = broker;
     this.inputSystem = inputSystem;
+    this.weaponAssetManager = weaponAssetManager;
 
     // TODO: This is not live updated, so we get what we get when it's called until that time.
     // I could also add a simpler system that just tells systems that have a query, to rerun the query (since something has changed)
@@ -33,7 +38,64 @@ export class PlayerControllerSystem implements System {
 
     // TODO: I really think I should skip the above (controlling more than one entity at a time), so until I refactor, for the purposes of projectiles, I'm just going to get the player reference again. (But really I should be moving to true ECS and not passing entity objects but just references)
     this.player = player;
+
+    // 1) Set the correct equipped weapon based on the state and add the appropriate animation setup.
+    this.switchWeapon(this.player.equippedWeapon.type);
   }
+
+  /**
+   * Note: This function allows us to instantiate teh animationcomponent on load as well.
+   */
+  switchWeapon = (weaponType: EquipableWeapon) => {
+    // TODO: Check if weapon is available based on inventory
+    this.player.equippedWeapon.type = weaponType;
+    const assets = this.weaponAssetManager.getWeaponAssets(weaponType);
+    const animationAssets = assets?.[EquipableWeaponState.Idle];
+    if (!animationAssets) {
+      console.error("Uh. Missing weapon assets...");
+      return;
+    }
+
+    // Initialize to default state always
+    const equippedWeaponAnimation: AnimationState = {
+      name: animationAssets.name,
+      frames: animationAssets.frames,
+      events: animationAssets.events, // TODO: Add this to this type
+      frameDuration: 40, // TODO: Deprecate this being needed for this type
+      looping: false, // Still not used...
+      currentFrame: 0,
+      timeSinceLastFrame: 0,
+    };
+
+    const equippedWeaponSprite = assets.sprite;
+
+    this.player.equippedWeaponAnimation = equippedWeaponAnimation;
+    this.player.equippedWeaponSprite = equippedWeaponSprite;
+  };
+
+  switchWeaponState = (newState: EquipableWeaponState) => {
+    if (this.player.equippedWeapon.state === newState) {
+      // We don't want to reset animations because a player accidentally tried switching to the same state.
+      return;
+    }
+
+    // TODO: I really should just cache this (I know it's just references getting passed around, but still)
+    const assets = this.weaponAssetManager.getWeaponAssets(
+      this.player.equippedWeapon.type
+    )!;
+    const animationAssets = assets[newState];
+
+    this.player.equippedWeapon.state = newState;
+    this.player.equippedWeaponAnimation = {
+      name: animationAssets.name,
+      frames: animationAssets.frames,
+      events: animationAssets.events,
+      frameDuration: 40,
+      looping: false,
+      currentFrame: 0,
+      timeSinceLastFrame: 0,
+    };
+  };
 
   updatePlayerMovement = () => {
     const incrementalModifier = 1; // NOTE: NO need to artificially slow it down when we're barely chugging along as it is. dt / 1000;
@@ -133,6 +195,7 @@ export class PlayerControllerSystem implements System {
       return;
     }
     if (activeMousedownEvent?.button === 0) {
+      this.switchWeaponState(EquipableWeaponState.Firing);
       this.lastBall = newTime;
       this.broker.emit("emit_projectile", {
         name: "emit_projectile",
@@ -158,9 +221,38 @@ export class PlayerControllerSystem implements System {
     }
   };
 
+  animateEquippedWeapon = () => {
+    // For now, we're going to assume all equipped weapons have only one frame in their idle state. Maybe later we can support more?
+    const weaponState = this.player.equippedWeapon.state;
+    if (weaponState === EquipableWeaponState.Idle) {
+      return;
+    }
+
+    // Otherwise, we want to advance the animation and look for any events. Now, my original thought was that this would be generic. But I think in the case of weapons, that is very much overkill and we can look for specific weapon events and let this controller be hardcoded with how to handle them, since the primary use case is going to be firing projectiles (and sounds) and otherwise interacting with objects.
+
+    // NOTE: this needs to be constrained to a frame rate, but we don't want that constraint in the update call since we want to respond immediately to a fire press, rather than wait x frames (since the weapon framerate will be lowish).
+
+    const animation = this.player.equippedWeaponAnimation;
+    const { currentFrame, frames, events, timeSinceLastFrame } = animation;
+    const time = Date.now();
+    const delta = time - timeSinceLastFrame;
+    if (delta < 1000 / 15) {
+      return;
+    }
+    // Short term, I'm not going to treat any animation as looping, and I'm going to simply return to idle state
+    const nextFrame = currentFrame + 1;
+    if (nextFrame >= frames.length) {
+      this.switchWeaponState(EquipableWeaponState.Idle);
+    } else {
+      animation.currentFrame = nextFrame;
+      animation.timeSinceLastFrame = time;
+    }
+  };
+
   update(dt: number) {
     this.updatePlayerMovement();
     // Temp disable projectile while figuring out positioning bugs
     this.handlePlayerActions();
+    this.animateEquippedWeapon();
   }
 }
