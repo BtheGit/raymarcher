@@ -56,7 +56,8 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   // Under teh hood, every call to get context after the first one returns the same reference, but I prefer the explicitness of doing it this way since that may not be known to many.
   const screenContext = screenCanvas.getContext("2d", {
     willReadFrequently: true,
-  });
+  })!;
+  // screenContext.imageSmoothingEnabled = false;
 
   const ecs = new ECS();
   const broker = new Broker();
@@ -216,7 +217,6 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
       ),
       elevation: startingPosition.elevation,
       direction,
-      rotation: startingPosition.rotation, // TODO: Get rid of
       height: 192, // I hope this isnt being used right now
       // scale: new Vector(1, 1),
     },
@@ -259,7 +259,6 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
       transform: {
         position: new Vector2(transform.position.x, transform.position.y),
         // TODO: Deprecate roation if the math is more work
-        rotation: transform.rotation,
         direction: directionVectorFromRotation(transform.rotation),
         height: transform.height,
         elevation: transform.elevation,

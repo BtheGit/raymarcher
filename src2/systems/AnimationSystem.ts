@@ -4,20 +4,21 @@ import { ECS, System } from "../utils/ECS/ECS";
 
 export class AnimationSystem implements System {
   private ecs: ECS;
-  private animatedEntities: AnimatedObjectEntity[];
   private textureManager: TextureManager;
 
   constructor(ecs: ECS, textureManager: TextureManager) {
     this.ecs = ecs;
     this.textureManager = textureManager;
-    // Hacky way to exclude the player entity while we sort out that state situation
-    this.animatedEntities = this.ecs.entityManager
-      .with(["state"])
-      .filter((e) => e.objectType === "object__animated");
   }
 
   update(dt: number) {
-    for (const entity of this.animatedEntities) {
+    // Hacky way to exclude the player entity while we sort out that state situation
+    // Obviously not caching entities is a problem, but we should do the caching on the query side so the ECS can update the query when it knows entities have changed.
+    const animatedEntities: AnimatedObjectEntity[] = this.ecs.entityManager
+      .with(["state"])
+      .filter((e) => e.objectType === "object__animated");
+
+    for (const entity of animatedEntities) {
       const currentStateKey = entity.state.currentState;
       const currentState = entity.state.states[currentStateKey];
       const activeAnimation = currentState?.animation;

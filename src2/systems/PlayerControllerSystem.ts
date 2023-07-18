@@ -197,20 +197,17 @@ export class PlayerControllerSystem implements System {
     if (activeMousedownEvent?.button === 0) {
       this.switchWeaponState(EquipableWeaponState.Firing);
       this.lastBall = newTime;
+      // TODO: Go associate projectiles (as separate entitys with weapons (and weapon actions), simply reference that here.)
       this.broker.emit("emit_projectile", {
         name: "emit_projectile",
-        type: "ball",
+        type: "magic_shot",
         emitter: "player", // Probably shouldn't pass the whole entity. So going to break out all the relevant stuff. I do want to know who emitted it for collision resolutions. But can probably just use an enum value like player | npc.
         origin: this.player.transform.position,
         // Do we need this with velocity?
         direction: this.player.transform.direction,
         // We should probably determine velocity? Would it be conditional on the player or just the projectile type (well, press and hold to throw, definitely player).
         velocity: this.player.transform.direction,
-        speed: 0.0075,
-        sprite: {
-          name: "purple_ball__A",
-          directions: 0,
-        }, // TODO: sprite type, and parameters, including any animations frame by frame (obviously better to do in wad))
+        speed: 0.004,
         collider: {
           type: "aabb",
           height: 0.1,

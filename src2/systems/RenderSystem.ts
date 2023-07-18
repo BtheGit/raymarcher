@@ -945,20 +945,34 @@ export class RenderSystem implements System {
 
     // Now, we'll need to determine if the sprite is as wide as the given width. If it's not, we need to pad (offset).
 
+    // NOTE: We are generically scaling all weapon sprites to 80 percent screen width. Short term. Different sprites will need their own scaling. This is a ratio to screenwidth
+    const SCALE = 0.8;
     const spriteWidth = equipedWeaponSprite.width;
+
+    const scaleRatio = (SCALE * this.canvas.width) / spriteWidth;
+
     const textureWidth = texture.width;
+    const textureHeight = texture.height;
+
+    const scaledSpriteWidth = this.canvas.width * SCALE;
+    const scaledTextureWidth = textureWidth * scaleRatio;
+    const scaledTextureHeight = textureHeight * scaleRatio;
+    const scaledDifference = scaledSpriteWidth - scaledTextureWidth;
     // Sprite width should always be the longest sprite.
     const difference = spriteWidth - textureWidth;
     // We're going to only support left aligned for now, but we'll revist when we have different sprites (Most are right handed though)
     const screenCenter = Math.floor(this.canvas.width / 2);
-    const spriteXOrigin =
-      Math.floor(screenCenter - spriteWidth / 2) + difference;
-    // TODO: Need scaling
+    const x =
+      Math.floor(screenCenter - scaledSpriteWidth / 2) + scaledDifference;
+
+    const y = this.canvas.height - scaledTextureHeight;
 
     this.offscreenCtx.drawImage(
       texture?.canvas,
-      spriteXOrigin,
-      this.canvas.height - texture.height
+      x,
+      y,
+      scaledTextureWidth,
+      scaledTextureHeight
     );
   };
 
