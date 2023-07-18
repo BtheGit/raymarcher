@@ -1,0 +1,39 @@
+{
+  "frames": {
+    "purple_ball__A0": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 14,
+        "h": 13
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 14,
+        "h": 13
+      },
+      "sourceSize": {
+        "w": 14,
+        "h": 13
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "image": "purple_ball.png",
+    "name": "purple_ball",
+    "id": "purple_ball",
+    "format": "RGBA8888",
+    "size": {
+      "w": 14,
+      "h": 13
+    },
+    "scale": 1
+  }
+}

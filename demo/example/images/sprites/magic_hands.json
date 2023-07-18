@@ -1,0 +1,185 @@
+{
+  "frames": {
+    "CONEG0": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 231,
+        "h": 55
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 231,
+        "h": 55
+      },
+      "sourceSize": {
+        "w": 231,
+        "h": 55
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "CONEA0": {
+      "frame": {
+        "x": 2,
+        "y": 61,
+        "w": 228,
+        "h": 37
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 228,
+        "h": 37
+      },
+      "sourceSize": {
+        "w": 228,
+        "h": 37
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "CONEB0": {
+      "frame": {
+        "x": 2,
+        "y": 102,
+        "w": 218,
+        "h": 65
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 218,
+        "h": 65
+      },
+      "sourceSize": {
+        "w": 218,
+        "h": 65
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "CONEE0": {
+      "frame": {
+        "x": 2,
+        "y": 171,
+        "w": 110,
+        "h": 102
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 110,
+        "h": 102
+      },
+      "sourceSize": {
+        "w": 110,
+        "h": 102
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "CONEC0": {
+      "frame": {
+        "x": 116,
+        "y": 171,
+        "w": 101,
+        "h": 100
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 101,
+        "h": 100
+      },
+      "sourceSize": {
+        "w": 101,
+        "h": 100
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "CONED0": {
+      "frame": {
+        "x": 237,
+        "y": 2,
+        "w": 101,
+        "h": 100
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 101,
+        "h": 100
+      },
+      "sourceSize": {
+        "w": 101,
+        "h": 100
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "CONEF0": {
+      "frame": {
+        "x": 221,
+        "y": 171,
+        "w": 96,
+        "h": 97
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 96,
+        "h": 97
+      },
+      "sourceSize": {
+        "w": 96,
+        "h": 97
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "magic_hands.png",
+    "name": "magic_hands",
+    "id": "magic_hands",
+    "format": "RGBA8888",
+    "size": {
+      "w": 340,
+      "h": 275
+    },
+    "scale": 1
+  }
+}

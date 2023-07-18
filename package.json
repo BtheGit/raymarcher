@@ -17,7 +17,8 @@
   "scripts": {
     "dev": "vite",
     "watch": "vite build --watch",
-    "build": "vite build"
+    "build": "vite build",
+    "publish": "npm run build && mkdir demo && cp -r ./dist ./demo/dist && cp -r ./example ./demo/example"
   },
   "repository": {
     "type": "git",

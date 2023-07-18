@@ -1,0 +1,39 @@
+{
+  "frames": {
+    "tree_1__A0": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 434,
+        "h": 455
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 434,
+        "h": 455
+      },
+      "sourceSize": {
+        "w": 434,
+        "h": 455
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "image": "sprite__tree_1.png",
+    "name": "tree_1",
+    "id": "tree_1",
+    "format": "RGBA8888",
+    "size": {
+      "w": 434,
+      "h": 455
+    },
+    "scale": 1
+  }
+}
