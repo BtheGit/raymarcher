@@ -1,14 +1,17 @@
 import { TextureManager } from "../TextureManager/TextureManager";
 import { AnimatedObjectEntity } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
+import { Broker } from "../utils/events";
 
 export class AnimationSystem implements System {
   private ecs: ECS;
   private textureManager: TextureManager;
+  private broker: Broker;
 
-  constructor(ecs: ECS, textureManager: TextureManager) {
+  constructor(ecs: ECS, textureManager: TextureManager, broker: Broker) {
     this.ecs = ecs;
     this.textureManager = textureManager;
+    this.broker = broker;
   }
 
   update(dt: number) {
@@ -41,10 +44,34 @@ export class AnimationSystem implements System {
 
       // TODO: Going to have to reset state frame counters since we are operating on teh original settings object... Should probably make a copy.
 
+      // TODO: Could also just do a check for duration and if it's not there, treat it like infinity. Can stop using inifinty too and make the properties optional.
+      if (!duration) {
+        // This should let me skip state animations that are just one frame forever. They shouldn't have associated events either. I hope.??
+        continue;
+      }
+
       if (activeAnimation.timeSinceLastFrame >= duration) {
-        activeAnimation.currentFrame =
-          (activeAnimation.currentFrame + 1) % activeAnimation.frames.length;
+        const isLastFrame =
+          activeAnimation.currentFrame >= activeAnimation.frames.length - 1;
+        if (isLastFrame && !activeAnimation.looping) {
+          // This should not be the first time we have gotten here, so if we dont' escape, we'll fire off events more than once.
+          continue;
+        } else if (isLastFrame && activeAnimation.looping) {
+          activeAnimation.currentFrame = 0;
+        } else {
+          activeAnimation.currentFrame = activeAnimation.currentFrame + 1;
+        }
         activeAnimation.timeSinceLastFrame = 0;
+        // Now we look for any events associated with the current frame and play them (TODO: will be having events correlate to a frame in a looping animation only once. that's a trickier one. We ignore for now.)
+        if (activeAnimation.events?.length) {
+          const activeFrame =
+            activeAnimation.frames[activeAnimation.currentFrame];
+          for (const event of activeAnimation.events) {
+            if (event.frameId === activeFrame.frameId) {
+              this.broker.emit(event.eventType, event.eventPayload);
+            }
+          }
+        }
       }
     }
 

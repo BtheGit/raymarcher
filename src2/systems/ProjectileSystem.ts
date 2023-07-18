@@ -1,4 +1,9 @@
-import { MagicShotProjectileEntity, EmitProjectileEvent } from "../raymarcher";
+import {
+  MagicShotProjectileEntity,
+  EmitProjectileEvent,
+  DestroyProjectileEvent,
+  ProjectileEntity,
+} from "../raymarcher";
 import { CollisionLayer, ProjectileState } from "../enums";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
@@ -8,25 +13,29 @@ export class ProjectileSystem implements System {
   private ecs: ECS;
   private broker: Broker;
 
+  test: any;
+
   constructor(ecs: ECS, broker: Broker) {
     this.ecs = ecs;
     this.broker = broker;
     this.broker.subscribe("emit_projectile", this.handleEmitProjectile);
+    this.broker.subscribe("destroy_projectile", this.handleDestroyProjectile);
   }
 
   handleEmitProjectile = (event: EmitProjectileEvent) => {
     // TODO: Switch on types of projectiles. For now, only handling ball.
     const { type } = event;
     switch (type) {
-      // TODO: Add gravity, etc?
-      case "ball":
-        this.newBallEntity(event);
-        break;
       // TODO: Replace with enum
       case "magic_shot":
         this.newMagicShot(event);
         break;
     }
+  };
+
+  handleDestroyProjectile = (projectileEntity: ProjectileEntity) => {
+    // For now, blindly remove the entity.
+    this.ecs.entityManager.remove(projectileEntity);
   };
 
   emitCollisionEvent = (collision) => {
@@ -40,8 +49,26 @@ export class ProjectileSystem implements System {
     });
   };
 
+  updateProjectileState = (
+    projectileEntity: MagicShotProjectileEntity,
+    newState: ProjectileState
+  ) => {
+    if (projectileEntity.state.currentState === newState) {
+      return;
+    }
+
+    // TODO: I could deep clone instead of transfering references. Maybe better for GC.
+
+    projectileEntity.state.previousState = projectileEntity.state.currentState;
+    projectileEntity.state.lastStateChange = Date.now();
+    projectileEntity.state.currentState = newState;
+
+    // TODO: My big issue is that it's not reseting frame information inside the animations. I should move the entity into an asset manager like the weapons so that every time I switch state, I'm guaranteed initial state again without having to manually go in and clear it all.
+  };
+
   newMagicShot = (event: EmitProjectileEvent) => {
-    const newEntity: MagicShotProjectileEntity = {
+    // TODO: I'm cheating here since I'm sadly using an entity reference to find and delete the entity. So I need a reference to it, which is not available if I declar it in one pass. I of course should be using ids.
+    const newEntity: MagicShotProjectileEntity = this.ecs.entityManager.add({
       objectType: "object__animated",
       projectileType: "magic_shot",
       transform: {
@@ -138,12 +165,13 @@ export class ProjectileSystem implements System {
       collisionLayer: {
         layer: CollisionLayer.PlayerProjectile,
       },
-    };
-    this.ecs.entityManager.add(newEntity);
-  };
-
-  newBallEntity = (event: EmitProjectileEvent) => {
-    this.newMagicShot(event);
+    });
+    newEntity.state.states[ProjectileState.Destroying].animation.events.push({
+      frameId: "D2FXL",
+      eventType: "destroy_projectile",
+      eventPayload: newEntity,
+    });
+    this.test = newEntity;
   };
 
   update(dt: number): void {
@@ -156,15 +184,21 @@ export class ProjectileSystem implements System {
           this.emitCollisionEvent(collision);
         }
 
-        // Destroy the entity.
-        this.ecs.entityManager.remove(projectile);
+        // We want to change this. Instead we are going to change the entity state
+        projectile.lifetime = Infinity;
+        projectile.movement.speed = 0;
+
+        // We don't want any new collisions being generated.
+        delete projectile.collider;
+        delete projectile.collisions;
+        this.updateProjectileState(projectile, ProjectileState.Destroying);
+        // this.ecs.entityManager.remove(projectile);
         continue;
       }
-      // TODO: I'd lvoe to bounce off walls (and ground), but short term I'm just going to destroy on collision.
       // TODO: Different animation played at destroy (will need to make stationary, remove collider, and play animation before destroying entity. (or just particle effect entity?))
       if (projectile.projectileType === "magic_shot") {
         if (projectile.lifetime < 0) {
-          // Destroy the entity.
+          // Simply remove the entity, no animations.
           this.ecs.entityManager.remove(projectile);
           continue;
         }

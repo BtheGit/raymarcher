@@ -110,7 +110,7 @@ export interface AnimationDefinition {
   // TODO: allow for random duration
   frameDuration: number; // Allow for all frames to share a duration
   looping: boolean;
-  events: any[]; // TODO: Define events
+  events: FrameEvent[]; // TODO: Define events
 }
 
 export interface AnimationState extends AnimationDefinition {
@@ -144,14 +144,14 @@ export interface EquipableWeaponAssets {
 export interface FrameEvent {
   frameId: string;
   eventType: string;
-  payload: any; // TODO:
+  eventPayload: any; // TODO:
 }
 
 export interface SoundComponent {}
 
 export interface EntityStateComponent {
   currentState: string | number;
-  previousState: string | null;
+  previousState: string | number | null;
   initialState: string | number;
   lastStateChange: number;
   states: {
@@ -510,4 +510,11 @@ export interface EmitProjectileEvent extends EventMessage {
   speed: 2;
   collider: ColliderComponent;
   collisionLayer: CollisionLayerComponent;
+}
+
+// This is tricky because it's going to rely on entity references. Would be better to have an entity Id to pass
+export interface DestroyProjectileEvent extends EventMessage {
+  name: "destroy_projectile";
+  // TODO: If entity's had generic lifecycles i could obviously reuse this.
+  entity: ProjectileEntity;
 }

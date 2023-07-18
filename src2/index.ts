@@ -112,12 +112,12 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   // Eitehr way, I'm going to ignore it completely for weapons, so that I can try out a slightly different interface.
   // TODO: I also want to determine the width values from the longest frame, that's it's own task. I'll do it manually for now. Dynamically loading stuff is quite the headache.
   weaponAssetManager.registerWeaponAssets(EquipableWeapon.None, {
-    defaultAnimation: {
+    [EquipableWeaponState.Idle]: {
       name: "default", // TODO: Defined separately again like other animations?
       frames: [],
       events: [],
     },
-    firingAnimation: {
+    [EquipableWeaponState.Firing]: {
       name: "firing",
       frames: [],
       events: [],
@@ -369,7 +369,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
 
   // There's no huge reason to pass this here except maybe to eventually sync the frame rates for all animations.
   // The animation system is just going to do us a solid of calling update on the tile manager per tick (and later) frame.
-  ecs.systems.add(new AnimationSystem(ecs, textureManager));
+  ecs.systems.add(new AnimationSystem(ecs, textureManager, broker));
 
   // Once again, we're cheating a bit to avoid extra lookups until we have a better ECS system. I'm going to persist a skybox reference here.
   const skyboxEntity: SkyboxEntity = {

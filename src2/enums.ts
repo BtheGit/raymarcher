@@ -11,7 +11,6 @@ export enum EquipableWeapon {
 }
 
 export enum Projectile {
-  Ball,
   MagicShot,
 }
 
