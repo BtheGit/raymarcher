@@ -3,6 +3,7 @@ import SpriteTree_1 from "./images/sprites/tree_1.json" assert { type: "json" };
 import BananaMan from "./images/sprites/banana.json" assert { type: "json" };
 import BlueCrystal from "./images/sprites/blue_crystal.json" assert { type: "json" };
 import PurpleBall from "./images/sprites/purple_ball.json" assert { type: "json" };
+import MagicShot from "./images/sprites/magic_shot.json" assert { type: "json" };
 import GreenFlame from "./images/sprites/green_flame.json" assert { type: "json" };
 import KoopaTroopa from "./images/sprites/koopa_troopa.json" assert { type: "json" };
 import AnimatedWater1 from "./images/sprites/animated_water_1.json" assert { type: "json" };
@@ -76,6 +77,7 @@ const spriteDatas = [
   KoopaTroopa,
   AnimatedWater1,
   MagicHands,
+  MagicShot,
 ];
 
 // const spriteMaps = spriteDatas.reduce((acc, curr) => {

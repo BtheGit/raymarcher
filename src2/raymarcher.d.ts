@@ -89,9 +89,7 @@ export interface BaseTransformComponent {
   height: number;
 }
 
-export interface TransformComponent extends BaseTransformComponent {
-  rotation: number;
-}
+export interface TransformComponent extends BaseTransformComponent {}
 
 export interface SpriteComponent {
   texture: string;
@@ -113,7 +111,6 @@ export interface AnimationDefinition {
   frameDuration: number; // Allow for all frames to share a duration
   looping: boolean;
   events: any[]; // TODO: Define events
-  nextState?: string; // At the end of the animation, change entity state to this. (Wouldn't make sense if looping of course)
 }
 
 export interface AnimationState extends AnimationDefinition {
@@ -153,12 +150,12 @@ export interface FrameEvent {
 export interface SoundComponent {}
 
 export interface EntityStateComponent {
-  currentState: string;
+  currentState: string | number;
   previousState: string | null;
-  initialState: string;
+  initialState: string | number;
   lastStateChange: number;
   states: {
-    [state: string]: EntityState;
+    [state: string | number]: EntityState;
   };
 }
 
@@ -239,6 +236,18 @@ export interface AnimatedObjectEntity extends BaseObjectEntity {
   collider?: ColliderComponent;
   collisions?: CollisionReport[];
   collisionLayer?: CollisionLayerComponent;
+}
+
+export interface ProjectileEntity extends AnimatedObjectEntity {
+  projectileType: string;
+}
+
+export interface MagicShotProjectileEntity extends ProjectileEntity {
+  projectileType: "magic_shot";
+  objectType: "object__animated";
+  velocity: VelocityComponent;
+  lifetime: number;
+  movement: MovementComponent;
 }
 
 export interface FriendlyDogEntity extends AnimatedObjectEntity {
@@ -500,22 +509,5 @@ export interface EmitProjectileEvent extends EventMessage {
   velocity: Vector2;
   speed: 2;
   collider: ColliderComponent;
-  collisionLayer: CollisionLayerComponent;
-}
-
-export interface ProjectileEntity {
-  projectileType: string;
-}
-
-export interface BallProjectileEntity extends ProjectileEntity {
-  projectileType: "ball";
-  objectType: "object__static";
-  sprite: SpriteTextureComponent;
-  transform: BaseTransformComponent;
-  velocity: VelocityComponent;
-  lifetime: number;
-  movement: MovementComponent;
-  collider: ColliderComponent;
-  collisions: CollisionReport[];
   collisionLayer: CollisionLayerComponent;
 }

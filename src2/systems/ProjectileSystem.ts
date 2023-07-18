@@ -1,5 +1,5 @@
-import { BallProjectileEntity, EmitProjectileEvent } from "../raymarcher";
-import { CollisionLayer } from "../enums";
+import { MagicShotProjectileEntity, EmitProjectileEvent } from "../raymarcher";
+import { CollisionLayer, ProjectileState } from "../enums";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 import { Vector2 } from "../utils/math";
@@ -22,13 +22,17 @@ export class ProjectileSystem implements System {
       case "ball":
         this.newBallEntity(event);
         break;
+      // TODO: Replace with enum
+      case "magic_shot":
+        this.newMagicShot(event);
+        break;
     }
   };
 
   emitCollisionEvent = (collision) => {
     this.broker.emit("projectile_collision", {
       name: "projectile_collision",
-      projectileType: "ball",
+      projectileType: "magic_shot",
       emitter: "player",
       timestamp: Date.now(), // Since this isn't the same exact event as the initial collision, probabl ya  new timestamp?
       collidedWith: collision.collidedWith, // This reference shoudl still be there, but the ball won't be, so we need to include pertinent information. If there were physics we'd include that kind of stuff, but not right now.
@@ -36,10 +40,10 @@ export class ProjectileSystem implements System {
     });
   };
 
-  newBallEntity = (event: EmitProjectileEvent) => {
-    const newEntity: BallProjectileEntity = {
-      objectType: "object__static",
-      projectileType: "ball",
+  newMagicShot = (event: EmitProjectileEvent) => {
+    const newEntity: MagicShotProjectileEntity = {
+      objectType: "object__animated",
+      projectileType: "magic_shot",
       transform: {
         position: event.origin,
         direction: event.direction, // I think this is unnecessary with projectiles, they should always have a velocity
@@ -47,7 +51,84 @@ export class ProjectileSystem implements System {
         elevation: 96,
       },
       velocity: event.velocity,
-      sprite: event.sprite,
+      state: {
+        currentState: ProjectileState.Active,
+        previousState: null,
+        initialState: ProjectileState.Active,
+        lastStateChange: Date.now(),
+        states: {
+          [ProjectileState.Active]: {
+            name: "ms_state_active", // TODO: Names for what?
+            animation: {
+              name: "ms_anim_active", // TODO: Names for what?
+              frames: [
+                {
+                  frameId: "D2FXA",
+                  directions: 8,
+                },
+                {
+                  frameId: "D2FXB",
+                  directions: 8,
+                },
+                {
+                  frameId: "D2FXC",
+                  directions: 8,
+                },
+                {
+                  frameId: "D2FXD",
+                  directions: 8,
+                },
+                {
+                  frameId: "D2FXE",
+                  directions: 8,
+                },
+              ],
+              frameDuration: 100,
+              looping: true,
+              events: [],
+              currentFrame: 0,
+              timeSinceLastFrame: 0,
+            },
+          },
+          [ProjectileState.Destroying]: {
+            name: "ms_state_destroying",
+            animation: {
+              name: "ms_anim_destroying",
+              frames: [
+                {
+                  frameId: "D2FXG",
+                  directions: 0,
+                },
+                {
+                  frameId: "D2FXH",
+                  directions: 0,
+                },
+                {
+                  frameId: "D2FXI",
+                  directions: 0,
+                },
+                {
+                  frameId: "D2FXJ",
+                  directions: 0,
+                },
+                {
+                  frameId: "D2FXK",
+                  directions: 0,
+                },
+                {
+                  frameId: "D2FXL",
+                  directions: 0,
+                },
+              ],
+              frameDuration: 50,
+              looping: false,
+              events: [],
+              currentFrame: 0,
+              timeSinceLastFrame: 0,
+            },
+          },
+        },
+      },
       lifetime: 2000,
       movement: {
         speed: event.speed,
@@ -61,12 +142,15 @@ export class ProjectileSystem implements System {
     this.ecs.entityManager.add(newEntity);
   };
 
+  newBallEntity = (event: EmitProjectileEvent) => {
+    this.newMagicShot(event);
+  };
+
   update(dt: number): void {
-    const projectiles: BallProjectileEntity[] = this.ecs.entityManager.with([
-      "projectileType",
-    ]);
+    const projectiles: MagicShotProjectileEntity[] =
+      this.ecs.entityManager.with(["projectileType"]);
     for (const projectile of projectiles) {
-      if (projectile.collisions.length) {
+      if (projectile.collisions?.length) {
         // TODO: ? Ok, so I've been having trouble resolving projectile collisions with enemies because the enemies lose their reference to the projectile when it's removed, before they act on it. There are lots of solutions. But really, I like event systems anyway, so I'd rather move in that direction. Even if it's not appropriate. So we're going to publish an event on projectile collision with an entity. Later we can worry about layers, but right now, meh. Let the different controllers listen and determine if they care. Now, because I'm doing it this way, I can just pass the entity reference. Not ideal but, stop me. I'm sleepy and I want this feature. :) I could be doing this right in the physics system as well of course... But this preserves order of operations at least I guess. As in, the bullet detects the hit and then hits the character in turn.
         for (const collision of projectile.collisions) {
           this.emitCollisionEvent(collision);
@@ -78,7 +162,7 @@ export class ProjectileSystem implements System {
       }
       // TODO: I'd lvoe to bounce off walls (and ground), but short term I'm just going to destroy on collision.
       // TODO: Different animation played at destroy (will need to make stationary, remove collider, and play animation before destroying entity. (or just particle effect entity?))
-      if (projectile.projectileType === "ball") {
+      if (projectile.projectileType === "magic_shot") {
         if (projectile.lifetime < 0) {
           // Destroy the entity.
           this.ecs.entityManager.remove(projectile);
