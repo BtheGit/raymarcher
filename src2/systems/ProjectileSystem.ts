@@ -184,6 +184,21 @@ export class ProjectileSystem implements System {
           this.emitCollisionEvent(collision);
         }
 
+        // I want projectile animations (like explosions) to render in front of what it collided with, so I need to move the projectile back along the plane to just before the point of intersection. I'm guessing this will be painful, but I'm going to take a rough first stab.
+        // Here's my dumb approach.
+        // use the first reported collision. That's presumably the closest.
+        // Look at recorded overlap . Unfortunately we can't just walk back the position on that axis, it's too broad. In fact we just want to reverse the direction and move in that reversed direction
+        const collision = projectile.collisions[0]; // If I want other systems to listen I should emit a sound event probably and pop this, for now, just going to peek
+
+        const overlap = collision.overlap - 0.2; // 0.2 is just from playing around. This is very fidgety.
+        projectile.transform.direction =
+          projectile.transform.direction.scale(-1);
+        const reverseVector = projectile.transform.direction.scale(overlap);
+
+        projectile.transform.position =
+          projectile.transform.position.subtract(reverseVector);
+        // now, all we do is walk back the position as much as the overlap, and add a fraction for padding. Issue is going to be negative or positive first.
+
         // We want to change this. Instead we are going to change the entity state
         projectile.lifetime = Infinity;
         projectile.movement.speed = 0;
