@@ -71,7 +71,7 @@ In the interests of making lists that never get completed, here are some potenti
   - [] Walls can reveal text
 - [] Support links? Like a portal pad that takes you to a new level (or different page)
 - [] Special effects
-  - [] Ball burst
+  - [x] Ball burst
   - [] Ball glow
 - [] Dialogue system?
 - [] Sky gradient support
