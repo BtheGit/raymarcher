@@ -167,7 +167,7 @@ export class ProjectileSystem implements System {
         layer: CollisionLayer.PlayerProjectile,
       },
     });
-    newEntity.state.states[ProjectileState.Destroying].animation.events.push({
+    newEntity.state.states[ProjectileState.Destroying].animation.events!.push({
       frameId: "D2FXL",
       eventType: "destroy_projectile",
       eventPayload: newEntity,

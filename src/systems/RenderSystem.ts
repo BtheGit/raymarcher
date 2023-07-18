@@ -575,7 +575,7 @@ export class RenderSystem implements System {
           // Let's dim the floor
           // TODO: Better dropoff curve.
           const brightnessModifier =
-            this.lookupFloorBrightnessModifier[y - 256];
+            this.lookupFloorBrightnessModifier[y - this.projectionPlane];
 
           const { surface } = gridCell.floorTile;
 

@@ -110,7 +110,7 @@ export interface AnimationDefinition {
   // TODO: allow for random duration
   frameDuration: number; // Allow for all frames to share a duration
   looping: boolean;
-  events: FrameEvent[]; // TODO: Define events
+  events?: FrameEvent[]; // TODO: Define events
 }
 
 export interface AnimationState extends AnimationDefinition {
@@ -458,6 +458,7 @@ export interface WADAnimation {
   looping: boolean;
   frameDuration: number;
   nextState?: string;
+  events?: FrameEvent[];
 }
 
 // TODO: This is really only one type of animation. Will support others.
