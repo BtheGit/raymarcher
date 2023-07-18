@@ -26,19 +26,19 @@ In the interests of making lists that never get completed, here are some potenti
 - [x] Have collision detection with walls
 - [x] Add sprites
 - [x] Add sprite collision detection
-- [ ] Add animated fixed position sprites
+- [x] Add animated fixed position sprites
 - [x] Allow for placing textures on walls face by face
-- [ ] Add moving sprites
-- [ ] Sprites with multiple vantage points (8 views depending on with player)
-- [ ] Add NPC class with movement logic
-- [ ] Add collisions to NPCs
-- [ ] Add basic triggered interactions to NPCs
+- [x] Add moving sprites
+- [x] Sprites with multiple vantage points (8 views depending on with player)
+- [x] Add NPC class with movement logic
+- [x] Add collisions to NPCs
+- [x] Add basic triggered interactions to NPCs
 - [ ] Add dialogue tree based interactions to NPCs
-- [ ] Give different sprites different motion types and displays
+- [x] Give different sprites different motion types and displays
 - [ ] Fog tiles
 - [ ] Rainbow gun
 - [x] Floor textures.
-- [\] Floor dimming.
+- [x] Floor dimming.
 - [x] Sky box texture
 - [x] Ceiling textures
 - [ ] Variable wall heights.
@@ -47,18 +47,38 @@ In the interests of making lists that never get completed, here are some potenti
 
 ### 5 Years later
 
-- [ ] Offscreen canvas
-- [ ] Animated textures
+- [x] Offscreen canvas
+- [x] Animated textures
 - [ ] Touch controls
-- [ ] Mouse press bug
-- [ ] Touch controls
-- [ ] Animated sprites with state machine?
-- [ ] Spritesheets
+- [x] Mouse press bug
+- [x] Animated sprites with state machine?
+- [x] Spritesheets
 - [ ] Gonna need all kinds of optimizations around reducing overhead when doing animated stuff.
 - [ ] use wolfenstein trick to mark what grid coordinates are intersected by raymarcher (ie frustum) and only render sprites on those grid tiles
-- [ ] other wolfenstein trick to only render visible columns of sprites. But this one should be less an issue today.
-- [ ] Try ECS system. Initially thought bespoke. Goign to see if miniplex is enough for this pretty bare bones library.
+- [x] other wolfenstein trick to only render visible columns of sprites. But this one should be less an issue today.
+- [x] Try ECS system. Initially thought bespoke. Goign to see if miniplex is enough for this pretty bare bones library.
 - [ ] Replace textures with texture atlas.
+
+### 5 Years and a day later
+
+- [] Sound
+  - [] Sound effects on trigger
+  - [] Ambient sound effects
+  - [] Sound modulated by distance with falloff
+- [] Another AI Type
+- [] Another interaction type taht triggers text/dialogue
+  - [] Characters can talk (ignore dialogue trees for now, just a canned response (or one from a random pool))
+  - [] Walls can reveal text
+- [] Support links? Like a portal pad that takes you to a new level (or different page)
+- [] Special effects
+  - [] Ball burst
+  - [] Ball glow
+- [] Dialogue system?
+- [] Sky gradient support
+- [] More HUD Elements...
+- [] Sprite fisheye effect causing them to appear to move up at periphery
+- [] NPCs getting stuck in walls.
+- [] Would be cool to support transitioning tile textures and skybox texture (to simulate day / night or something)
 
 ### Alternate fun ideas with raycasters:
 
