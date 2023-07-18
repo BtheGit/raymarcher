@@ -68,6 +68,7 @@ export class ProjectileSystem implements System {
 
   newMagicShot = (event: EmitProjectileEvent) => {
     // TODO: I'm cheating here since I'm sadly using an entity reference to find and delete the entity. So I need a reference to it, which is not available if I declar it in one pass. I of course should be using ids.
+    // I won't be able to do this anyway, if animations are defined in the wad. So, this is just a short term thing (read: permanent) so I can get features (read, pragmatic and never gonna change)
     const newEntity: MagicShotProjectileEntity = this.ecs.entityManager.add({
       objectType: "object__animated",
       projectileType: "magic_shot",
