@@ -32,7 +32,9 @@ import AnimatedWater1 from "./images/sprites/animated_water_1.json" assert { typ
 // then generates this would be great since it would approximate an editor experience (which is what is really missing at this point).
 
 const textures = {
-  background__trees1: "./images/textures/background__trees1.jpg",
+  background__clouds1: "./images/textures/background__clouds1.jpg",
+  background__holographic_twilight_hills_sm:
+    "./images/textures/background__holographic_twilight_hills_sm.jpg",
   grass1: "./images/textures/retro_texture_pack_9/GRASS_1A.png",
   // hedge1: "./images/textures/hedge1.jpg",
   // floor_grass1: "./images/textures/floor_grass1.jpg",
@@ -60,6 +62,7 @@ const textures = {
   // stripes_creamsicle1: "./images/textures/stripes_creamsicle1.jpg",
   lava: "./images/textures/lava.png",
   sparkle: "./images/textures/sparkle.png",
+  brick_grass_edge: "./images/textures/retro_texture_pack_9/BRICK_3C.png",
 };
 
 const spriteDatas = [
@@ -363,7 +366,7 @@ const wall_default = {
     //   b: 200,
     // },
     type: "texture",
-    textureName: "light_brick1",
+    textureName: "brick_grass_edge",
   },
 };
 
@@ -1258,7 +1261,7 @@ const wad = {
         floor_default,
         floor_default,
         floor_default,
-        floor_default,
+        wall_default,
         floor_default,
         floor_default,
         floor_default,
@@ -1315,7 +1318,8 @@ const wad = {
           },
         },
         floor_default,
-        wall_default,
+        floor_default,
+
         floor_default,
         floor_default,
         floor_default,
@@ -1543,7 +1547,7 @@ const wad = {
       // TODO: Add gradients and colors for sky
       type: "texture",
       texture: {
-        name: "background__trees1",
+        name: "background__holographic_twilight_hills_sm",
       },
       color: "#7AA1D2",
       gradient: {
@@ -1568,7 +1572,7 @@ const wad = {
         x: 2,
         y: 2.5,
       },
-      rotation: 0,
+      rotation: 45,
       fov: 130,
       elevation: 0,
       walkSpeed: 0.003, // TODO: Uh, can I use less fractional units?
