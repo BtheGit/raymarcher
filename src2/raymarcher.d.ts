@@ -1,5 +1,5 @@
 import { Vector2 } from "./utils/math";
-import { CollisionLayer } from "./enums";
+import { CollisionLayer, EquipableWeapon, EquipableWeaponState } from "./enums";
 
 export type Entity = any;
 
@@ -16,6 +16,43 @@ export type Ray = {
   rayDirection: Vector2;
   activeCell: Vector2;
 };
+
+export interface PlayerStateComponent {
+  currentState;
+}
+
+export interface PlayerEntity {
+  camera: CameraComponent;
+  userControl: UserControlledComponent;
+  transform: TransformComponent;
+  // position: PositionComponent;
+  // direction: Vector;
+  plane: Vector2;
+  velocity: VelocityComponent;
+  movement: MovementComponent;
+  // sprite: SpriteComponent;
+  collider: ColliderComponent;
+  collisions: CollisionReport[];
+  collisionLayer: CollisionLayerComponent;
+  state: PlayerStateComponent;
+  equippedWeapon: EquipableWeaponComponent;
+  equippedWeaponAnimation: AnimationState;
+  equippedWeaponSprite: EquipableWeaponSprite;
+  // TODO: Inventory or weaponinventory to make some things not immediately available.
+}
+
+export interface EquipableWeaponComponent {
+  type: EquipableWeapon;
+  state: EquipableWeaponState;
+}
+
+// This doesn't have the actual sprite. Just the render related info
+// We really care about width not height, since it's bottom aligned. However, if I ever get weapon bob in, height will be a small factor.
+export interface EquipableWeaponSprite {
+  width: number;
+  // TODO: allow other customizations besides centering.
+  // In some cases I assume separate frames will need to be repositioned, like an axe chop.
+}
 
 // TODO: Oh man. Uh. Sort term gonna just stick a flag on player, then we figure out how to make the camera jump around for freeview and stuff.
 export interface CameraComponent {
@@ -75,6 +112,7 @@ export interface AnimationDefinition {
   // TODO: allow for random duration
   frameDuration: number; // Allow for all frames to share a duration
   looping: boolean;
+  events: any[]; // TODO: Define events
   nextState?: string; // At the end of the animation, change entity state to this. (Wouldn't make sense if looping of course)
 }
 
@@ -89,6 +127,27 @@ export interface AnimationFrame {
   directions: 0 | 8;
   duration?: number; // Allow a frame to override the base duration of the animation
   sound?: SoundComponent;
+}
+
+export interface AnimationAsset {
+  name: string;
+  frames: AnimationFrame[];
+  events: FrameEvent[];
+}
+
+export interface EquipableWeaponAssets {
+  // Since Map enum isn't mapped I can't use a generic 'in' :/
+  [EquipableWeaponState.Idle]: AnimationAsset;
+  [EquipableWeaponState.Firing]: AnimationAsset;
+  sprite: {
+    width: number;
+  };
+}
+
+export interface FrameEvent {
+  frameId: string;
+  eventType: string;
+  payload: any; // TODO:
 }
 
 export interface SoundComponent {}
@@ -248,26 +307,6 @@ export interface GridTileEntity {
   floorTile?: FloorTileComponent;
   // collider?: ColliderComponent;
   // collisionResult: CollisionResultComponent;
-}
-
-export interface PlayerStateComponent {
-  currentState;
-}
-
-export interface PlayerEntity {
-  camera: CameraComponent;
-  userControl: UserControlledComponent;
-  transform: TransformComponent;
-  // position: PositionComponent;
-  // direction: Vector;
-  plane: Vector2;
-  velocity: VelocityComponent;
-  movement: MovementComponent;
-  // sprite: SpriteComponent;
-  collider: ColliderComponent;
-  collisions: CollisionReport[];
-  collisionLayer: CollisionLayerComponent;
-  state: PlayerStateComponent;
 }
 
 export interface SkyboxEntity {

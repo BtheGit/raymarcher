@@ -6,6 +6,7 @@ import PurpleBall from "./images/sprites/purple_ball.json" assert { type: "json"
 import GreenFlame from "./images/sprites/green_flame.json" assert { type: "json" };
 import KoopaTroopa from "./images/sprites/koopa_troopa.json" assert { type: "json" };
 import AnimatedWater1 from "./images/sprites/animated_water_1.json" assert { type: "json" };
+import MagicHands from "./images/sprites/magic_hands.json" assert { type: "json" };
 
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
@@ -74,6 +75,7 @@ const spriteDatas = [
   GreenFlame,
   KoopaTroopa,
   AnimatedWater1,
+  MagicHands,
 ];
 
 // const spriteMaps = spriteDatas.reduce((acc, curr) => {

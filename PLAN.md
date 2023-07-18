@@ -79,6 +79,9 @@ In the interests of making lists that never get completed, here are some potenti
 - [] Sprite fisheye effect causing them to appear to move up at periphery
 - [] NPCs getting stuck in walls.
 - [] Would be cool to support transitioning tile textures and skybox texture (to simulate day / night or something)
+- [] Pickups that trigger events like dialogue boxes.
+- [] Support multiple levels and portals between them.
+- [] Support portals in general (with a teleport effect I think to make it clear)
 
 ### Alternate fun ideas with raycasters:
 

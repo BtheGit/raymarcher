@@ -19,6 +19,7 @@ import {
 import { ECS, System } from "../utils/ECS/ECS";
 import { apparentDirectionAngle, toDegrees, lerp } from "../utils/math";
 import { SpriteManager } from "../SpriteManager/SpriteManager";
+import { EquipableWeapon } from "../enums";
 
 export function adjustBrightness(canvas, brightness) {
   const adjustedCanvas = document.createElement("canvas");
@@ -926,6 +927,41 @@ export class RenderSystem implements System {
     }
   }
 
+  renderEquippedWeapon = () => {
+    // First, we can skip this whole phase if the equipped weapon is none.
+    const equippedWeapon = this.camera.equippedWeapon.type;
+    if (equippedWeapon === EquipableWeapon.None) {
+      return;
+    }
+    const equippedWeaponAnimation = this.camera.equippedWeaponAnimation;
+    const activeFrame =
+      equippedWeaponAnimation.frames[equippedWeaponAnimation.currentFrame];
+
+    const texture = this.spriteManager.getSpriteTexture(activeFrame.frameId);
+    if (!texture) {
+      return;
+    }
+    const equipedWeaponSprite = this.camera.equippedWeaponSprite;
+
+    // Now, we'll need to determine if the sprite is as wide as the given width. If it's not, we need to pad (offset).
+
+    const spriteWidth = equipedWeaponSprite.width;
+    const textureWidth = texture.width;
+    // Sprite width should always be the longest sprite.
+    const difference = spriteWidth - textureWidth;
+    // We're going to only support left aligned for now, but we'll revist when we have different sprites (Most are right handed though)
+    const screenCenter = Math.floor(this.canvas.width / 2);
+    const spriteXOrigin =
+      Math.floor(screenCenter - spriteWidth / 2) + difference;
+    // TODO: Need scaling
+
+    this.offscreenCtx.drawImage(
+      texture?.canvas,
+      spriteXOrigin,
+      this.canvas.height - texture.height
+    );
+  };
+
   draw() {
     this.ctx.drawImage(this.offscreenCanvas, 0, 0);
   }
@@ -944,6 +980,8 @@ export class RenderSystem implements System {
     // console.time("render objects");
     this.renderObjects();
     // console.timeEnd("render objects");
+
+    this.renderEquippedWeapon();
 
     // TODO: Combine all the buffers into a single offscreen buffer.
     // I'd like to look into options. Maybe layered canvases. Maybe manipulating pixels directly...

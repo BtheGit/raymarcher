@@ -4,3 +4,13 @@ export enum CollisionLayer {
   PlayerProjectile,
   FriendlyNPC,
 }
+
+export enum EquipableWeapon {
+  None,
+  MagicHands,
+}
+
+export enum EquipableWeaponState {
+  Idle,
+  Firing,
+}

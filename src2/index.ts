@@ -1,4 +1,5 @@
 import SingletonInputSystem from "./systems/SingletonInputSystem";
+import { WeaponAssetManger } from "./WeaponAssetManager/WeaponAssetManager";
 import { PlayerControllerSystem } from "./systems/PlayerControllerSystem";
 import { RaycasterSystem } from "./systems/RaycasterSystem";
 import { RenderSystem } from "./systems/RenderSystem";
@@ -29,7 +30,7 @@ import {
   WAD,
   WADTextureAnimationSprite,
 } from "./raymarcher";
-import { CollisionLayer } from "./enums";
+import { CollisionLayer, EquipableWeapon, EquipableWeaponState } from "./enums";
 // TO Allay future confusion, event manager is not an event system. Ideally it shoudl be replaced with an event system though.
 import { EventManager } from "./EventManager/EventManager";
 import { AnimationSystem } from "./systems/AnimationSystem";
@@ -63,6 +64,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   const spriteManager = new SpriteManager(textureManager);
   const animationManager = new AnimationManager();
   const gridManager = new GridManager(ecs);
+  const weaponAssetManager = WeaponAssetManger.getInstance();
 
   // I don't love the idea of modeling everything as an entity, but since it's easier to revert that than implement it... yolo.
   const gameSettingsEntity: GameSettingsEntity = {
@@ -104,7 +106,79 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   const grid: WADGridCell[][] = wad.map.grid!;
   gridManager.loadGrid(grid);
 
-  // TODO: We'll hard code the sky in the renderer until we figure out how to model that.
+  // TODO: Starting with hardcoded weapons, then moving to wad and more complex start up.
+  // SO, a second big thing to consider is my animation manager. It's very basic, and barely serves a purposes, and maybe shouldn't be so generic. Let different object types manage their own? Or come up with a better system and reextend that?
+  // Eitehr way, I'm going to ignore it completely for weapons, so that I can try out a slightly different interface.
+  // TODO: I also want to determine the width values from the longest frame, that's it's own task. I'll do it manually for now. Dynamically loading stuff is quite the headache.
+  weaponAssetManager.registerWeaponAssets(EquipableWeapon.None, {
+    defaultAnimation: {
+      name: "default", // TODO: Defined separately again like other animations?
+      frames: [],
+      events: [],
+    },
+    firingAnimation: {
+      name: "firing",
+      frames: [],
+      events: [],
+    },
+    sprite: {
+      width: 0,
+    },
+  });
+
+  weaponAssetManager.registerWeaponAssets(EquipableWeapon.MagicHands, {
+    [EquipableWeaponState.Idle]: {
+      name: "magic_hands__default",
+      frames: [
+        {
+          frameId: "CONEA0",
+          duration: Infinity,
+          directions: 0, // I want to make this optional so I don't need it for hud animations ideally.
+        },
+      ],
+      events: [],
+    },
+    [EquipableWeaponState.Firing]: {
+      name: "firing",
+      frames: [
+        {
+          frameId: "CONEB0",
+          duration: 40, // TODO: Fixed duration for weapon animations?
+          directions: 0, // I want to make this optional so I don't need it for hud animations ideally.
+        },
+        {
+          frameId: "CONEC0",
+          duration: 40,
+          directions: 0, // I want to make this optional so I don't need it for hud animations ideally.
+        },
+        {
+          frameId: "CONED0",
+          duration: 40,
+          directions: 0, // I want to make this optional so I don't need it for hud animations ideally.
+        },
+        {
+          frameId: "CONEE0",
+          duration: 40,
+          directions: 0, // I want to make this optional so I don't need it for hud animations ideally.
+        },
+        {
+          frameId: "CONEF0",
+          duration: 40,
+          directions: 0, // I want to make this optional so I don't need it for hud animations ideally.
+        },
+        {
+          frameId: "CONEG0",
+          duration: 40,
+          directions: 0, // I want to make this optional so I don't need it for hud animations ideally.
+        },
+      ],
+      events: [],
+    },
+    sprite: {
+      width: 228,
+      // TODO: Scale?
+    },
+  });
 
   // ## Player/CAMERA
   const startingPosition = wad.map.start;
@@ -115,6 +189,19 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   ).scale(fov);
   const plane = planeVectorFromRotation(startingPosition.rotation);
   const playerEntity: PlayerEntity = {
+    equippedWeapon: {
+      type: EquipableWeapon.MagicHands,
+      state: EquipableWeaponState.Idle,
+    },
+    // TODO: We want this to be set up in the player controller on start, so we keep referential integrity with the component in the weaponAssetManager when possible. Typescript will complain for a bit until I sort that out.
+    // equippedWeaponAnimation: {
+    //   name: "default",
+    //   frames: [],
+    //   frameDuration: Infinity,
+    //   looping: false,
+    //   currentFrame: 0,
+    //   timeSinceLastFrame: Date.now(),
+    // },
     camera: {
       inverseDeterminate: 1.0 / (plane.x * direction.y - direction.x * plane.y),
       fov: fov,
@@ -259,7 +346,13 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   const UserInputSystem = SingletonInputSystem.getInstance(settings.canvasId);
 
   ecs.systems.add(
-    new PlayerControllerSystem(ecs, broker, UserInputSystem, playerEntity)
+    new PlayerControllerSystem(
+      ecs,
+      broker,
+      UserInputSystem,
+      playerEntity,
+      weaponAssetManager
+    )
   );
 
   ecs.systems.add(new AIControllerSystem(ecs, broker, gridManager));
