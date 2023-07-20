@@ -4,7 +4,7 @@ import {
   DestroyProjectileEvent,
   ProjectileEntity,
 } from "../raymarcher";
-import { CollisionLayer, ProjectileState } from "../enums";
+import { CollisionLayer, EventMessageName, ProjectileState } from "../enums";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 import { Vector2 } from "../utils/math";
@@ -18,8 +18,14 @@ export class ProjectileSystem implements System {
   constructor(ecs: ECS, broker: Broker) {
     this.ecs = ecs;
     this.broker = broker;
-    this.broker.subscribe("emit_projectile", this.handleEmitProjectile);
-    this.broker.subscribe("destroy_projectile", this.handleDestroyProjectile);
+    this.broker.subscribe(
+      EventMessageName.EmitProjectile,
+      this.handleEmitProjectile
+    );
+    this.broker.subscribe(
+      EventMessageName.DestroyProjectile,
+      this.handleDestroyProjectile
+    );
   }
 
   handleEmitProjectile = (event: EmitProjectileEvent) => {
@@ -169,7 +175,7 @@ export class ProjectileSystem implements System {
     });
     newEntity.state.states[ProjectileState.Destroying].animation.events!.push({
       frameId: "D2FXL",
-      eventType: "destroy_projectile",
+      eventType: EventMessageName.DestroyProjectile,
       eventPayload: newEntity,
     });
     this.test = newEntity;

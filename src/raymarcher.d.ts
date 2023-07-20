@@ -5,6 +5,7 @@ import {
   EquipableWeaponState,
   GameActorType,
   AIType,
+  EventMessageName,
 } from "./enums";
 
 export type Entity = any;
@@ -525,7 +526,7 @@ export interface EventMessage {
 }
 
 export interface EmitProjectileEvent extends EventMessage {
-  name: "emit_projectile";
+  name: EventMessageName.EmitProjectile;
   emitter: "player";
   type: string;
   // TODO: Type of projectile and parameters and associated sprite
@@ -540,13 +541,13 @@ export interface EmitProjectileEvent extends EventMessage {
 
 // This is tricky because it's going to rely on entity references. Would be better to have an entity Id to pass
 export interface DestroyProjectileEvent extends EventMessage {
-  name: "destroy_projectile";
+  name: EventMessageName.DestroyProjectile;
   // TODO: If entity's had generic lifecycles i could obviously reuse this.
   entity: ProjectileEntity;
 }
 
 export interface PlayerActorCollisionEvent extends EventMessage {
-  name: "player_actor_collision";
+  name: EventMessageName.PlayerActorCollision;
   actor: GameActorType;
   entity: Entity;
   // ...

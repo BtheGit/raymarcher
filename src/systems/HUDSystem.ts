@@ -7,12 +7,14 @@ import { EventManager } from "../EventManager/EventManager";
 import { GridManager } from "../GridManager/GridManager";
 import { SpriteManager } from "../SpriteManager/SpriteManager";
 import { TextureManager } from "../TextureManager/TextureManager";
+import { EventMessageName } from "../enums";
 import {
   GameSettingsComponent,
   GameSettingsEntity,
   PlayerEntity,
 } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
+import { Broker } from "../utils/events";
 import SingletonInputSystem from "./SingletonInputSystem";
 
 const PI2 = Math.PI * 2;
@@ -26,6 +28,7 @@ export class HUDSystem implements System {
   private gameSettings: GameSettingsComponent;
   private camera: PlayerEntity;
   private inputSystem: SingletonInputSystem;
+  private broker: Broker;
 
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -52,7 +55,8 @@ export class HUDSystem implements System {
     gridManager: GridManager,
     eventManager: EventManager,
     camera: PlayerEntity,
-    inputSystem: SingletonInputSystem
+    inputSystem: SingletonInputSystem,
+    broker: Broker
   ) {
     this.ecs = ecs;
     this.gameSettings = gameSettings.gameSettings;
@@ -62,6 +66,7 @@ export class HUDSystem implements System {
     this.eventManager = eventManager;
     this.camera = camera;
     this.inputSystem = inputSystem;
+    this.broker = broker;
 
     this.canvas = canvas;
     this.ctx = ctx;
@@ -73,7 +78,18 @@ export class HUDSystem implements System {
     this.minimapLayer0Canvas.height = this.minimapLayer1Canvas.height = 200;
 
     this.bufferMiniMap();
+
+    // I'm going to cheat hard hear and move special effects to this component until I build that into its own system.
+    // At first a generic effect made sense but in fact, I'd rather the emitter not know how the data will be used, and only focus on what happened.
+    this.broker.subscribe(
+      EventMessageName.PlayerActorCollision,
+      this.handleItemPickup
+    );
   }
+
+  handleItemPickup = (event) => {
+    console.log(event);
+  };
 
   // For now, this is really going to be called once. Later, if it supports zoom or map tiles are able to change, we'll need
   // to decide how to rerender.

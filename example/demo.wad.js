@@ -10,6 +10,7 @@ import AnimatedWater1 from "./images/sprites/animated_water_1.json" assert { typ
 import MagicHands from "./images/sprites/magic_hands.json" assert { type: "json" };
 import MagicDust from "./images/sprites/magic_dust.json" assert { type: "json" };
 import Bat from "./images/sprites/bat_1.json" assert { type: "json" };
+import Pickups1 from "./images/sprites/pickups_1.json" assert { type: "json" };
 
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
@@ -82,6 +83,7 @@ const spriteDatas = [
   MagicShot,
   MagicDust,
   Bat,
+  Pickups1,
 ];
 
 // const spriteMaps = spriteDatas.reduce((acc, curr) => {
@@ -96,6 +98,148 @@ for (const spriteData of spriteDatas) {
 
 const animations = [
   // TODO: I haven't been smart enough to support static sprites/textures
+  {
+    name: "coin__idle",
+    looping: true,
+    frameDuration: 65,
+    frames: [
+      {
+        frameId: "COINA",
+        directions: 0,
+      },
+      {
+        frameId: "COINB",
+        directions: 0,
+      },
+      {
+        frameId: "COINC",
+        directions: 0,
+      },
+      {
+        frameId: "COIND",
+        directions: 0,
+      },
+      {
+        frameId: "COINE",
+        directions: 0,
+      },
+      {
+        frameId: "COINF",
+        directions: 0,
+      },
+      {
+        frameId: "COING",
+        directions: 0,
+      },
+      {
+        frameId: "COINH",
+        directions: 0,
+      },
+      {
+        frameId: "COINI",
+        directions: 0,
+      },
+      {
+        frameId: "COINJ",
+        directions: 0,
+      },
+      {
+        frameId: "COINK",
+        directions: 0,
+      },
+      {
+        frameId: "COINL",
+        directions: 0,
+      },
+      {
+        frameId: "COINM",
+        directions: 0,
+      },
+      {
+        frameId: "COINN",
+        directions: 0,
+      },
+      {
+        frameId: "COINO",
+        directions: 0,
+      },
+      {
+        frameId: "COINP",
+        directions: 0,
+      },
+    ],
+  },
+  {
+    name: "scroll__idle",
+    looping: true,
+    frameDuration: 65,
+    frames: [
+      {
+        frameId: "HRADA",
+        directions: 0,
+      },
+      {
+        frameId: "HRADB",
+        directions: 0,
+      },
+      {
+        frameId: "HRADC",
+        directions: 0,
+      },
+      {
+        frameId: "HRADD",
+        directions: 0,
+      },
+      {
+        frameId: "HRADE",
+        directions: 0,
+      },
+      {
+        frameId: "HRADF",
+        directions: 0,
+      },
+      {
+        frameId: "HRADG",
+        directions: 0,
+      },
+      {
+        frameId: "HRADH",
+        directions: 0,
+      },
+      {
+        frameId: "HRADI",
+        directions: 0,
+      },
+      {
+        frameId: "HRADJ",
+        directions: 0,
+      },
+      {
+        frameId: "HRADK",
+        directions: 0,
+      },
+      {
+        frameId: "HRADL",
+        directions: 0,
+      },
+      {
+        frameId: "HRADM",
+        directions: 0,
+      },
+      {
+        frameId: "HRADN",
+        directions: 0,
+      },
+      {
+        frameId: "HRADO",
+        directions: 0,
+      },
+      {
+        frameId: "HRADP",
+        directions: 0,
+      },
+    ],
+  },
   {
     name: "bat__idle",
     looping: true,
@@ -1332,6 +1476,136 @@ const map_1 = {
     {
       transform: {
         position: {
+          x: 5,
+          y: 2.75,
+        },
+        rotation: 0,
+
+        height: 32,
+        elevation: 64,
+      },
+      actor: "Coin",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "coin__idle",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.15,
+        height: 0.8,
+        solid: false,
+      },
+    },
+    {
+      transform: {
+        position: {
+          x: 5,
+          y: 7,
+        },
+        rotation: 0,
+
+        height: 32,
+        elevation: 64,
+      },
+      actor: "Coin",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "coin__idle",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.15,
+        height: 0.8,
+        solid: false,
+      },
+    },
+    {
+      transform: {
+        position: {
+          x: 5,
+          y: 2.75,
+        },
+        rotation: 0,
+
+        height: 32,
+        elevation: 64,
+      },
+      actor: "Coin",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "coin__idle",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.15,
+        height: 0.8,
+        solid: false,
+      },
+    },
+    {
+      transform: {
+        position: {
+          x: 5,
+          y: 7.25,
+        },
+        rotation: 0,
+
+        height: 32,
+        elevation: 64,
+      },
+      actor: "Coin",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "coin__idle",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.15,
+        height: 0.8,
+        solid: false,
+      },
+    },
+    {
+      transform: {
+        position: {
+          x: 5,
+          y: 7.75,
+        },
+        rotation: 0,
+
+        height: 32,
+        elevation: 64,
+      },
+      actor: "Coin",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "coin__idle",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.15,
+        height: 0.8,
+        solid: false,
+      },
+    },
+    {
+      transform: {
+        position: {
           x: 7,
           y: 5,
         },
@@ -1969,7 +2243,58 @@ const map_2 = {
         height: 0.8,
         solid: false,
       },
-      // If no state, then no animation (default state)
+    },
+    {
+      transform: {
+        position: {
+          x: 5,
+          y: 2.75,
+        },
+        rotation: 0,
+
+        height: 32,
+        elevation: 64,
+      },
+      actor: "Coin",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "coin__idle",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.15,
+        height: 0.8,
+        solid: false,
+      },
+    },
+    {
+      transform: {
+        position: {
+          x: 3,
+          y: 1.75,
+        },
+        rotation: 0,
+
+        height: 64,
+        elevation: 32,
+      },
+      actor: "Book",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "scroll__idle",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.15,
+        height: 0.8,
+        solid: false,
+      },
     },
     {
       transform: {

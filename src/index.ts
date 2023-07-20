@@ -428,7 +428,8 @@ const loadLevel = async (
       gridManager,
       eventManager,
       playerEntity,
-      UserInputSystem
+      UserInputSystem,
+      broker
     )
   );
 

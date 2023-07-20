@@ -9,7 +9,12 @@ import { ECS, System } from "../utils/ECS/ECS";
 import SingletonInputSystem from "./SingletonInputSystem";
 import { Broker } from "../utils/events";
 import { WeaponAssetManger } from "../WeaponAssetManager/WeaponAssetManager";
-import { EquipableWeapon, EquipableWeaponState, GameActorType } from "../enums";
+import {
+  EquipableWeapon,
+  EquipableWeaponState,
+  EventMessageName,
+  GameActorType,
+} from "../enums";
 
 export class PlayerControllerSystem implements System {
   private inputSystem: SingletonInputSystem;
@@ -203,8 +208,8 @@ export class PlayerControllerSystem implements System {
       this.switchWeaponState(EquipableWeaponState.Firing);
       this.lastBall = newTime;
       // TODO: Go associate projectiles (as separate entitys with weapons (and weapon actions), simply reference that here.)
-      this.broker.emit("emit_projectile", {
-        name: "emit_projectile",
+      this.broker.emit(EventMessageName.EmitProjectile, {
+        name: EventMessageName.EmitProjectile,
         type: "magic_shot",
         emitter: "player", // Probably shouldn't pass the whole entity. So going to break out all the relevant stuff. I do want to know who emitted it for collision resolutions. But can probably just use an enum value like player | npc.
         origin: this.player.transform.position,
@@ -266,10 +271,12 @@ export class PlayerControllerSystem implements System {
     // Handle Objects. Deal with walls later. Which will be fun if we change color when we touch them or something!)
     if (collision.collidedWith?.actor) {
       switch (collision.collidedWith.actor) {
+        case GameActorType.Book:
+        case GameActorType.Coin:
         case GameActorType.Portal: {
-          this.broker.emit("player_actor_collision", {
-            name: "player_actor_collision",
-            actor: GameActorType.Portal,
+          this.broker.emit(EventMessageName.PlayerActorCollision, {
+            name: EventMessageName.PlayerActorCollision,
+            actor: collision.collidedWith.actor,
             entity: collision.collidedWith,
           } as PlayerActorCollisionEvent);
         }

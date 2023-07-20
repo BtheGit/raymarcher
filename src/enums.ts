@@ -45,3 +45,9 @@ export enum AIType {
   DogFriendly = "DogFriendly",
   BirdSkittish = "BirdSkittish",
 }
+
+export enum EventMessageName {
+  PlayerActorCollision = "PlayerActorCollision",
+  DestroyProjectile = "DestroyProjectile",
+  EmitProjectile = "EmitProjectile",
+}

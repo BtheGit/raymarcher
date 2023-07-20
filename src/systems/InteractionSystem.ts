@@ -2,7 +2,7 @@
  * This is really just going to be a placeholder for all interactions that are scripted. I'd like something more modular, but I really only can think of a few events I need to support. Destroying pickups on collision with player. And triggering portals. Portals themselves will have to be built to point at a specific level. Which is not ideal behavior, but so it goes. In addition, since I'm currently reseting most of the game when loading a level (and hoping to have the GC grab stale references, I'd rather not share an event handler directly between the outer loop and the level, so I'm going to use actual dom events to broadcast a level change.)
  */
 
-import { GameActorType } from "../enums";
+import { EventMessageName, GameActorType } from "../enums";
 import { BaseObjectEntity, Entity } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
@@ -16,13 +16,12 @@ export class InteractionSystem implements System {
     this.broker = broker;
 
     this.broker.subscribe(
-      "player_actor_collision",
+      EventMessageName.PlayerActorCollision,
       this.handlePlayerActorCollision
     );
   }
 
   handlePlayerActorCollision = (event) => {
-    console.log(event);
     switch (event.actor) {
       case GameActorType.Portal: {
         // Prevent any more collisions before anything else.
@@ -41,6 +40,10 @@ export class InteractionSystem implements System {
             },
           })
         );
+      }
+      case GameActorType.Book:
+      case GameActorType.Coin: {
+        this.ecs.entityManager.remove(event.entity);
       }
     }
   };

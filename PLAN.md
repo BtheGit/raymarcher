@@ -72,7 +72,7 @@ In the interests of making lists that never get completed, here are some potenti
   - [] Ambient sound effects
   - [] Sound modulated by distance with falloff
 - [x] Another AI Type (Birds.)
-- [] Item pickups (which I can use to trigger events)
+- [x] Item pickups (which I can use to trigger events)
 - [] Another interaction type taht triggers text/dialogue
   - [] Characters can talk (ignore dialogue trees for now, just a canned response (or one from a random pool))
   - [] Walls can reveal text
@@ -86,8 +86,8 @@ In the interests of making lists that never get completed, here are some potenti
 - [x] NPCs getting stuck in walls.
 - [] Would be cool to support transitioning tile textures and skybox texture (to simulate day / night or something)
 - [] Pickups that trigger events like dialogue boxes.
-- [] Support multiple levels and portals between them.
-- [] Support portals in general (with a teleport effect I think to make it clear)
+- [x] Support multiple levels and portals between them.
+- [x] Support portals in general (with a teleport effect I think to make it clear)
 
 ### Alternate fun ideas with raycasters:
 
