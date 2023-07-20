@@ -9,6 +9,7 @@ import KoopaTroopa from "./images/sprites/koopa_troopa.json" assert { type: "jso
 import AnimatedWater1 from "./images/sprites/animated_water_1.json" assert { type: "json" };
 import MagicHands from "./images/sprites/magic_hands.json" assert { type: "json" };
 import MagicDust from "./images/sprites/magic_dust.json" assert { type: "json" };
+import Bat from "./images/sprites/bat_1.json" assert { type: "json" };
 
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
@@ -80,6 +81,7 @@ const spriteDatas = [
   MagicHands,
   MagicShot,
   MagicDust,
+  Bat,
 ];
 
 // const spriteMaps = spriteDatas.reduce((acc, curr) => {
@@ -94,6 +96,40 @@ for (const spriteData of spriteDatas) {
 
 const animations = [
   // TODO: I haven't been smart enough to support static sprites/textures
+  {
+    name: "bat__idle",
+    looping: true,
+    frameDuration: 125,
+    frames: [
+      {
+        frameId: "ABATA",
+        directions: 8,
+      },
+      {
+        frameId: "ABATC",
+        directions: 8,
+      },
+    ],
+  },
+  {
+    name: "bat__fly",
+    looping: true,
+    frameDuration: 125,
+    frames: [
+      {
+        frameId: "ABATA",
+        directions: 8,
+      },
+      {
+        frameId: "ABATB",
+        directions: 8,
+      },
+      {
+        frameId: "ABATC",
+        directions: 8,
+      },
+    ],
+  },
   {
     name: "koopa_troopa__idle",
     looping: true,
@@ -486,440 +522,6 @@ const wall_default = {
     textureName: "brick_grass_edge",
   },
 };
-
-const objects = [
-  {
-    transform: {
-      position: {
-        x: 7,
-        y: 5,
-      },
-      rotation: 0,
-      // scale: {
-      //   x: 1,
-      //   y: 1,
-      // },
-      height: 64,
-      elevation: 0,
-    },
-    actor: "Prop",
-    sprite: {
-      name: "blue_crystal__A",
-      directions: 8,
-    },
-    collider: {
-      type: "aabb",
-      width: 0.8,
-      height: 0.8,
-      solid: true,
-    },
-    // If no state, then no animation (default state)
-  },
-  {
-    transform: {
-      position: {
-        x: 5.5,
-        y: 4.5,
-      },
-      rotation: 0,
-
-      height: 256,
-      elevation: 0,
-    },
-    actor: "Portal",
-    initialState: "state__on",
-    states: [
-      {
-        name: "state__on",
-        animation: "magic_dust_portal",
-      },
-    ],
-    collider: {
-      type: "aabb",
-      width: 0.8,
-      height: 0.8,
-      solid: false,
-    },
-    // If no state, then no animation (default state)
-  },
-  {
-    transform: {
-      position: {
-        x: 5.5,
-        y: 2.5,
-      },
-      rotation: 0,
-
-      height: 192,
-      elevation: 0,
-    },
-    actor: "Prop",
-    initialState: "state__on",
-    states: [
-      {
-        name: "state__on",
-        animation: "green_flame_default",
-      },
-    ],
-    collider: {
-      type: "aabb",
-      width: 0.8,
-      height: 0.8,
-      solid: true,
-    },
-    // If no state, then no animation (default state)
-  },
-  {
-    transform: {
-      position: {
-        x: 7,
-        y: 3,
-      },
-      rotation: 0,
-      // scale: {
-      //   x: 1,
-      //   y: 1,
-      // },
-      height: 256,
-      elevation: 0,
-    },
-    actor: "Prop",
-    sprite: {
-      name: "tree_1__A",
-      directions: 0,
-    },
-    collider: {
-      type: "aabb",
-      width: 0.8,
-      height: 0.8,
-      solid: true,
-    },
-    // If no state, then no animation (default state)
-  },
-  {
-    transform: {
-      position: {
-        x: 15,
-        y: 20,
-      },
-      rotation: 0,
-      height: 256,
-      elevation: 0,
-    },
-    actor: "Prop",
-    sprite: {
-      name: "tree_1__A",
-      directions: 0,
-    },
-    collider: {
-      type: "aabb",
-      width: 0.8,
-      height: 0.8,
-      solid: true,
-    },
-  },
-  {
-    transform: {
-      position: {
-        x: 10,
-        y: 10,
-      },
-      rotation: 90,
-      height: 192,
-      elevation: 0,
-    },
-    movement: {
-      speed: 0.001,
-    },
-    actor: "FriendlyDog",
-    initialState: "state__idle",
-    states: [
-      {
-        name: "state__idle",
-        animation: "scientist__default",
-      },
-      {
-        name: "state__wander",
-        animation: "scientist__default",
-      },
-      {
-        name: "state__hit",
-        animation: "scientist__hit",
-      },
-    ],
-    collider: {
-      type: "aabb",
-      width: 0.5,
-      height: 0.5,
-      solid: true,
-    },
-    ai: {
-      aiType: "dog_friendly",
-      playRadius: 1,
-      swarmRadius: 5,
-      idleDurationRange: [1, 3],
-      idleTimer: 0,
-      seekTarget: {
-        target: null,
-      },
-      seekPath: {
-        path: null,
-        currentIndex: 0,
-      },
-    },
-  },
-  {
-    transform: {
-      position: {
-        x: 6,
-        y: 8,
-      },
-      rotation: 120,
-      height: 192,
-      elevation: 0,
-    },
-    movement: {
-      speed: 0.001,
-    },
-    actor: "FriendlyDog",
-    initialState: "state__idle",
-    states: [
-      {
-        name: "state__idle",
-        animation: "scientist__default",
-      },
-      {
-        name: "state__wander",
-        animation: "scientist__default",
-      },
-      {
-        name: "state__hit",
-        animation: "scientist__hit",
-      },
-    ],
-    collider: {
-      type: "aabb",
-      width: 0.5,
-      height: 0.5,
-      solid: true,
-    },
-    ai: {
-      aiType: "dog_friendly",
-      playRadius: 1,
-      swarmRadius: 5,
-      idleDurationRange: [1, 3],
-      idleTimer: 0,
-      seekTarget: {
-        target: null,
-      },
-      seekPath: {
-        path: null,
-        currentIndex: 0,
-      },
-    },
-  },
-  {
-    transform: {
-      position: {
-        x: 5,
-        y: 7,
-      },
-      rotation: 215,
-      height: 192,
-      elevation: 0,
-    },
-    movement: {
-      speed: 0.003,
-    },
-    actor: "FriendlyDog",
-    initialState: "state__idle",
-    states: [
-      {
-        name: "state__idle",
-        animation: "bananaman__wait",
-      },
-      {
-        name: "state__wander",
-        animation: "bananaman__walk",
-      },
-      {
-        name: "state__hit",
-        animation: "bananaman__stand",
-      },
-    ],
-    collider: {
-      type: "aabb",
-      width: 0.4,
-      height: 0.4,
-      solid: true,
-    },
-    ai: {
-      aiType: "dog_friendly",
-      playRadius: 1,
-      swarmRadius: 5,
-      idleDurationRange: [1, 3],
-      idleTimer: 0,
-      seekTarget: {
-        target: null,
-      },
-      seekPath: {
-        path: null,
-        currentIndex: 0,
-      },
-    },
-  },
-  {
-    transform: {
-      position: {
-        x: 6,
-        y: 10,
-      },
-      rotation: 0,
-      height: 64,
-      elevation: 0,
-    },
-    movement: {
-      speed: 0.0001,
-    },
-    actor: "FriendlyDog",
-    initialState: "state__idle",
-    states: [
-      {
-        name: "state__idle",
-        animation: "bananaman__wait",
-      },
-      {
-        name: "state__wander",
-        animation: "bananaman__walk",
-      },
-      {
-        name: "state__hit",
-        animation: "bananaman__stand",
-      },
-    ],
-    collider: {
-      type: "aabb",
-      width: 0.4,
-      height: 0.4,
-      solid: true,
-    },
-    ai: {
-      aiType: "dog_friendly",
-      playRadius: 1,
-      swarmRadius: 5,
-      idleDurationRange: [1, 3],
-      idleTimer: 0,
-      seekTarget: {
-        target: null,
-      },
-      seekPath: {
-        path: null,
-        currentIndex: 0,
-      },
-    },
-  },
-  {
-    transform: {
-      position: {
-        x: 4,
-        y: 3,
-      },
-      rotation: 0,
-      height: 128,
-      elevation: 0,
-    },
-    movement: {
-      speed: 0.001,
-    },
-    actor: "FriendlyDog",
-    initialState: "state__idle",
-    states: [
-      {
-        name: "state__idle",
-        animation: "bananaman__wait",
-      },
-      {
-        name: "state__wander",
-        animation: "bananaman__walk",
-      },
-      {
-        name: "state__hit",
-        animation: "bananaman__stand",
-      },
-    ],
-    collider: {
-      type: "aabb",
-      width: 0.4,
-      height: 0.4,
-      solid: true,
-    },
-    ai: {
-      aiType: "dog_friendly",
-      playRadius: 1,
-      swarmRadius: 5,
-      idleDurationRange: [1, 3],
-      idleTimer: 0,
-      seekTarget: {
-        target: null,
-      },
-      seekPath: {
-        path: null,
-        currentIndex: 0,
-      },
-    },
-  },
-  {
-    transform: {
-      position: {
-        x: 4,
-        y: 4,
-      },
-      rotation: 0,
-      height: 128,
-      elevation: 0,
-    },
-    movement: {
-      speed: 0.001,
-    },
-    actor: "FriendlyDog",
-    initialState: "state__idle",
-    states: [
-      {
-        name: "state__idle",
-        animation: "koopa_troopa__idle",
-      },
-      {
-        name: "state__wander",
-        animation: "koopa_troopa__walk",
-      },
-      {
-        name: "state__hit",
-        animation: "koopa_troopa__shell",
-        height: 64,
-      },
-    ],
-    collider: {
-      type: "aabb",
-      width: 0.4,
-      height: 0.2,
-      solid: true,
-    },
-    ai: {
-      aiType: "dog_friendly",
-      playRadius: 1,
-      swarmRadius: 5,
-      idleDurationRange: [1, 3],
-      idleTimer: 0,
-      seekTarget: {
-        target: null,
-      },
-      seekPath: {
-        path: null,
-        currentIndex: 0,
-      },
-    },
-  },
-];
 
 const map_1 = {
   settings: {
@@ -1726,7 +1328,439 @@ const map_1 = {
     elevation: 0,
     walkSpeed: 0.003, // TODO: Uh, can I use less fractional units?
   },
-  objects,
+  objects: [
+    {
+      transform: {
+        position: {
+          x: 7,
+          y: 5,
+        },
+        rotation: 0,
+        // scale: {
+        //   x: 1,
+        //   y: 1,
+        // },
+        height: 64,
+        elevation: 0,
+      },
+      actor: "Prop",
+      sprite: {
+        name: "blue_crystal__A",
+        directions: 8,
+      },
+      collider: {
+        type: "aabb",
+        width: 0.8,
+        height: 0.8,
+        solid: true,
+      },
+      // If no state, then no animation (default state)
+    },
+    {
+      transform: {
+        position: {
+          x: 5.5,
+          y: 4.5,
+        },
+        rotation: 0,
+
+        height: 256,
+        elevation: 0,
+      },
+      actor: "Portal",
+      initialState: "state__on",
+      states: [
+        {
+          name: "state__on",
+          animation: "magic_dust_portal",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.15,
+        height: 0.8,
+        solid: false,
+      },
+      // If no state, then no animation (default state)
+    },
+    {
+      transform: {
+        position: {
+          x: 5.5,
+          y: 2.5,
+        },
+        rotation: 0,
+
+        height: 192,
+        elevation: 0,
+      },
+      actor: "Prop",
+      initialState: "state__on",
+      states: [
+        {
+          name: "state__on",
+          animation: "green_flame_default",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.8,
+        height: 0.8,
+        solid: true,
+      },
+      // If no state, then no animation (default state)
+    },
+    {
+      transform: {
+        position: {
+          x: 7,
+          y: 3,
+        },
+        rotation: 0,
+        // scale: {
+        //   x: 1,
+        //   y: 1,
+        // },
+        height: 256,
+        elevation: 0,
+      },
+      actor: "Prop",
+      sprite: {
+        name: "tree_1__A",
+        directions: 0,
+      },
+      collider: {
+        type: "aabb",
+        width: 0.8,
+        height: 0.8,
+        solid: true,
+      },
+      // If no state, then no animation (default state)
+    },
+    {
+      transform: {
+        position: {
+          x: 15,
+          y: 20,
+        },
+        rotation: 0,
+        height: 256,
+        elevation: 0,
+      },
+      actor: "Prop",
+      sprite: {
+        name: "tree_1__A",
+        directions: 0,
+      },
+      collider: {
+        type: "aabb",
+        width: 0.8,
+        height: 0.8,
+        solid: true,
+      },
+    },
+    {
+      transform: {
+        position: {
+          x: 10,
+          y: 10,
+        },
+        rotation: 90,
+        height: 192,
+        elevation: 0,
+      },
+      movement: {
+        speed: 0.001,
+      },
+      actor: "NPC",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "scientist__default",
+        },
+        {
+          name: "state__wander",
+          animation: "scientist__default",
+        },
+        {
+          name: "state__hit",
+          animation: "scientist__hit",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.5,
+        height: 0.5,
+        solid: true,
+      },
+      ai: {
+        aiType: "DogFriendly",
+        playRadius: 1,
+        swarmRadius: 5,
+        idleDurationRange: [1, 3],
+        idleTimer: 0,
+        seekTarget: {
+          target: null,
+        },
+        seekPath: {
+          path: null,
+          currentIndex: 0,
+        },
+      },
+    },
+    {
+      transform: {
+        position: {
+          x: 6,
+          y: 8,
+        },
+        rotation: 120,
+        height: 192,
+        elevation: 0,
+      },
+      movement: {
+        speed: 0.001,
+      },
+      actor: "NPC",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "scientist__default",
+        },
+        {
+          name: "state__wander",
+          animation: "scientist__default",
+        },
+        {
+          name: "state__hit",
+          animation: "scientist__hit",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.5,
+        height: 0.5,
+        solid: true,
+      },
+      ai: {
+        aiType: "DogFriendly",
+        playRadius: 1,
+        swarmRadius: 5,
+        idleDurationRange: [1, 3],
+        idleTimer: 0,
+        seekTarget: {
+          target: null,
+        },
+        seekPath: {
+          path: null,
+          currentIndex: 0,
+        },
+      },
+    },
+    {
+      transform: {
+        position: {
+          x: 5,
+          y: 7,
+        },
+        rotation: 215,
+        height: 192,
+        elevation: 0,
+      },
+      movement: {
+        speed: 0.003,
+      },
+      actor: "NPC",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "bananaman__wait",
+        },
+        {
+          name: "state__wander",
+          animation: "bananaman__walk",
+        },
+        {
+          name: "state__hit",
+          animation: "bananaman__stand",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.4,
+        height: 0.4,
+        solid: true,
+      },
+      ai: {
+        aiType: "DogFriendly",
+        playRadius: 1,
+        swarmRadius: 5,
+        idleDurationRange: [1, 3],
+        idleTimer: 0,
+        seekTarget: {
+          target: null,
+        },
+        seekPath: {
+          path: null,
+          currentIndex: 0,
+        },
+      },
+    },
+    {
+      transform: {
+        position: {
+          x: 6,
+          y: 10,
+        },
+        rotation: 0,
+        height: 64,
+        elevation: 0,
+      },
+      movement: {
+        speed: 0.0001,
+      },
+      actor: "NPC",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "bananaman__wait",
+        },
+        {
+          name: "state__wander",
+          animation: "bananaman__walk",
+        },
+        {
+          name: "state__hit",
+          animation: "bananaman__stand",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.4,
+        height: 0.4,
+        solid: true,
+      },
+      ai: {
+        aiType: "DogFriendly",
+        playRadius: 1,
+        swarmRadius: 5,
+        idleDurationRange: [1, 3],
+        idleTimer: 0,
+        seekTarget: {
+          target: null,
+        },
+        seekPath: {
+          path: null,
+          currentIndex: 0,
+        },
+      },
+    },
+    {
+      transform: {
+        position: {
+          x: 4,
+          y: 3,
+        },
+        rotation: 0,
+        height: 128,
+        elevation: 0,
+      },
+      movement: {
+        speed: 0.001,
+      },
+      actor: "NPC",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "bananaman__wait",
+        },
+        {
+          name: "state__wander",
+          animation: "bananaman__walk",
+        },
+        {
+          name: "state__hit",
+          animation: "bananaman__stand",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.4,
+        height: 0.4,
+        solid: true,
+      },
+      ai: {
+        aiType: "DogFriendly",
+        playRadius: 1,
+        swarmRadius: 5,
+        idleDurationRange: [1, 3],
+        idleTimer: 0,
+        seekTarget: {
+          target: null,
+        },
+        seekPath: {
+          path: null,
+          currentIndex: 0,
+        },
+      },
+    },
+    {
+      transform: {
+        position: {
+          x: 4,
+          y: 4,
+        },
+        rotation: 0,
+        height: 128,
+        elevation: 0,
+      },
+      movement: {
+        speed: 0.001,
+      },
+      actor: "NPC",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "koopa_troopa__idle",
+        },
+        {
+          name: "state__wander",
+          animation: "koopa_troopa__walk",
+        },
+        {
+          name: "state__hit",
+          animation: "koopa_troopa__shell",
+          height: 64,
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.4,
+        height: 0.2,
+        solid: true,
+      },
+      ai: {
+        aiType: "DogFriendly",
+        playRadius: 1,
+        swarmRadius: 5,
+        idleDurationRange: [1, 3],
+        idleTimer: 0,
+        seekTarget: {
+          target: null,
+        },
+        seekPath: {
+          path: null,
+          currentIndex: 0,
+        },
+      },
+    },
+  ],
 };
 
 const map_2 = {
@@ -1894,7 +1928,7 @@ const map_2 = {
       x: 2,
       y: 2.5,
     },
-    rotation: 45,
+    rotation: 0,
     fov: 130,
     elevation: 0,
     walkSpeed: 0.003, // TODO: Uh, can I use less fractional units?
@@ -1921,17 +1955,67 @@ const map_2 = {
       ],
       collider: {
         type: "aabb",
-        width: 0.8,
+        width: 0.15,
         height: 0.8,
         solid: false,
       },
       // If no state, then no animation (default state)
     },
+    {
+      transform: {
+        position: {
+          x: 6,
+          y: 2.5,
+        },
+        rotation: 0,
+        height: 64,
+        elevation: 128,
+      },
+      movement: {
+        speed: 0.005,
+      },
+      actor: "NPC",
+      initialState: "state__idle",
+      states: [
+        {
+          name: "state__idle",
+          animation: "bat__idle",
+        },
+        {
+          name: "state__flee",
+          animation: "bat__fly",
+        },
+        {
+          name: "state__hit",
+          animation: "bat__idle",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.4,
+        height: 0.4,
+        solid: false,
+      },
+      ai: {
+        aiType: "BirdSkittish",
+        playRadius: 1,
+        swarmRadius: 5,
+        idleDurationRange: [1, 3],
+        idleTimer: 0,
+        seekTarget: {
+          target: null,
+        },
+        seekPath: {
+          path: null,
+          currentIndex: 0,
+        },
+      },
+    },
   ],
 };
 
 const wadSettings = {
-  firstMap: "map_1",
+  firstMap: "map_2",
 };
 
 const wad = {

@@ -1,7 +1,7 @@
 import { GridManager } from "../GridManager/GridManager";
-import { CollisionLayer } from "../enums";
+import { AIType, CollisionLayer } from "../enums";
 import {
-  FriendlyDogEntity,
+  DogFriendlyEntity,
   GridNode,
   ObjectEntity,
   PlayerEntity,
@@ -11,7 +11,7 @@ import { Broker } from "../utils/events";
 import { Vector2 } from "../utils/math";
 
 // TODO: Make a generic of course that has the event system baked in
-export class AIFriendlyDogSystem {
+export class AIDogFriendlySystem {
   private ecs: ECS;
   private broker: Broker;
   private gridManager: GridManager;
@@ -35,10 +35,11 @@ export class AIFriendlyDogSystem {
     );
   }
 
+  // Doom has projectiles keep a pointer to their emitter, which would make sense for reconciling source of damage. Because I'm missing that, I'm relying on the emitter to send an event on successful hit. Probably should reverse that. But since it's non-functional for now (except having to emit events, I'm gonna punt)
   handleProjectileCollision = (e) => {
     // We only care about collisions with this ai.
     // TODO: Type all this later (though it's very hacky...)
-    if (e.collidedWith?.ai?.aiType !== "dog_friendly") {
+    if (e.collidedWith?.ai?.aiType !== AIType.DogFriendly) {
       return;
     }
     this.updateState(e.collidedWith, "state__hit");
@@ -66,7 +67,7 @@ export class AIFriendlyDogSystem {
     entity.state.lastStateChange = Date.now();
   };
 
-  update = (dt: number, entity: FriendlyDogEntity) => {
+  update = (dt: number, entity: DogFriendlyEntity) => {
     const stateComponent = entity.state;
     const { currentState, previousState, lastStateChange } = stateComponent;
     let target = entity.ai.seekTarget.target;

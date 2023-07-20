@@ -62,12 +62,17 @@ In the interests of making lists that never get completed, here are some potenti
 ### 5 Years and a day later
 
 - [x] Support multiple maps.
-- [] Support portals between maps. (no transition effects for now)
+- [x] Support portals between maps. (no transition effects for now)
+- [] Somehow on load determine sprite height and width so we can use those for ratio scaling later. Anything where the sizes change is not working. Maybe I can just plug those numbers in short term or long term. Ideally I would just have everything the same size and save myself this extra hassle. But I like to be special. I'm going to add them to the sprites for now, textures are uh, on their own I guess. Wait, let's try just using the maximum height for now and seeing if that's enough.
+- [] Improve bird flight styles. Improvev bird idle (sine wave)
+- [] Fix enemies getting very close to wall boundaries and effectively stuck.
+- [] Sine wave positioning for idle state of bird
+- [] Support spawner type. So I can generically spawn entities into the world based on rules - like stepping on a portal, or after x minute (passive spawner vs active spawner maybe).
 - [] Sound
   - [] Sound effects on trigger
   - [] Ambient sound effects
   - [] Sound modulated by distance with falloff
-- [] Another AI Type (Birds.)
+- [x] Another AI Type (Birds.)
 - [] Item pickups (which I can use to trigger events)
 - [] Another interaction type taht triggers text/dialogue
   - [] Characters can talk (ignore dialogue trees for now, just a canned response (or one from a random pool))

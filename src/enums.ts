@@ -30,10 +30,18 @@ export enum ProjectileState {
 // Not sure If I should mix objects and npcs either.
 
 //Using this style of enum to better correlate strings in wad (so, it's not just numbers that are more likely to change during initial dev)
+
+// Generic for N
 export enum GameActorType {
   Prop = "Prop",
   Coin = "Coin",
   Book = "Book",
   Portal = "Portal",
-  FriendlyDog = "FriendlyDog",
+  NPC = "NPC",
+  DogFriendly = "DogFriendly",
+}
+
+export enum AIType {
+  DogFriendly = "DogFriendly",
+  BirdSkittish = "BirdSkittish",
 }

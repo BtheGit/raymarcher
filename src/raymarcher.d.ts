@@ -4,6 +4,7 @@ import {
   EquipableWeapon,
   EquipableWeaponState,
   GameActorType,
+  AIType,
 } from "./enums";
 
 export type Entity = any;
@@ -206,7 +207,17 @@ export interface SeekPathComponent {
 }
 
 export interface DogAIComponent extends BaseAIComponent {
-  aiType: "dog_friendly";
+  aiType: AIType.DogFriendly;
+  playRadius: number;
+  swarmRadius: number;
+  idleDurationRange: [number, number];
+  idleTimer: number;
+  // TODO: I'm getting a bit overwhelmed with options here. Just going to try and keep all these values here, but some might make more sense to be related to state or movement or physics. Also, I should be redefining the state component to not include animations directly again. Ha.
+  seekTarget: SeekTargetComponent;
+  seekPath: SeekPathComponent;
+}
+export interface BirdAIComponent extends BaseAIComponent {
+  aiType: AIType.BirdSkittish;
   playRadius: number;
   swarmRadius: number;
   idleDurationRange: [number, number];
@@ -216,7 +227,7 @@ export interface DogAIComponent extends BaseAIComponent {
   seekPath: SeekPathComponent;
 }
 
-export type AIComponent = DogAIComponent;
+export type AIComponent = DogAIComponent | BirdAIComponent;
 
 export interface BaseObjectEntity {
   actor: GameActorType;
@@ -253,8 +264,11 @@ export interface MagicShotProjectileEntity extends ProjectileEntity {
   movement: MovementComponent;
 }
 
-export interface FriendlyDogEntity extends AnimatedObjectEntity {
+export interface DogFriendlyEntity extends AnimatedObjectEntity {
   ai: DogAIComponent;
+}
+export interface BirdSkittishEntity extends AnimatedObjectEntity {
+  ai: BirdAIComponent;
 }
 
 export type ObjectEntity = StaticObjectEntity | AnimatedObjectEntity;

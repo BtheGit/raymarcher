@@ -28,6 +28,7 @@ export class PhysicsSystem implements System {
   }
 
   update(dt: number) {
+    // TODO: Ensure player is first in this order. Simplifies things a lot.
     const kineticEntities: KineticEntity[] = this.ecs.entityManager.with([
       "velocity",
       "transform",
@@ -159,6 +160,7 @@ export class PhysicsSystem implements System {
             continue;
 
           // Vertical collision check. Fun to feel like it's not all on a flat plane. Wait till we have birds! oooh
+
           const isOverhead =
             entity.transform.elevation >
             collidingEntity.transform.elevation +
@@ -166,6 +168,7 @@ export class PhysicsSystem implements System {
           const isUnderfoot =
             entity.transform.elevation + entity.transform.height <
             collidingEntity.transform.elevation;
+
           if (isOverhead || isUnderfoot) {
             continue;
           }
@@ -185,6 +188,8 @@ export class PhysicsSystem implements System {
               newPosition.y + entity.collider.height! - collidingPosition.y,
               collidingPosition.y + collidingCollider.height! - newPosition.y
             );
+
+            console.log(entity, collidingEntity);
 
             // Determine the axis with the smallest overlap
             if (xOverlap < yOverlap) {
@@ -218,7 +223,7 @@ export class PhysicsSystem implements System {
 
               // Don't be affected by things that aren't solid.
               // TODO: We are going to collide with it continuously if we're not careful
-              if (!collidingEntity.collider?.solid) {
+              if (!entity.collider.solid || !collidingEntity.collider?.solid) {
                 continue;
               }
 
@@ -253,7 +258,7 @@ export class PhysicsSystem implements System {
 
               // Don't be affected by things that aren't solid.
               // TODO: We are going to collide with it continuously if we're not careful
-              if (!collidingEntity.collider?.solid) {
+              if (!entity.collider.solid || !collidingEntity.collider?.solid) {
                 continue;
               }
 

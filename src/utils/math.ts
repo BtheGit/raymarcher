@@ -49,6 +49,10 @@ export class Vector2 {
     return new Vector2(callback(this.x), callback(this.y));
   }
 
+  length = () => {
+    return Math.sqrt(this.x * this.x + this.y * this.y);
+  };
+
   angle(vector) {
     const dot = this.dot(vector);
     const magnitudeProduct = this.magnitudeProduct(vector);
