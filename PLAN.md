@@ -64,9 +64,8 @@ In the interests of making lists that never get completed, here are some potenti
 - [x] Support multiple maps.
 - [x] Support portals between maps. (no transition effects for now)
 - [] Somehow on load determine sprite height and width so we can use those for ratio scaling later. Anything where the sizes change is not working. Maybe I can just plug those numbers in short term or long term. Ideally I would just have everything the same size and save myself this extra hassle. But I like to be special. I'm going to add them to the sprites for now, textures are uh, on their own I guess. Wait, let's try just using the maximum height for now and seeing if that's enough.
-- [] Improve bird flight styles. Improvev bird idle (sine wave)
-- [] Fix enemies getting very close to wall boundaries and effectively stuck.
-- [] Sine wave positioning for idle state of bird
+- [] Improve bird flight styles. Improve bird idle (sine wave)
+- [x] Fix enemies getting very close to wall boundaries and effectively stuck.
 - [] Support spawner type. So I can generically spawn entities into the world based on rules - like stepping on a portal, or after x minute (passive spawner vs active spawner maybe).
 - [] Sound
   - [] Sound effects on trigger
@@ -78,14 +77,13 @@ In the interests of making lists that never get completed, here are some potenti
   - [] Characters can talk (ignore dialogue trees for now, just a canned response (or one from a random pool))
   - [] Walls can reveal text
 - [] Support links? Like a portal pad that takes you to a new level (or different page)
-- [] Special effects
+- [x] Special effects
   - [x] Ball burst
-  - [] Ball glow
 - [] Dialogue system?
 - [] Sky gradient support
 - [] More HUD Elements...
 - [] Sprite fisheye effect causing them to appear to move up at periphery
-- [] NPCs getting stuck in walls.
+- [x] NPCs getting stuck in walls.
 - [] Would be cool to support transitioning tile textures and skybox texture (to simulate day / night or something)
 - [] Pickups that trigger events like dialogue boxes.
 - [] Support multiple levels and portals between them.

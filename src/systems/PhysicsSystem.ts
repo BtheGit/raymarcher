@@ -1,5 +1,10 @@
 import { GridManager } from "../GridManager/GridManager";
-import { Entity, KineticEntity, ObjectEntity } from "../raymarcher";
+import {
+  Entity,
+  KineticEntity,
+  ObjectEntity,
+  PlayerEntity,
+} from "../raymarcher";
 import { CollisionLayer } from "../enums";
 
 import { ECS, System } from "../utils/ECS/ECS";
@@ -14,11 +19,16 @@ export class PhysicsSystem implements System {
   private gridManager: GridManager;
   private kineticEntities: KineticEntity[];
   private deceleration = 10;
+  player: PlayerEntity;
 
   constructor(ecs: ECS, broker: Broker, gridManager: GridManager) {
     this.ecs = ecs;
     this.broker = broker;
     this.gridManager = gridManager;
+
+    // Yeah, I can pass this in. Just trying it out, to whether it's the right way to move.
+    this.player = ecs.entityManager.with(["camera"])[0];
+
     // For now only allowing one player controlled entity and it will be the camera
     // this.playerEntity = this.ecs.entityManager.with(["camera"])[0];
     // this.collidableEntities = this.ecs.entityManager.with([
@@ -28,11 +38,13 @@ export class PhysicsSystem implements System {
   }
 
   update(dt: number) {
-    // TODO: Ensure player is first in this order. Simplifies things a lot.
-    const kineticEntities: KineticEntity[] = this.ecs.entityManager.with([
-      "velocity",
-      "transform",
-    ]);
+    // TODO: Ensure player is first in this order. Simplifies things a lot. Doing it the hacky way first
+    const kineticEntities: KineticEntity[] = [
+      this.player,
+      ...this.ecs.entityManager
+        .with(["velocity", "transform"])
+        .filter((el) => !el.hasOwnProperty("camera")),
+    ];
     const decelerationRate = this.deceleration * dt;
 
     for (const entity of kineticEntities) {
@@ -54,7 +66,28 @@ export class PhysicsSystem implements System {
         continue;
       }
 
+      const colliderModifier = entity.collider?.radius
+        ? entity.collider?.radius
+        : 0;
+
       const potentialPosition = position.add(deltaPosition);
+
+      // This may be a terrible idea, but right now, I'm not colliding with walls correctly, and I want to at least, have some buffer. I could also hard code this value, to give a fixed buffer (like 10 units or something. Note: Need to change stuff like to )
+      const directionX = newVelocity.x < 0 ? -1 : 1;
+      const directionY = newVelocity.y < 0 ? -1 : 1;
+      const wallCheckPosition = potentialPosition.add(
+        new Vector2(directionX, directionY).scale(colliderModifier)
+      );
+
+      // console.log(
+      //   newVelocity,
+      //   deltaPosition,
+      //   potentialPosition,
+      //   wallCheckPosition
+      // );
+      // const wallCheckPosition = potentialPosition.scale(
+      //   (1 - colliderModifier) / deltaPosition
+      // );
 
       // Slow down!
       if (Vector2.magnitude(newVelocity) > 0) {
@@ -76,13 +109,13 @@ export class PhysicsSystem implements System {
 
       //For now, very basic. No radius or anything.
       const nextXTile = this.gridManager.getGridTileFromCoord(
-        potentialPosition.x,
+        wallCheckPosition.x,
         position.y
       )!;
 
       const nextYTile = this.gridManager.getGridTileFromCoord(
         position.x,
-        potentialPosition.y
+        wallCheckPosition.y
       )!;
 
       // SO: Right now I'm not actually detecting wall collisions.
@@ -188,8 +221,6 @@ export class PhysicsSystem implements System {
               newPosition.y + entity.collider.height! - collidingPosition.y,
               collidingPosition.y + collidingCollider.height! - newPosition.y
             );
-
-            console.log(entity, collidingEntity);
 
             // Determine the axis with the smallest overlap
             if (xOverlap < yOverlap) {

@@ -228,6 +228,7 @@ const loadLevel = async (
     plane,
     collider: {
       type: "aabb",
+      radius: 0.2,
       width: 0.8,
       height: 0.8,
       solid: true,

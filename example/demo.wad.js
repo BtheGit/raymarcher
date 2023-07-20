@@ -1350,6 +1350,7 @@ const map_1 = {
       },
       collider: {
         type: "aabb",
+        radius: 0.8,
         width: 0.8,
         height: 0.8,
         solid: true,
@@ -1404,6 +1405,7 @@ const map_1 = {
       ],
       collider: {
         type: "aabb",
+        radius: 0.8,
         width: 0.8,
         height: 0.8,
         solid: true,
@@ -1431,6 +1433,7 @@ const map_1 = {
       },
       collider: {
         type: "aabb",
+        radius: 0.8,
         width: 0.8,
         height: 0.8,
         solid: true,
@@ -1454,6 +1457,7 @@ const map_1 = {
       },
       collider: {
         type: "aabb",
+        radius: 0.8,
         width: 0.8,
         height: 0.8,
         solid: true,
@@ -1490,6 +1494,7 @@ const map_1 = {
       ],
       collider: {
         type: "aabb",
+        radius: 0.5,
         width: 0.5,
         height: 0.5,
         solid: true,
@@ -1540,6 +1545,7 @@ const map_1 = {
       ],
       collider: {
         type: "aabb",
+        radius: 0.5,
         width: 0.5,
         height: 0.5,
         solid: true,
@@ -1590,6 +1596,7 @@ const map_1 = {
       ],
       collider: {
         type: "aabb",
+        radius: 0.4,
         width: 0.4,
         height: 0.4,
         solid: true,
@@ -1640,6 +1647,7 @@ const map_1 = {
       ],
       collider: {
         type: "aabb",
+        radius: 0.4,
         width: 0.4,
         height: 0.4,
         solid: true,
@@ -1690,6 +1698,7 @@ const map_1 = {
       ],
       collider: {
         type: "aabb",
+        radius: 0.4,
         width: 0.4,
         height: 0.4,
         solid: true,
@@ -1741,6 +1750,7 @@ const map_1 = {
       ],
       collider: {
         type: "aabb",
+        radius: 0.4,
         width: 0.4,
         height: 0.2,
         solid: true,
@@ -1992,6 +2002,7 @@ const map_2 = {
       ],
       collider: {
         type: "aabb",
+        radius: 0.4,
         width: 0.4,
         height: 0.4,
         solid: false,
