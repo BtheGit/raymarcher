@@ -458,7 +458,12 @@ const loadLevel = async (
 };
 
 const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
-  // screenContext.imageSmoothingEnabled = false;
+  const screenCanvas = document.getElementById(
+    settings.canvasId
+  ) as HTMLCanvasElement;
+  const screenContext = screenCanvas.getContext("2d", {
+    willReadFrequently: true,
+  })!;
 
   // TODO: Short term I'm going to reload everything to change map. Being stateful is more hassle than it's worth until I have a reason. For my portfolio, I'm just making a one way path, no back tracking.
   // Stuff like animated textures though, should only be loaded based on level. And in fact we lose some efficiencies by completely unloading all textures. Browser caching will help there. Definitely would be best not to run animations in the background like flatWarp if we don't need to.
@@ -478,7 +483,23 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
     const newLevel =
       otherLevels[Math.floor(Math.random() * otherLevels.length)];
 
+    // This is just for fun to try out an interlevel screen. Just black flash for now.
+
     level.unload();
+
+    // screenContext.setTransform(1, 0, 0, 1, 0, 0);
+    // screenContext.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
+    // screenContext.rect(0, 0, screenCanvas.width, screenCanvas.height);
+    // screenContext.fillStyle = "red";
+    // screenContext.fill();
+    // screenContext.beginPath();
+    // screenContext.moveTo(75, 50);
+    // screenContext.lineTo(100, 75);
+    // screenContext.lineTo(100, 25);
+    // screenContext.fill();
+    // setTimeout(async () => {
+    // }, 2000);
+
     level = await loadLevel(wad, settings, newLevel);
   });
 };
