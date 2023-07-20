@@ -6,6 +6,7 @@ import { RenderSystem } from "./systems/RenderSystem";
 import { PhysicsSystem } from "./systems/PhysicsSystem";
 import { AIControllerSystem } from "./systems/AIControllerSystem";
 import { ProjectileSystem } from "./systems/ProjectileSystem";
+import { InteractionSystem } from "./systems/InteractionSystem";
 import { HUDSystem } from "./systems/HUDSystem";
 import { ECS } from "./utils/ECS/ECS";
 import {
@@ -50,8 +51,9 @@ const DEFAULT_SETTINGS = {
 const loadLevel = async (
   wad: WAD,
   settings: typeof DEFAULT_SETTINGS,
-  levelMap
+  levelName: string
 ) => {
+  const levelMap = wad.maps[levelName];
   const screenCanvas = document.getElementById(
     settings.canvasId
   ) as HTMLCanvasElement;
@@ -255,10 +257,19 @@ const loadLevel = async (
   // NOTE: Textures are not added to the wad with dimensions. That is a mistake and with an editor would be fine. So we load the boot process and get all those values now. (We ignored it for tiles since those would always be the same size and stretched.)
   const objects: WADObjectEntity[] = levelMap.objects ?? [];
   objects.forEach((object) => {
-    const { transform, sprite, states, initialState, collider, ai, movement } =
-      object;
+    const {
+      transform,
+      sprite,
+      states,
+      initialState,
+      collider,
+      ai,
+      movement,
+      actor,
+    } = object;
 
     let objectEntity = {
+      actor,
       transform: {
         position: new Vector2(transform.position.x, transform.position.y),
         // TODO: Deprecate roation if the math is more work
@@ -363,6 +374,8 @@ const loadLevel = async (
 
   ecs.systems.add(new PhysicsSystem(ecs, broker, gridManager));
 
+  ecs.systems.add(new InteractionSystem(ecs, broker));
+
   // TODO:
   // Once again, I don't know the ideal way to separate concerns here (without huge time overhead for good event stuff), so I'm going to short term undo all my good efforts and hard connect systems. Namely the renderer and the raycaster in this case. In fact, until I get smarter, they really shouldn't be two systems at all. But oh well, the renderer will at least have other concerns like text and a HUD that have nothing to do with raycasting. So I'm going to make a very fake eventBus to pass stuff along short term.
   const eventManager = new EventManager();
@@ -437,6 +450,7 @@ const loadLevel = async (
   tick();
 
   return {
+    levelName,
     unload: () => {
       cancelAnimationFrame(animationFrame);
     },
@@ -452,14 +466,21 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   // To that end, everything is getting pushed into a loadLevel
   // We'll want to have a cleanup function for everything that needs it for when this is called in the game (event based)
   const wadSettings = wad.wadSettings;
-  const levelMap = wad.maps[wadSettings.firstMap];
-  let level = await loadLevel(wad, settings, levelMap);
+  let level = await loadLevel(wad, settings, wadSettings.firstMap);
 
-  // Kinda crazy how far just cancel the animation frame gets me. But memory... I wonder if this stuff is getting GCed correctly.
-  // setTimeout(async () => {
-  //   level.unload();
-  //   level = await loadLevel(wad, settings, wad.maps["map_2"]);
-  // }, 5000);
+  document.addEventListener("game_event", async (e: Event) => {
+    const detail = (<CustomEvent>e).detail;
+    const { type } = detail;
+
+    // Just for testing, choose a random level that's not the current one and switch
+    const levels = Object.keys(wad.maps);
+    const otherLevels = levels.filter((name) => name !== level.levelName);
+    const newLevel =
+      otherLevels[Math.floor(Math.random() * otherLevels.length)];
+
+    level.unload();
+    level = await loadLevel(wad, settings, newLevel);
+  });
 };
 
 export default main;

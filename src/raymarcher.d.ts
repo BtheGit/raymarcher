@@ -1,5 +1,10 @@
 import { Vector2 } from "./utils/math";
-import { CollisionLayer, EquipableWeapon, EquipableWeaponState } from "./enums";
+import {
+  CollisionLayer,
+  EquipableWeapon,
+  EquipableWeaponState,
+  GameActorType,
+} from "./enums";
 
 export type Entity = any;
 
@@ -214,28 +219,26 @@ export interface DogAIComponent extends BaseAIComponent {
 export type AIComponent = DogAIComponent;
 
 export interface BaseObjectEntity {
+  actor: GameActorType;
   objectType: string;
   transform: TransformComponent;
   movement: MovementComponent;
   velocity: VelocityComponent;
   ai?: AIComponent;
+  collider?: ColliderComponent;
+  collisions?: CollisionReport[];
+  collisionLayer?: CollisionLayerComponent;
 }
 
 export interface StaticObjectEntity extends BaseObjectEntity {
   // NOTE: This is to make it easier to deal with typescript. It's really got no other use today.
-  objectType: "object__static";
+  objectType: "object__static"; // TODO: Get better than static animated/ that was to help with implementing textures. But I should be past that now.
   sprite: SpriteTextureComponent;
-  collider?: ColliderComponent;
-  collisions?: CollisionReport[];
-  collisionLayer?: CollisionLayerComponent;
 }
 
 export interface AnimatedObjectEntity extends BaseObjectEntity {
   objectType: "object__animated";
   state: EntityStateComponent;
-  collider?: ColliderComponent;
-  collisions?: CollisionReport[];
-  collisionLayer?: CollisionLayerComponent;
 }
 
 export interface ProjectileEntity extends AnimatedObjectEntity {
@@ -412,6 +415,7 @@ export interface WADGridCell {
 export type WADGrid = WADGridCell[][];
 
 export interface WADObjectEntity {
+  actor: GameActorType;
   transform: {
     position: {
       x: number;
@@ -525,4 +529,11 @@ export interface DestroyProjectileEvent extends EventMessage {
   name: "destroy_projectile";
   // TODO: If entity's had generic lifecycles i could obviously reuse this.
   entity: ProjectileEntity;
+}
+
+export interface PlayerActorCollisionEvent extends EventMessage {
+  name: "player_actor_collision";
+  actor: GameActorType;
+  entity: Entity;
+  // ...
 }

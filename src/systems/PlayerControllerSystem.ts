@@ -1,10 +1,15 @@
 import { Vector2 } from "../utils/math";
-import { AnimationState, Entity, PlayerEntity } from "../raymarcher";
+import {
+  AnimationState,
+  Entity,
+  PlayerActorCollisionEvent,
+  PlayerEntity,
+} from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
 import SingletonInputSystem from "./SingletonInputSystem";
 import { Broker } from "../utils/events";
 import { WeaponAssetManger } from "../WeaponAssetManager/WeaponAssetManager";
-import { EquipableWeapon, EquipableWeaponState } from "../enums";
+import { EquipableWeapon, EquipableWeaponState, GameActorType } from "../enums";
 
 export class PlayerControllerSystem implements System {
   private inputSystem: SingletonInputSystem;
@@ -246,7 +251,34 @@ export class PlayerControllerSystem implements System {
     }
   };
 
+  // I'm in the endgame with this toy and I'm starting to want to pull back a bit to get stuff in quick. More and more I want to move responsibility into controllers. In terms of collisions, I'm starting to feel more and more I want that to be reconciled in actor controllers to reduce footprint and brain pain.
+
+  // So more most prop interactions, we'll simply have the player reconcile the action, broadcast the event (let's hope we don't have to deal with duplicates (can throttle on the prop side for a few ticks if need be)) and have the interaction system (which is really the prop controller at the moment) listen for events instead of polling entities.
+  handleCollisions = () => {
+    const collisions = this.player.collisions;
+    if (!collisions.length) {
+      return;
+    }
+    // Short term, we're going to reconcile one event and let others be ignored. So we pop and clear.
+    const collision = collisions.shift()!;
+    this.player.collisions = [];
+
+    // Handle Objects. Deal with walls later. Which will be fun if we change color when we touch them or something!)
+    if (collision.collidedWith?.actor) {
+      switch (collision.collidedWith.actor) {
+        case GameActorType.Portal: {
+          this.broker.emit("player_actor_collision", {
+            name: "player_actor_collision",
+            actor: GameActorType.Portal,
+            entity: collision.collidedWith,
+          } as PlayerActorCollisionEvent);
+        }
+      }
+    }
+  };
+
   update(dt: number) {
+    this.handleCollisions();
     this.updatePlayerMovement();
     // Temp disable projectile while figuring out positioning bugs
     this.handlePlayerActions();

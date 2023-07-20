@@ -126,6 +126,11 @@ export class EntityManager<Entity> extends Bucket<Entity> {
     });
     return entities;
   };
+
+  queryEntities = (filter: (entity: Entity) => boolean) => {
+    const entities = this.bucket.filter(filter);
+    return entities;
+  };
 }
 
 // If we use a class. Otherwise we just return a function in a closure that saves the ecs reference

@@ -502,6 +502,7 @@ const objects = [
       height: 64,
       elevation: 0,
     },
+    actor: "Prop",
     sprite: {
       name: "blue_crystal__A",
       directions: 8,
@@ -525,6 +526,7 @@ const objects = [
       height: 256,
       elevation: 0,
     },
+    actor: "Portal",
     initialState: "state__on",
     states: [
       {
@@ -551,6 +553,7 @@ const objects = [
       height: 192,
       elevation: 0,
     },
+    actor: "Prop",
     initialState: "state__on",
     states: [
       {
@@ -580,6 +583,7 @@ const objects = [
       height: 256,
       elevation: 0,
     },
+    actor: "Prop",
     sprite: {
       name: "tree_1__A",
       directions: 0,
@@ -602,6 +606,7 @@ const objects = [
       height: 256,
       elevation: 0,
     },
+    actor: "Prop",
     sprite: {
       name: "tree_1__A",
       directions: 0,
@@ -626,6 +631,7 @@ const objects = [
     movement: {
       speed: 0.001,
     },
+    actor: "FriendlyDog",
     initialState: "state__idle",
     states: [
       {
@@ -675,6 +681,7 @@ const objects = [
     movement: {
       speed: 0.001,
     },
+    actor: "FriendlyDog",
     initialState: "state__idle",
     states: [
       {
@@ -724,6 +731,7 @@ const objects = [
     movement: {
       speed: 0.003,
     },
+    actor: "FriendlyDog",
     initialState: "state__idle",
     states: [
       {
@@ -773,6 +781,7 @@ const objects = [
     movement: {
       speed: 0.0001,
     },
+    actor: "FriendlyDog",
     initialState: "state__idle",
     states: [
       {
@@ -822,6 +831,7 @@ const objects = [
     movement: {
       speed: 0.001,
     },
+    actor: "FriendlyDog",
     initialState: "state__idle",
     states: [
       {
@@ -871,6 +881,7 @@ const objects = [
     movement: {
       speed: 0.001,
     },
+    actor: "FriendlyDog",
     initialState: "state__idle",
     states: [
       {
@@ -1888,6 +1899,35 @@ const map_2 = {
     elevation: 0,
     walkSpeed: 0.003, // TODO: Uh, can I use less fractional units?
   },
+  objects: [
+    {
+      transform: {
+        position: {
+          x: 8,
+          y: 2.5,
+        },
+        rotation: 0,
+
+        height: 256,
+        elevation: 0,
+      },
+      actor: "Portal",
+      initialState: "state__on",
+      states: [
+        {
+          name: "state__on",
+          animation: "magic_dust_portal",
+        },
+      ],
+      collider: {
+        type: "aabb",
+        width: 0.8,
+        height: 0.8,
+        solid: false,
+      },
+      // If no state, then no animation (default state)
+    },
+  ],
 };
 
 const wadSettings = {
