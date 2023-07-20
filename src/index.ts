@@ -47,7 +47,11 @@ const DEFAULT_SETTINGS = {
 
 // TODO: Default Wad
 
-const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
+const loadLevel = async (
+  wad: WAD,
+  settings: typeof DEFAULT_SETTINGS,
+  levelMap
+) => {
   const screenCanvas = document.getElementById(
     settings.canvasId
   ) as HTMLCanvasElement;
@@ -57,7 +61,6 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   const screenContext = screenCanvas.getContext("2d", {
     willReadFrequently: true,
   })!;
-  // screenContext.imageSmoothingEnabled = false;
 
   const ecs = new ECS();
   const broker = new Broker();
@@ -104,7 +107,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   animationManager.loadAnimations(wad.animations);
 
   // TODO: Some kind of default fallback map and textures.
-  const grid: WADGridCell[][] = wad.map.grid!;
+  const grid: WADGridCell[][] = levelMap.grid!;
   gridManager.loadGrid(grid);
 
   // TODO: Starting with hardcoded weapons, then moving to wad and more complex start up.
@@ -182,7 +185,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   });
 
   // ## Player/CAMERA
-  const startingPosition = wad.map.start;
+  const startingPosition = levelMap.start;
   const fovRadians = toRadians(startingPosition.fov);
   const fov = Math.abs(Math.atan(fovRadians));
   const direction = directionVectorFromRotation(
@@ -250,7 +253,7 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   // ## Objects and NPCS
   // TODO:
   // NOTE: Textures are not added to the wad with dimensions. That is a mistake and with an editor would be fine. So we load the boot process and get all those values now. (We ignored it for tiles since those would always be the same size and stretched.)
-  const objects: WADObjectEntity[] = wad.map.objects ?? [];
+  const objects: WADObjectEntity[] = levelMap.objects ?? [];
   objects.forEach((object) => {
     const { transform, sprite, states, initialState, collider, ai, movement } =
       object;
@@ -374,8 +377,8 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   // Once again, we're cheating a bit to avoid extra lookups until we have a better ECS system. I'm going to persist a skybox reference here.
   const skyboxEntity: SkyboxEntity = {
     skybox: {
-      surface: wad.map.sky.type,
-      texture: wad.map.sky.texture,
+      surface: levelMap.sky.type,
+      texture: levelMap.sky.texture,
     },
   };
 
@@ -415,10 +418,12 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
     )
   );
 
+  let animationFrame;
+
   // TODO: Performance.now gives me ever increasing numbers versus the delta between times, which I need for modifying calculations between frames.
   let lastTime = Date.now(); // performance.now();
   const tick = () => {
-    requestAnimationFrame(tick);
+    animationFrame = requestAnimationFrame(tick);
     /* Determine deltatime */
     const time = Date.now(); // performance.now();
     const dt = time - lastTime; // / 1000;
@@ -430,6 +435,31 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   };
 
   tick();
+
+  return {
+    unload: () => {
+      cancelAnimationFrame(animationFrame);
+    },
+  };
+};
+
+const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
+  // screenContext.imageSmoothingEnabled = false;
+
+  // TODO: Short term I'm going to reload everything to change map. Being stateful is more hassle than it's worth until I have a reason. For my portfolio, I'm just making a one way path, no back tracking.
+  // Stuff like animated textures though, should only be loaded based on level. And in fact we lose some efficiencies by completely unloading all textures. Browser caching will help there. Definitely would be best not to run animations in the background like flatWarp if we don't need to.
+
+  // To that end, everything is getting pushed into a loadLevel
+  // We'll want to have a cleanup function for everything that needs it for when this is called in the game (event based)
+  const wadSettings = wad.wadSettings;
+  const levelMap = wad.maps[wadSettings.firstMap];
+  let level = await loadLevel(wad, settings, levelMap);
+
+  // Kinda crazy how far just cancel the animation frame gets me. But memory... I wonder if this stuff is getting GCed correctly.
+  // setTimeout(async () => {
+  //   level.unload();
+  //   level = await loadLevel(wad, settings, wad.maps["map_2"]);
+  // }, 5000);
 };
 
 export default main;

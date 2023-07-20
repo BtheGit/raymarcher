@@ -61,6 +61,8 @@ In the interests of making lists that never get completed, here are some potenti
 
 ### 5 Years and a day later
 
+- [x] Support multiple maps.
+- [] Support portals between maps. (no transition effects for now)
 - [] Sound
   - [] Sound effects on trigger
   - [] Ambient sound effects

@@ -482,16 +482,23 @@ export type WADTextureAnimation =
   | WADTextureAnimationFlatWarp
   | WADTextureAnimationSprite;
 
+export interface WADMap {
+  grid: WADGrid;
+  sky: any;
+  start: any;
+  objects: WADObjectEntity[];
+}
+
 export interface WAD {
+  wadSettings: {
+    firstMap: string;
+  };
   textures: any;
   sprites: any;
   animations: WADAnimation[];
   textureAnimations: WADTextureAnimation[];
-  map: {
-    grid: WADGrid;
-    sky: any;
-    start: any;
-    objects: WADObjectEntity[];
+  maps: {
+    [key: string]: WADMap;
   };
 }
 
