@@ -67,7 +67,8 @@ In the interests of making lists that never get completed, here are some potenti
   - [] Sound effects on trigger
   - [] Ambient sound effects
   - [] Sound modulated by distance with falloff
-- [] Another AI Type
+- [] Another AI Type (Birds.)
+- [] Item pickups (which I can use to trigger events)
 - [] Another interaction type taht triggers text/dialogue
   - [] Characters can talk (ignore dialogue trees for now, just a canned response (or one from a random pool))
   - [] Walls can reveal text

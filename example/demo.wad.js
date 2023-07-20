@@ -8,6 +8,7 @@ import GreenFlame from "./images/sprites/green_flame.json" assert { type: "json"
 import KoopaTroopa from "./images/sprites/koopa_troopa.json" assert { type: "json" };
 import AnimatedWater1 from "./images/sprites/animated_water_1.json" assert { type: "json" };
 import MagicHands from "./images/sprites/magic_hands.json" assert { type: "json" };
+import MagicDust from "./images/sprites/magic_dust.json" assert { type: "json" };
 
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
@@ -78,6 +79,7 @@ const spriteDatas = [
   AnimatedWater1,
   MagicHands,
   MagicShot,
+  MagicDust,
 ];
 
 // const spriteMaps = spriteDatas.reduce((acc, curr) => {
@@ -236,6 +238,117 @@ const animations = [
     ],
     looping: true,
     frameDuration: 125,
+  },
+  {
+    name: "magic_dust_portal",
+    looping: true,
+    frameDuration: 125,
+    frames: [
+      {
+        frameId: "TSMKA",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKB",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKC",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKD",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKE",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKF",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKG",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKH",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKI",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKJ",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKK",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKL",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKM",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKN",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKO",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKP",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKQ",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKR",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKS",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKT",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKU",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKV",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKW",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKX",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKY",
+        directions: 0,
+      },
+      {
+        frameId: "TSMKZ",
+        directions: 0,
+      },
+    ],
   },
   {
     name: "green_flame_default",
@@ -398,6 +511,32 @@ const objects = [
       width: 0.8,
       height: 0.8,
       solid: true,
+    },
+    // If no state, then no animation (default state)
+  },
+  {
+    transform: {
+      position: {
+        x: 5.5,
+        y: 4.5,
+      },
+      rotation: 0,
+
+      height: 256,
+      elevation: 0,
+    },
+    initialState: "state__on",
+    states: [
+      {
+        name: "state__on",
+        animation: "magic_dust_portal",
+      },
+    ],
+    collider: {
+      type: "aabb",
+      width: 0.8,
+      height: 0.8,
+      solid: false,
     },
     // If no state, then no animation (default state)
   },

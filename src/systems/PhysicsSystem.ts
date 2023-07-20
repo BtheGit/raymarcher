@@ -216,6 +216,12 @@ export class PhysicsSystem implements System {
                 continue;
               }
 
+              // Don't be affected by things that aren't solid.
+              // TODO: We are going to collide with it continuously if we're not careful
+              if (!collidingEntity.collider?.solid) {
+                continue;
+              }
+
               newPosition.x +=
                 newPosition.x < collidingPosition.x ? -xOverlap : xOverlap;
             } else {
@@ -242,6 +248,12 @@ export class PhysicsSystem implements System {
                 entity?.collisionLayer?.layer ===
                 CollisionLayer.PlayerProjectile
               ) {
+                continue;
+              }
+
+              // Don't be affected by things that aren't solid.
+              // TODO: We are going to collide with it continuously if we're not careful
+              if (!collidingEntity.collider?.solid) {
                 continue;
               }
 
