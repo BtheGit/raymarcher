@@ -2251,6 +2251,11 @@ const map_2 = {
         height: 32,
         elevation: 64,
       },
+      bobbingMovement: {
+        amplitude: 2,
+        frequency: 0.4,
+        initialElevation: 32,
+      },
       actor: "Coin",
       initialState: "state__idle",
       states: [
@@ -2276,6 +2281,11 @@ const map_2 = {
 
         height: 64,
         elevation: 32,
+      },
+      bobbingMovement: {
+        amplitude: 3,
+        frequency: 0.5,
+        initialElevation: 32,
       },
       actor: "Book",
       interactionDirectives: [
