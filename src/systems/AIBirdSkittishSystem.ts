@@ -2,6 +2,7 @@ import { GridManager } from "../GridManager/GridManager";
 import { AIType, CollisionLayer, EventMessageName } from "../enums";
 import {
   BirdSkittishEntity,
+  EntityStateComponent,
   GridNode,
   ObjectEntity,
   PlayerEntity,
@@ -15,6 +16,7 @@ import { Vector2 } from "../utils/math";
  *
  * - Can switch between flying and walking periodically during wander stage.
  * - Add swarm behavior when I have math for that.
+ * - For now, since birds don't land, I can have them always oscillating on a sine wave to mimc floating in air a bit
  *
  * TODO: Once I have one or two more AIs, look at redundancy and common code to refactor.
  */
@@ -58,7 +60,7 @@ export class AIBirdSkittishSystem {
 
   // TODO: This is a stand-in for a generic state change mechanism, specifically in this case to allow us to reset time in state
   updateState = (entity, newState: string) => {
-    const stateComponent = entity.state;
+    const stateComponent: EntityStateComponent = entity.state;
     const { currentState, states } = stateComponent;
 
     if (newState === currentState) {
@@ -73,6 +75,20 @@ export class AIBirdSkittishSystem {
     entity.state.previousState = currentState;
     entity.state.currentState = newState;
     entity.state.lastStateChange = Date.now();
+
+    if (stateObject.bobbingMovement) {
+      entity.bobbingMovement = {
+        initialElevation: entity.transform.elevation,
+        amplitude: stateObject.bobbingMovement.amplitude,
+        frequency: stateObject.bobbingMovement.frequency,
+        startTime: Date.now(),
+      };
+    } else {
+      this.ecs.entityManager.removeComponentFromEntity(
+        entity,
+        "bobbingMovement"
+      );
+    }
   };
 
   setIdleState = (entity: BirdSkittishEntity) => {

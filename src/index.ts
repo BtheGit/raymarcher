@@ -7,6 +7,7 @@ import { PhysicsSystem } from "./systems/PhysicsSystem";
 import { AIControllerSystem } from "./systems/AIControllerSystem";
 import { ProjectileSystem } from "./systems/ProjectileSystem";
 import { InteractionSystem } from "./systems/InteractionSystem";
+import { BobbingMovementSystem } from "./systems/BobbingMovementSystem";
 import { HUDSystem } from "./systems/HUDSystem";
 import { ECS } from "./utils/ECS/ECS";
 import {
@@ -85,7 +86,6 @@ const loadLevel = async (
 
   ecs.entityManager.add(gameSettingsEntity);
 
-  // TODO: Load all texture and sprite image resources from the wad (containing file paths)
   const textureMap: { [key: string]: string } = wad.textures ?? [];
 
   // TODO: Blocking texture load for now just in case there are issues with lazy loading.
@@ -109,7 +109,6 @@ const loadLevel = async (
   );
   animationManager.loadAnimations(wad.animations);
 
-  // TODO: Some kind of default fallback map and textures.
   const grid: WADGridCell[][] = levelMap.grid!;
   gridManager.loadGrid(grid);
 
@@ -269,6 +268,7 @@ const loadLevel = async (
       movement,
       actor,
       interactionDirectives,
+      bobbingMovement,
     } = object;
 
     let objectEntity = {
@@ -295,6 +295,14 @@ const loadLevel = async (
       // TODO: Move derived value instantiation out of the wad (stuff like idleTimer)
       // For now, we'll just force the wad to match the component shape so we can fry bigger fish.
       (objectEntity as ObjectEntity).ai = ai;
+    }
+
+    // TODO: Right now, we don't have an initializer per actor type, so lots of rules gonna be shoved together. That means, birds are going to spawn in idle state without a bobbingMovement component set. Could do it in the wad too, or just have something do the check here. WADs are pretty overloadeed as it is.
+    if (bobbingMovement) {
+      (objectEntity as ObjectEntity).bobbingMovement = {
+        ...bobbingMovement,
+        startTime: Date.now(),
+      };
     }
 
     if (interactionDirectives) {
@@ -377,6 +385,8 @@ const loadLevel = async (
   );
 
   ecs.systems.add(new AIControllerSystem(ecs, broker, gridManager));
+
+  ecs.systems.add(new BobbingMovementSystem(ecs));
 
   ecs.systems.add(new ProjectileSystem(ecs, broker));
 

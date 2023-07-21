@@ -100,10 +100,9 @@ export class EntityManager<Entity> extends Bucket<Entity> {
   };
 
   removeComponentFromEntity = (entity: Entity, componentKey: keyof Entity) => {
-    if (entity[componentKey] === undefined) {
-      throw new Error("Component does not exist on entity");
+    if (!entity[componentKey] === undefined) {
+      delete entity[componentKey];
     }
-    delete entity[componentKey];
 
     // TODO: Broadcast and reindex any queries etc.
   };

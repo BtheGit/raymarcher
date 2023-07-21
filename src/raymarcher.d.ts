@@ -87,6 +87,18 @@ export interface MovementComponent {
   // rotationSpeed: number;
 }
 
+export interface BobbingMovementSettingsComponent {
+  amplitude: number;
+  frequency: number;
+}
+
+export interface BobbingMovementComponent {
+  amplitude: number;
+  frequency: number;
+  initialElevation: number;
+  startTime: number;
+}
+
 // Breaking these apart to gently deprecate rotation;
 export interface BaseTransformComponent {
   position: Vector2;
@@ -110,6 +122,7 @@ export interface EntityState {
   animation: AnimationState;
   height?: number; // To optionally let me resize objects during different states. Should be opt in to avoid overwork
   sound?: SoundComponent; // Some entities should play a sound continuously during a certain state.
+  bobbingMovement?: BobbingMovementSettingsComponent;
 }
 
 export interface AnimationDefinition {
@@ -249,6 +262,7 @@ export interface BaseObjectEntity {
   transform: TransformComponent;
   movement: MovementComponent;
   velocity: VelocityComponent;
+  bobbingMovement?: BobbingMovementComponent;
   interactionDirectives?: InteractionDirective[];
   ai?: AIComponent;
   collider?: ColliderComponent;
@@ -476,6 +490,11 @@ export interface WADObjectEntity {
     width?: number;
     height?: number;
     solid: boolean;
+  };
+  bobbingMovement?: {
+    amplitude: number;
+    frequency: number;
+    initialElevation: number;
   };
   movement?: MovementComponent;
   collisionLayer?: number;

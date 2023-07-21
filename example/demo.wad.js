@@ -2302,8 +2302,8 @@ const map_2 = {
     {
       transform: {
         position: {
-          x: 6,
-          y: 2.5,
+          x: 4,
+          y: 2,
         },
         rotation: 0,
         height: 64,
@@ -2314,10 +2314,19 @@ const map_2 = {
       },
       actor: "NPC",
       initialState: "state__idle",
+      bobbingMovement: {
+        amplitude: 4,
+        frequency: 0.75,
+        initialElevation: 128,
+      },
       states: [
         {
           name: "state__idle",
           animation: "bat__idle",
+          bobbingMovement: {
+            amplitude: 4,
+            frequency: 0.75,
+          },
         },
         {
           name: "state__flee",
