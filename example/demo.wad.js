@@ -668,9 +668,7 @@ const wall_default = {
 };
 
 const map_1 = {
-  settings: {
-    tileSize: 256, // World units to subdivide grid tiles for anything more granular. TODO:
-  },
+  settings: {},
   grid: [
     [
       wall_default,
@@ -2048,9 +2046,7 @@ const map_1 = {
 };
 
 const map_2 = {
-  settings: {
-    tileSize: 256, // World units to subdivide grid tiles for anything more granular. TODO:
-  },
+  settings: {},
   grid: [
     [
       wall_default,

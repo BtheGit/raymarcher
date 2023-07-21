@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
     width: 512, // document.documentElement.clientWidth,
     height: 368, // document.documentElement.clientHeight,
     canvasId: "raymarcher-display",
-    tileSize: 256, // TODO: Make this defined in the WAD (since the wad will define world objects relative to this... or, just use this forever since this is a toy project after all. :) )
   };
   const r = engine(wad, DEFAULT_SETTINGS);
 });

@@ -73,21 +73,24 @@ In the interests of making lists that never get completed, here are some potenti
   - [] Sound modulated by distance with falloff
 - [x] Another AI Type (Birds.)
 - [x] Item pickups (which I can use to trigger events)
-- [] Another interaction type taht triggers text/dialogue
+- [x] Another interaction type taht triggers text/dialogue
   - [] Characters can talk (ignore dialogue trees for now, just a canned response (or one from a random pool))
   - [] Walls can reveal text
 - [] Support links? Like a portal pad that takes you to a new level (or different page)
 - [x] Special effects
   - [x] Ball burst
 - [] Dialogue system?
-- [] Sky gradient support
+- [] Sky gradient support (animated!)
 - [] More HUD Elements...
 - [] Sprite fisheye effect causing them to appear to move up at periphery
 - [x] NPCs getting stuck in walls.
 - [] Would be cool to support transitioning tile textures and skybox texture (to simulate day / night or something)
-- [] Pickups that trigger events like dialogue boxes.
+- [x] Pickups that trigger events like dialogue boxes.
 - [x] Support multiple levels and portals between them.
 - [x] Support portals in general (with a teleport effect I think to make it clear)
+- [] On level load actions/directives
+- [] Doors
+- [] Multiple skyboxes with set depth to support parallax
 
 ### Alternate fun ideas with raycasters:
 

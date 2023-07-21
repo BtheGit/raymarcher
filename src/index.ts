@@ -39,18 +39,19 @@ import { SpriteManager } from "./SpriteManager/SpriteManager";
 import { AnimationManager } from "./AnimationManager/AnimationManager";
 import { Broker } from "./utils/events";
 
+const TILE_SIZE = 256;
+
 const DEFAULT_SETTINGS = {
   width: 768,
   height: 512,
   canvasId: "raymarcher-display",
-  tileSize: 256, // TODO: Make this defined in the WAD (since the wad will define world objects relative to this... or, just use this forever since this is a toy project after all. :) )
 };
 
 // TODO: Default Wad
 
 const loadLevel = async (
   wad: WAD,
-  settings: typeof DEFAULT_SETTINGS,
+  settings = DEFAULT_SETTINGS,
   levelName: string
 ) => {
   const levelMap = wad.maps[levelName];
@@ -78,7 +79,7 @@ const loadLevel = async (
       width: settings.width,
       height: settings.height,
       canvasId: settings.canvasId,
-      tileSize: settings.tileSize,
+      tileSize: TILE_SIZE,
     },
   };
 
