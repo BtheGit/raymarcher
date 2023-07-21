@@ -2239,7 +2239,7 @@ const map_2 = {
       ],
       collider: {
         type: "aabb",
-        width: 0.15,
+        width: 0.2,
         height: 0.8,
         solid: false,
       },
@@ -2286,7 +2286,7 @@ const map_2 = {
         {
           type: "ShowMessage",
           priority: 5,
-          body: "Hello world.",
+          body: "When did you first realize you were god?",
         },
       ],
       initialState: "state__idle",

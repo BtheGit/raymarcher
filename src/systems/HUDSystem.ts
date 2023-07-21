@@ -21,6 +21,8 @@ import SingletonInputSystem from "./SingletonInputSystem";
 
 const PI2 = Math.PI * 2;
 
+// TODO: Text Defaults so every message doesn't have to specify.
+
 export class HUDSystem implements System {
   private ecs: ECS;
   private textureManager: TextureManager;
@@ -34,6 +36,7 @@ export class HUDSystem implements System {
 
   private messageQueue: any = [];
   private messageTimeout: number | null = null;
+  private activeMessage: string | null = null;
 
   // TODO: Placeholder for generic system. Liike so much here. Want to have the brief flash of doom for a pickup, but also be able to override it with a new pickup. Will check for existence of value, if it is, will use its state to render correct frame of animation. Self destruct at end.
   private flashEffect = null;
@@ -56,6 +59,8 @@ export class HUDSystem implements System {
   // Message buffer
   textMessageCanvas = document.createElement("canvas");
   textMessageCtx = this.textMessageCanvas.getContext("2d")!;
+
+  // TODO FLASH BUFFER
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -107,7 +112,6 @@ export class HUDSystem implements System {
     }
 
     for (const directive of event.entity.interactionDirectives) {
-      console.log(directive);
       switch (directive.type) {
         case InteractionDirectiveName.ShowMessage: {
           this.queueTextMessage(directive.body, directive.priority);
@@ -137,21 +141,22 @@ export class HUDSystem implements System {
       this.textMessageCanvas.width,
       this.textMessageCanvas.height
     );
+    this.activeMessage = null;
   };
 
-  todoFlash = () => {
-    this.textMessageCtx.globalAlpha = 0.3;
-    this.textMessageCtx.fillStyle = "rgba(150, 50, 50, 30)";
-    this.textMessageCtx.fillRect(
-      0,
-      0,
-      this.textMessageCanvas.width,
-      this.textMessageCanvas.height
-    );
-    this.messageTimeout = setTimeout(() => {
-      this.clearTextMessage();
-    }, 60);
-  };
+  // todoFlash = () => {
+  //   this.textMessageCtx.globalAlpha = 0.3;
+  //   this.textMessageCtx.fillStyle = "rgba(150, 50, 50, 30)";
+  //   this.textMessageCtx.fillRect(
+  //     0,
+  //     0,
+  //     this.textMessageCanvas.width,
+  //     this.textMessageCanvas.height
+  //   );
+  //   this.messageTimeout = setTimeout(() => {
+  //     this.clearTextMessage();
+  //   }, 60);
+  // };
 
   bufferTextMessage = () => {
     this.clearTextMessage();
@@ -161,12 +166,59 @@ export class HUDSystem implements System {
     }
 
     const nextMessage = this.messageQueue.shift();
-    console.log(nextMessage.body);
-    // TODO: Can use this to line split and justify etc.
-    // console.log(this.textMessageCtx.measureText(nextMessage.body));
+    this.activeMessage = nextMessage.body;
+    this.messageTimeout = setTimeout(() => {
+      this.clearTextMessage();
+    }, 2000);
   };
 
   renderTextMessages = () => {
+    if (!this.activeMessage) {
+      return;
+    }
+    // TODO: Can use this to line split and justify etc.
+    // TODO: Make box optional and color a setting.
+    // console.log(this.textMessageCtx.measureText(nextMessage.body));
+    this.textMessageCtx.font = "2em serif";
+    this.textMessageCtx.textAlign = "center";
+    this.textMessageCtx.textBaseline = "middle";
+
+    const BOX_PADDING = 10;
+    const textCenterX = this.textMessageCanvas.width / 2;
+    const textCenterY = this.textMessageCanvas.height / 2;
+    const textMeasure = this.textMessageCtx.measureText(this.activeMessage);
+    const textHeight =
+      textMeasure.fontBoundingBoxAscent + textMeasure.fontBoundingBoxDescent;
+    const textWidth =
+      textMeasure.actualBoundingBoxLeft + textMeasure.actualBoundingBoxRight;
+
+    const containerX =
+      textCenterX - textMeasure.actualBoundingBoxLeft - BOX_PADDING;
+    const containerY =
+      textCenterY - textMeasure.fontBoundingBoxAscent - BOX_PADDING;
+    const containerWidth = textWidth + BOX_PADDING * 2;
+    const containerHeight = textHeight + BOX_PADDING * 2;
+
+    this.textMessageCtx.clearRect(
+      0,
+      0,
+      this.textMessageCanvas.width,
+      this.textMessageCanvas.height
+    );
+
+    this.textMessageCtx.globalAlpha = 0.5;
+    this.textMessageCtx.fillStyle = "black";
+
+    this.textMessageCtx.fillRect(
+      containerX,
+      containerY,
+      containerWidth,
+      containerHeight
+    );
+    this.textMessageCtx.globalAlpha = 1;
+    this.textMessageCtx.fillStyle = "white";
+
+    this.textMessageCtx.fillText(this.activeMessage, textCenterX, textCenterY);
     this.offscreenCtx.drawImage(this.textMessageCanvas, 0, 0);
   };
 
