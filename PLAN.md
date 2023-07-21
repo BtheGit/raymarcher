@@ -64,7 +64,7 @@ In the interests of making lists that never get completed, here are some potenti
 - [x] Support multiple maps.
 - [x] Support portals between maps. (no transition effects for now)
 - [] Somehow on load determine sprite height and width so we can use those for ratio scaling later. Anything where the sizes change is not working. Maybe I can just plug those numbers in short term or long term. Ideally I would just have everything the same size and save myself this extra hassle. But I like to be special. I'm going to add them to the sprites for now, textures are uh, on their own I guess. Wait, let's try just using the maximum height for now and seeing if that's enough.
-- [] Improve bird flight styles. Improve bird idle (sine wave)
+- [x] Improve bird flight styles. Improve bird idle (sine wave)
 - [x] Fix enemies getting very close to wall boundaries and effectively stuck.
 - [] Support spawner type. So I can generically spawn entities into the world based on rules - like stepping on a portal, or after x minute (passive spawner vs active spawner maybe).
 - [] Sound
@@ -91,6 +91,9 @@ In the interests of making lists that never get completed, here are some potenti
 - [] On level load actions/directives
 - [] Doors
 - [] Multiple skyboxes with set depth to support parallax
+- [] Different weapons and switching between them
+- [] Make my own sprites (not engine related though)
+- [] Projectiles with gravity
 
 ### Alternate fun ideas with raycasters:
 

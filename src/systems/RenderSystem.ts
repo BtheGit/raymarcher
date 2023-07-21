@@ -525,6 +525,7 @@ export class RenderSystem implements System {
       let floorXWall;
       let floorYWall;
       //4 different wall directions possible
+      // TODO: Can I do this without activeCell?
       if (wallOrientation === "vertical" && rayDirection.x > 0) {
         floorXWall = activeCell.x;
         floorYWall = activeCell.y + wallIntersection;

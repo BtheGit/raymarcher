@@ -129,7 +129,9 @@ export class HUDSystem implements System {
     };
 
     this.messageQueue.push(message);
-    this.bufferTextMessage();
+    if (!this.activeMessage) {
+      this.bufferTextMessage();
+    }
 
     // TODO: Instead of just pushing, let's sort this into priority order ( or just expel anything lower priority in front of it)
   };
@@ -168,7 +170,7 @@ export class HUDSystem implements System {
     const nextMessage = this.messageQueue.shift();
     this.activeMessage = nextMessage.body;
     this.messageTimeout = setTimeout(() => {
-      this.clearTextMessage();
+      this.bufferTextMessage();
     }, 2000);
   };
 
@@ -179,24 +181,39 @@ export class HUDSystem implements System {
     // TODO: Can use this to line split and justify etc.
     // TODO: Make box optional and color a setting.
     // console.log(this.textMessageCtx.measureText(nextMessage.body));
-    this.textMessageCtx.font = "2em serif";
+    this.textMessageCtx.font = "24px serif";
     this.textMessageCtx.textAlign = "center";
     this.textMessageCtx.textBaseline = "middle";
 
-    const BOX_PADDING = 10;
+    // Support for line breaks.
+    // Simple implementation. We expect them to be given to us manually for now.
+    // Figure out the text width this time by finding the longest string and assuming it's the longest once rendered
+    const textLines = this.activeMessage.split("\n");
+    let longestLine = "";
+    for (const line of textLines) {
+      longestLine = longestLine.length > line.length ? longestLine : line;
+    }
+
+    const BOX_PADDING = 20;
+    const LINE_HEIGHT = 45;
     const textCenterX = this.textMessageCanvas.width / 2;
     const textCenterY = this.textMessageCanvas.height / 2;
-    const textMeasure = this.textMessageCtx.measureText(this.activeMessage);
-    const textHeight =
-      textMeasure.fontBoundingBoxAscent + textMeasure.fontBoundingBoxDescent;
-    const textWidth =
+    const textMeasure = this.textMessageCtx.measureText(longestLine);
+
+    // const baseLineHeight =
+    //   textMeasure.fontBoundingBoxAscent + textMeasure.fontBoundingBoxDescent;
+    const lineWidth =
       textMeasure.actualBoundingBoxLeft + textMeasure.actualBoundingBoxRight;
+
+    // const textLineStep = baseLineHeight + LINE_MARGIN;
+
+    const textHeight = textLines.length * LINE_HEIGHT;
 
     const containerX =
       textCenterX - textMeasure.actualBoundingBoxLeft - BOX_PADDING;
-    const containerY =
-      textCenterY - textMeasure.fontBoundingBoxAscent - BOX_PADDING;
-    const containerWidth = textWidth + BOX_PADDING * 2;
+    const containerY = textCenterY - textHeight / 2 - BOX_PADDING;
+
+    const containerWidth = lineWidth + BOX_PADDING * 2;
     const containerHeight = textHeight + BOX_PADDING * 2;
 
     this.textMessageCtx.clearRect(
@@ -218,7 +235,13 @@ export class HUDSystem implements System {
     this.textMessageCtx.globalAlpha = 1;
     this.textMessageCtx.fillStyle = "white";
 
-    this.textMessageCtx.fillText(this.activeMessage, textCenterX, textCenterY);
+    let textTopY = containerY + BOX_PADDING + LINE_HEIGHT / 2;
+    for (const line in textLines) {
+      const text = textLines[line];
+      this.textMessageCtx.fillText(text, textCenterX, textTopY);
+      textTopY += LINE_HEIGHT;
+    }
+
     this.offscreenCtx.drawImage(this.textMessageCanvas, 0, 0);
   };
 

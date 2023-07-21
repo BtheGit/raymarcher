@@ -1627,7 +1627,6 @@ const map_1 = {
         height: 0.8,
         solid: true,
       },
-      // If no state, then no animation (default state)
     },
     {
       transform: {
@@ -1654,7 +1653,6 @@ const map_1 = {
         height: 0.8,
         solid: false,
       },
-      // If no state, then no animation (default state)
     },
     {
       transform: {
@@ -1682,7 +1680,6 @@ const map_1 = {
         height: 0.8,
         solid: true,
       },
-      // If no state, then no animation (default state)
     },
     {
       transform: {
@@ -1710,7 +1707,6 @@ const map_1 = {
         height: 0.8,
         solid: true,
       },
-      // If no state, then no animation (default state)
     },
     {
       transform: {
@@ -2292,7 +2288,12 @@ const map_2 = {
         {
           type: "ShowMessage",
           priority: 5,
-          body: "When did you first realize you were god?",
+          body: "What did the solipsist say when he\nbroke up with his girlfriend?",
+        },
+        {
+          type: "ShowMessage",
+          priority: 5,
+          body: "It's not you, it's me.",
         },
       ],
       initialState: "state__idle",
