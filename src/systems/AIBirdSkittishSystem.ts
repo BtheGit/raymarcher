@@ -1,5 +1,5 @@
 import { GridManager } from "../GridManager/GridManager";
-import { CollisionLayer } from "../enums";
+import { AIType, CollisionLayer, EventMessageName } from "../enums";
 import {
   BirdSkittishEntity,
   GridNode,
@@ -39,7 +39,7 @@ export class AIBirdSkittishSystem {
 
     // TODO: shared constants for collision events.
     this.broker.subscribe(
-      "projectile_collision",
+      EventMessageName.ProjectileCollision,
       this.handleProjectileCollision
     );
   }
@@ -47,7 +47,7 @@ export class AIBirdSkittishSystem {
   handleProjectileCollision = (e) => {
     // We only care about collisions with this ai.
     // TODO: Type all this later (though it's very hacky...)
-    if (e.collidedWith?.ai?.aiType !== "bird_skittish") {
+    if (e.collidedWith?.ai?.aiType !== AIType.BirdSkittish) {
       return;
     }
     this.updateState(e.collidedWith, "state__hit");

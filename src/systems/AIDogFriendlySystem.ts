@@ -1,5 +1,5 @@
 import { GridManager } from "../GridManager/GridManager";
-import { AIType, CollisionLayer } from "../enums";
+import { AIType, CollisionLayer, EventMessageName } from "../enums";
 import {
   DogFriendlyEntity,
   GridNode,
@@ -28,9 +28,8 @@ export class AIDogFriendlySystem {
     this.gridManager = gridManager;
     this.player = player;
 
-    // TODO: shared constants for collision events.
     this.broker.subscribe(
-      "projectile_collision",
+      EventMessageName.ProjectileCollision,
       this.handleProjectileCollision
     );
   }
@@ -38,7 +37,6 @@ export class AIDogFriendlySystem {
   // Doom has projectiles keep a pointer to their emitter, which would make sense for reconciling source of damage. Because I'm missing that, I'm relying on the emitter to send an event on successful hit. Probably should reverse that. But since it's non-functional for now (except having to emit events, I'm gonna punt)
   handleProjectileCollision = (e) => {
     // We only care about collisions with this ai.
-    // TODO: Type all this later (though it's very hacky...)
     if (e.collidedWith?.ai?.aiType !== AIType.DogFriendly) {
       return;
     }

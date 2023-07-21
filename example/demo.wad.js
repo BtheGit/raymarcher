@@ -2282,6 +2282,13 @@ const map_2 = {
         elevation: 32,
       },
       actor: "Book",
+      interactionDirectives: [
+        {
+          type: "ShowMessage",
+          priority: 5,
+          body: "Hello world.",
+        },
+      ],
       initialState: "state__idle",
       states: [
         {

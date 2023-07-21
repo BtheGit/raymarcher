@@ -7,10 +7,12 @@ import { EventManager } from "../EventManager/EventManager";
 import { GridManager } from "../GridManager/GridManager";
 import { SpriteManager } from "../SpriteManager/SpriteManager";
 import { TextureManager } from "../TextureManager/TextureManager";
-import { EventMessageName } from "../enums";
+import { EventMessageName, InteractionDirectiveName } from "../enums";
 import {
+  EventMessage,
   GameSettingsComponent,
   GameSettingsEntity,
+  PlayerActorCollisionEvent,
   PlayerEntity,
 } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
@@ -30,6 +32,12 @@ export class HUDSystem implements System {
   private inputSystem: SingletonInputSystem;
   private broker: Broker;
 
+  private messageQueue: any = [];
+  private messageTimeout: number | null = null;
+
+  // TODO: Placeholder for generic system. Liike so much here. Want to have the brief flash of doom for a pickup, but also be able to override it with a new pickup. Will check for existence of value, if it is, will use its state to render correct frame of animation. Self destruct at end.
+  private flashEffect = null;
+
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
 
@@ -44,6 +52,10 @@ export class HUDSystem implements System {
   // Individual Buffer Things that change frequently on mini map
   minimapLayer1Canvas = document.createElement("canvas");
   minimapLayer1Ctx = this.minimapLayer1Canvas.getContext("2d")!;
+
+  // Message buffer
+  textMessageCanvas = document.createElement("canvas");
+  textMessageCtx = this.textMessageCanvas.getContext("2d")!;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -71,8 +83,10 @@ export class HUDSystem implements System {
     this.canvas = canvas;
     this.ctx = ctx;
 
-    this.offscreenCanvas.width = this.canvas.width;
-    this.offscreenCanvas.height = this.canvas.height;
+    this.textMessageCanvas.width = this.offscreenCanvas.width =
+      this.canvas.width;
+    this.textMessageCanvas.height = this.offscreenCanvas.height =
+      this.canvas.height;
 
     this.minimapLayer0Canvas.width = this.minimapLayer1Canvas.width = 200;
     this.minimapLayer0Canvas.height = this.minimapLayer1Canvas.height = 200;
@@ -87,8 +101,73 @@ export class HUDSystem implements System {
     );
   }
 
-  handleItemPickup = (event) => {
-    console.log(event);
+  handleItemPickup = (event: PlayerActorCollisionEvent) => {
+    if (!event.entity?.interactionDirectives?.length) {
+      return;
+    }
+
+    for (const directive of event.entity.interactionDirectives) {
+      console.log(directive);
+      switch (directive.type) {
+        case InteractionDirectiveName.ShowMessage: {
+          this.queueTextMessage(directive.body, directive.priority);
+        }
+      }
+    }
+  };
+
+  // Let's use a priority system to evacuate queued messages in favor of higher priority messages.
+  queueTextMessage = (body: string, priority = 5) => {
+    const message = {
+      body,
+      priority,
+      timestamp: Date.now(), // For later doing cleanup of stale or stuck messages.
+    };
+
+    this.messageQueue.push(message);
+    this.bufferTextMessage();
+
+    // TODO: Instead of just pushing, let's sort this into priority order ( or just expel anything lower priority in front of it)
+  };
+
+  clearTextMessage = () => {
+    this.textMessageCtx.clearRect(
+      0,
+      0,
+      this.textMessageCanvas.width,
+      this.textMessageCanvas.height
+    );
+  };
+
+  todoFlash = () => {
+    this.textMessageCtx.globalAlpha = 0.3;
+    this.textMessageCtx.fillStyle = "rgba(150, 50, 50, 30)";
+    this.textMessageCtx.fillRect(
+      0,
+      0,
+      this.textMessageCanvas.width,
+      this.textMessageCanvas.height
+    );
+    this.messageTimeout = setTimeout(() => {
+      this.clearTextMessage();
+    }, 60);
+  };
+
+  bufferTextMessage = () => {
+    this.clearTextMessage();
+
+    if (!this.messageQueue.length) {
+      return;
+    }
+
+    const nextMessage = this.messageQueue.shift();
+    console.log(nextMessage.body);
+    // TODO: Can use this to line split and justify etc.
+    // console.log(this.textMessageCtx.measureText(nextMessage.body));
+  };
+
+  renderTextMessages = () => {
+    this.offscreenCtx.drawImage(this.textMessageCanvas, 0, 0);
   };
 
   // For now, this is really going to be called once. Later, if it supports zoom or map tiles are able to change, we'll need
@@ -233,12 +312,19 @@ export class HUDSystem implements System {
     this.ctx.drawImage(this.offscreenCanvas, 0, 0);
   }
   update(dt: number) {
+    this.offscreenCtx.clearRect(
+      0,
+      0,
+      this.offscreenCanvas.width,
+      this.offscreenCanvas.height
+    );
     // TODO: Render HUD (MapOverlay, Text, etc)
+
+    this.renderTextMessages();
 
     if (this.inputSystem.isKeyPressed("`")) {
       this.renderMiniMap();
-
-      this.draw();
     }
+    this.draw();
   }
 }

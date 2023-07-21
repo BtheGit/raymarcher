@@ -30,8 +30,8 @@ export class ProjectileSystem implements System {
 
   handleEmitProjectile = (event: EmitProjectileEvent) => {
     // TODO: Switch on types of projectiles. For now, only handling ball.
-    const { type } = event;
-    switch (type) {
+    const { projectileType } = event;
+    switch (projectileType) {
       // TODO: Replace with enum
       case "magic_shot":
         this.newMagicShot(event);
@@ -45,8 +45,8 @@ export class ProjectileSystem implements System {
   };
 
   emitCollisionEvent = (collision) => {
-    this.broker.emit("projectile_collision", {
-      name: "projectile_collision",
+    this.broker.emit(EventMessageName.ProjectileCollision, {
+      name: EventMessageName.ProjectileCollision,
       projectileType: "magic_shot",
       emitter: "player",
       timestamp: Date.now(), // Since this isn't the same exact event as the initial collision, probabl ya  new timestamp?

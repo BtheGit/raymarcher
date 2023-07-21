@@ -267,6 +267,7 @@ const loadLevel = async (
       ai,
       movement,
       actor,
+      interactionDirectives,
     } = object;
 
     let objectEntity = {
@@ -293,6 +294,11 @@ const loadLevel = async (
       // TODO: Move derived value instantiation out of the wad (stuff like idleTimer)
       // For now, we'll just force the wad to match the component shape so we can fry bigger fish.
       (objectEntity as ObjectEntity).ai = ai;
+    }
+
+    if (interactionDirectives) {
+      (objectEntity as ObjectEntity).interactionDirectives =
+        interactionDirectives;
     }
 
     if (sprite) {
@@ -488,19 +494,6 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
     // This is just for fun to try out an interlevel screen. Just black flash for now.
 
     level.unload();
-
-    // screenContext.setTransform(1, 0, 0, 1, 0, 0);
-    // screenContext.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
-    // screenContext.rect(0, 0, screenCanvas.width, screenCanvas.height);
-    // screenContext.fillStyle = "red";
-    // screenContext.fill();
-    // screenContext.beginPath();
-    // screenContext.moveTo(75, 50);
-    // screenContext.lineTo(100, 75);
-    // screenContext.lineTo(100, 25);
-    // screenContext.fill();
-    // setTimeout(async () => {
-    // }, 2000);
 
     level = await loadLevel(wad, settings, newLevel);
   });

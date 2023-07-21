@@ -50,4 +50,9 @@ export enum EventMessageName {
   PlayerActorCollision = "PlayerActorCollision",
   DestroyProjectile = "DestroyProjectile",
   EmitProjectile = "EmitProjectile",
+  ProjectileCollision = "ProjectileCollision",
+}
+
+export enum InteractionDirectiveName {
+  ShowMessage = "ShowMessage",
 }

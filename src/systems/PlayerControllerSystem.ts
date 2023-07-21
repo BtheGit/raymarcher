@@ -210,7 +210,7 @@ export class PlayerControllerSystem implements System {
       // TODO: Go associate projectiles (as separate entitys with weapons (and weapon actions), simply reference that here.)
       this.broker.emit(EventMessageName.EmitProjectile, {
         name: EventMessageName.EmitProjectile,
-        type: "magic_shot",
+        projectileType: "magic_shot",
         emitter: "player", // Probably shouldn't pass the whole entity. So going to break out all the relevant stuff. I do want to know who emitted it for collision resolutions. But can probably just use an enum value like player | npc.
         origin: this.player.transform.position,
         // Do we need this with velocity?

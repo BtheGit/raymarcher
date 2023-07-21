@@ -6,6 +6,7 @@ import {
   GameActorType,
   AIType,
   EventMessageName,
+  InteractionDirectiveName,
 } from "./enums";
 
 export type Entity = any;
@@ -194,6 +195,18 @@ export interface CollisionReport {
   // TODO: Unfortunately, I need to rethink how to do projectile impacts when the colliding entity is removed. Maybe I need to schedule dead entities for deletion so that references aren't immediately lost. That would be a short term hack.
 }
 
+export interface BaseInteractionDirective {
+  type: string;
+  priority: number;
+}
+
+export interface MessageInteractionDirective extends BaseInteractionDirective {
+  type: InteractionDirectiveName.ShowMessage;
+  body: string;
+}
+
+export type InteractionDirective = MessageInteractionDirective;
+
 export interface BaseAIComponent {
   aiType: string;
 }
@@ -236,6 +249,7 @@ export interface BaseObjectEntity {
   transform: TransformComponent;
   movement: MovementComponent;
   velocity: VelocityComponent;
+  interactionDirectives?: InteractionDirective[];
   ai?: AIComponent;
   collider?: ColliderComponent;
   collisions?: CollisionReport[];
@@ -449,6 +463,7 @@ export interface WADObjectEntity {
     directions: 0 | 8;
   };
   initialState?: string;
+  interactionDirectives?: any[];
   states?: Array<{
     name: string;
     animation: string;
@@ -521,14 +536,16 @@ export interface WAD {
   };
 }
 
-export interface EventMessage {
-  type: string;
+export interface EventMessageBase {
+  // Events in side of events? Ha. Well, it's turtles all the way down. The thought is to be able to associate an arbitrary set of single instructions with an event, so I can worry less about composing one large object of flags. This may be more overkill ironically :)
+  // We don't need to pass these as long as we're passing entities. These are already in a component
+  // directives: InteractionDirective[];
 }
 
-export interface EmitProjectileEvent extends EventMessage {
+export interface EmitProjectileEvent extends EventMessageBase {
   name: EventMessageName.EmitProjectile;
   emitter: "player";
-  type: string;
+  projectileType: string;
   // TODO: Type of projectile and parameters and associated sprite
   sprite: SpriteTextureComponent; // TODO: Sprite types (static animated)
   origin: Vector2;
@@ -540,15 +557,20 @@ export interface EmitProjectileEvent extends EventMessage {
 }
 
 // This is tricky because it's going to rely on entity references. Would be better to have an entity Id to pass
-export interface DestroyProjectileEvent extends EventMessage {
+export interface DestroyProjectileEvent extends EventMessageBase {
   name: EventMessageName.DestroyProjectile;
   // TODO: If entity's had generic lifecycles i could obviously reuse this.
   entity: ProjectileEntity;
 }
 
-export interface PlayerActorCollisionEvent extends EventMessage {
+export interface PlayerActorCollisionEvent extends EventMessageBase {
   name: EventMessageName.PlayerActorCollision;
   actor: GameActorType;
   entity: Entity;
   // ...
 }
+
+export type EventMessage =
+  | EmitProjectileEvent
+  | DestroyProjectileEvent
+  | PlayerActorCollisionEvent;
