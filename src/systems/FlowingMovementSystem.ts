@@ -37,6 +37,7 @@ export class FlowingMovementSystem implements System {
         return;
       }
 
+      // TODO: https://howtorts.github.io/2014/01/04/basic-flow-fields.html Mayeb the fix is here?
       // // Calculate the position within the current tile (0 to 1)
       // const positionInTileX = flowerEntity.transform.position.x % 1;
       // const positionInTileY = flowerEntity.transform.position.y % 1;
@@ -111,6 +112,9 @@ export class FlowingMovementSystem implements System {
 
       // // Add the combined flow field velocity to the entity's current velocity
       // flowerEntity.velocity = flowerEntity.velocity!.add(combinedFlowField);
+      // // flowerEntity.velocity = combinedFlowField.subtract(
+      // //   flowerEntity.velocity!
+      // // );
       // flowerEntity.transform.direction = flowerEntity.velocity;
 
       const currTile = flowerEntity.transform.position.map(Math.floor);
