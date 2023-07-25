@@ -94,6 +94,7 @@ In the interests of making lists that never get completed, here are some potenti
 - [] Different weapons and switching between them
 - [] Make my own sprites (not engine related though)
 - [] Projectiles with gravity
+- [x] Flow field pathfinding for swarms. Sort of
 
 ### Alternate fun ideas with raycasters:
 

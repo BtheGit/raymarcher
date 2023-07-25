@@ -249,10 +249,6 @@ const animations = [
         frameId: "ABATA",
         directions: 8,
       },
-      {
-        frameId: "ABATC",
-        directions: 8,
-      },
     ],
   },
   {
@@ -1741,8 +1737,9 @@ const map_1 = {
         height: 192,
         elevation: 0,
       },
-      movement: {
-        speed: 0.001,
+      movementSettings: {
+        walkSpeed: 0.001,
+        runSpeed: 0.0015,
       },
       actor: "NPC",
       initialState: "state__idle",
@@ -1758,6 +1755,10 @@ const map_1 = {
         {
           name: "state__hit",
           animation: "scientist__hit",
+        },
+        {
+          name: "state__swarm",
+          animation: "scientist__default",
         },
       ],
       collider: {
@@ -1792,8 +1793,9 @@ const map_1 = {
         height: 192,
         elevation: 0,
       },
-      movement: {
-        speed: 0.001,
+      movementSettings: {
+        walkSpeed: 0.001,
+        runSpeed: 0.0015,
       },
       actor: "NPC",
       initialState: "state__idle",
@@ -1809,6 +1811,10 @@ const map_1 = {
         {
           name: "state__hit",
           animation: "scientist__hit",
+        },
+        {
+          name: "state__swarm",
+          animation: "scientist__default",
         },
       ],
       collider: {
@@ -1843,8 +1849,9 @@ const map_1 = {
         height: 192,
         elevation: 0,
       },
-      movement: {
-        speed: 0.003,
+      movementSettings: {
+        walkSpeed: 0.003,
+        runSpeed: 0.005,
       },
       actor: "NPC",
       initialState: "state__idle",
@@ -1860,6 +1867,10 @@ const map_1 = {
         {
           name: "state__hit",
           animation: "bananaman__stand",
+        },
+        {
+          name: "state__swarm",
+          animation: "bananaman__walk",
         },
       ],
       collider: {
@@ -1894,8 +1905,9 @@ const map_1 = {
         height: 64,
         elevation: 0,
       },
-      movement: {
-        speed: 0.0001,
+      movementSettings: {
+        walkSpeed: 0.0001,
+        runSpeed: 0.0005,
       },
       actor: "NPC",
       initialState: "state__idle",
@@ -1911,6 +1923,10 @@ const map_1 = {
         {
           name: "state__hit",
           animation: "bananaman__stand",
+        },
+        {
+          name: "state__swarm",
+          animation: "bananaman__walk",
         },
       ],
       collider: {
@@ -1945,8 +1961,9 @@ const map_1 = {
         height: 128,
         elevation: 0,
       },
-      movement: {
-        speed: 0.001,
+      movementSettings: {
+        walkSpeed: 0.001,
+        runSpeed: 0.003,
       },
       actor: "NPC",
       initialState: "state__idle",
@@ -1962,6 +1979,10 @@ const map_1 = {
         {
           name: "state__hit",
           animation: "bananaman__stand",
+        },
+        {
+          name: "state__swarm",
+          animation: "bananaman__walk",
         },
       ],
       collider: {
@@ -1996,8 +2017,9 @@ const map_1 = {
         height: 128,
         elevation: 0,
       },
-      movement: {
-        speed: 0.001,
+      movementSettings: {
+        walkSpeed: 0.001,
+        runSpeed: 0.002,
       },
       actor: "NPC",
       initialState: "state__idle",
@@ -2008,6 +2030,10 @@ const map_1 = {
         },
         {
           name: "state__wander",
+          animation: "koopa_troopa__walk",
+        },
+        {
+          name: "state__swarm",
           animation: "koopa_troopa__walk",
         },
         {
@@ -2320,8 +2346,9 @@ const map_2 = {
         height: 64,
         elevation: 128,
       },
-      movement: {
-        speed: 0.005,
+      movementSettings: {
+        walkSpeed: 0.005,
+        runSpeed: 0.008,
       },
       actor: "NPC",
       initialState: "state__idle",
@@ -2374,7 +2401,7 @@ const map_2 = {
 };
 
 const wadSettings = {
-  firstMap: "map_2",
+  firstMap: "map_1",
 };
 
 const wad = {

@@ -80,9 +80,15 @@ export interface RotationComponent {
 
 export interface VelocityComponent extends Vector2 {}
 
-// TODO: Hard code for now.
+export interface MovementSettings {
+  walkSpeed: number;
+  runSpeed: number;
+}
+
+// TODO: Break out defaults from current.
 export interface MovementComponent {
   speed: number;
+  settings?: MovementSettings;
   // walkSpeed: number;
   // rotationSpeed: number;
 }
@@ -97,6 +103,13 @@ export interface BobbingMovementComponent {
   frequency: number;
   initialElevation: number;
   startTime: number;
+}
+
+export interface FlowingMovementComponent {
+  // TODO: Field type (target or noise)
+  target: Vector2 | { x: number; y: number };
+  weight: number;
+  speed: number;
 }
 
 // Breaking these apart to gently deprecate rotation;
@@ -260,9 +273,10 @@ export interface BaseObjectEntity {
   actor: GameActorType;
   objectType: string;
   transform: TransformComponent;
-  movement: MovementComponent;
   velocity: VelocityComponent;
+  movement?: MovementComponent;
   bobbingMovement?: BobbingMovementComponent;
+  flowingMovement?: FlowingMovementComponent;
   interactionDirectives?: InteractionDirective[];
   ai?: AIComponent;
   collider?: ColliderComponent;
@@ -295,9 +309,11 @@ export interface MagicShotProjectileEntity extends ProjectileEntity {
 
 export interface DogFriendlyEntity extends AnimatedObjectEntity {
   ai: DogAIComponent;
+  movement: MovementComponent;
 }
 export interface BirdSkittishEntity extends AnimatedObjectEntity {
   ai: BirdAIComponent;
+  movement: MovementComponent;
 }
 
 export type ObjectEntity = StaticObjectEntity | AnimatedObjectEntity;
@@ -496,7 +512,7 @@ export interface WADObjectEntity {
     frequency: number;
     initialElevation: number;
   };
-  movement?: MovementComponent;
+  movementSettings?: MovementSettings;
   collisionLayer?: number;
   ai?: any;
 }

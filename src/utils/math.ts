@@ -19,6 +19,20 @@ export class Vector2 {
     return Math.sqrt(vector.x ** 2 + vector.y ** 2);
   }
 
+  static lerp(
+    start: Vector2 | { x: number; y: number },
+    target: Vector2 | { x: number; y: number },
+    t: number
+  ): Vector2 {
+    const newX = start.x + t * (target.x - start.x);
+    const newY = start.y + t * (target.y - start.y);
+    return new Vector2(newX, newY);
+  }
+
+  normalize() {
+    return Vector2.normalize(this);
+  }
+
   equals(vector) {
     return this.x === vector.x && this.y === vector.y;
   }

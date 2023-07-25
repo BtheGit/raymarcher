@@ -42,7 +42,7 @@ export class PhysicsSystem implements System {
     const kineticEntities: KineticEntity[] = [
       this.player,
       ...this.ecs.entityManager
-        .with(["velocity", "transform"])
+        .with(["velocity", "transform", "movement"])
         .filter((el) => !el.hasOwnProperty("camera")),
     ];
     const decelerationRate = this.deceleration * dt;
@@ -50,7 +50,7 @@ export class PhysicsSystem implements System {
     for (const entity of kineticEntities) {
       const { velocity } = entity;
       const { position } = entity.transform;
-      const { speed } = entity.movement;
+      const { speed } = entity.movement!;
 
       if (velocity.x === 0 && velocity.y === 0) continue;
 

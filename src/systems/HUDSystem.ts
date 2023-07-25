@@ -23,6 +23,23 @@ const PI2 = Math.PI * 2;
 
 // TODO: Text Defaults so every message doesn't have to specify.
 
+function drawRoundedRect(ctx, x, y, width, height, cornerRadius) {
+  ctx.beginPath();
+  ctx.moveTo(x + cornerRadius, y);
+  ctx.arcTo(x + width, y, x + width, y + cornerRadius, cornerRadius);
+  ctx.arcTo(
+    x + width,
+    y + height,
+    x + width - cornerRadius,
+    y + height,
+    cornerRadius
+  );
+  ctx.arcTo(x, y + height, x, y + height - cornerRadius, cornerRadius);
+  ctx.arcTo(x, y, x + cornerRadius, y, cornerRadius);
+  ctx.closePath();
+  ctx.fill();
+}
+
 export class HUDSystem implements System {
   private ecs: ECS;
   private textureManager: TextureManager;
@@ -225,13 +242,21 @@ export class HUDSystem implements System {
 
     this.textMessageCtx.globalAlpha = 0.5;
     this.textMessageCtx.fillStyle = "black";
-
-    this.textMessageCtx.fillRect(
+    drawRoundedRect(
+      this.textMessageCtx,
       containerX,
       containerY,
       containerWidth,
-      containerHeight
+      containerHeight,
+      5
     );
+
+    // this.textMessageCtx.fillRect(
+    //   containerX,
+    //   containerY,
+    //   containerWidth,
+    //   containerHeight,
+    // );
     this.textMessageCtx.globalAlpha = 1;
     this.textMessageCtx.fillStyle = "white";
 

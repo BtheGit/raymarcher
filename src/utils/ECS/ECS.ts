@@ -100,7 +100,7 @@ export class EntityManager<Entity> extends Bucket<Entity> {
   };
 
   removeComponentFromEntity = (entity: Entity, componentKey: keyof Entity) => {
-    if (!entity[componentKey] === undefined) {
+    if (entity[componentKey] !== undefined) {
       delete entity[componentKey];
     }
 

@@ -39,6 +39,7 @@ import { AnimationSystem } from "./systems/AnimationSystem";
 import { SpriteManager } from "./SpriteManager/SpriteManager";
 import { AnimationManager } from "./AnimationManager/AnimationManager";
 import { Broker } from "./utils/events";
+import { FlowingMovementSystem } from "./systems/FlowingMovementSystem";
 
 const TILE_SIZE = 256;
 
@@ -265,7 +266,7 @@ const loadLevel = async (
       initialState,
       collider,
       ai,
-      movement,
+      movementSettings,
       actor,
       interactionDirectives,
       bobbingMovement,
@@ -281,10 +282,14 @@ const loadLevel = async (
         elevation: transform.elevation,
       },
       velocity: new Vector2(0, 0),
-      movement: movement ?? {
-        speed: 0,
-      },
     };
+
+    if (movementSettings) {
+      (objectEntity as ObjectEntity).movement = {
+        speed: 0,
+        settings: movementSettings,
+      };
+    }
 
     if (collider) {
       (objectEntity as ObjectEntity).collider = collider;
@@ -363,7 +368,7 @@ const loadLevel = async (
           currentState: initialState,
           previousState: null,
           initialState,
-          lastStateChange: 0,
+          lastStateChange: Date.now(),
           states: entityStates,
         },
       };
@@ -387,6 +392,8 @@ const loadLevel = async (
   ecs.systems.add(new AIControllerSystem(ecs, broker, gridManager));
 
   ecs.systems.add(new BobbingMovementSystem(ecs));
+
+  ecs.systems.add(new FlowingMovementSystem(ecs, gridManager));
 
   ecs.systems.add(new ProjectileSystem(ecs, broker));
 

@@ -5,12 +5,18 @@
 import { GridCoord, GridTileEntity, WADGrid } from "../raymarcher";
 import { ECS } from "../utils/ECS/ECS";
 import { shortestPathBFS } from "../utils/bfs";
+import { LRUCache } from "../utils/cache";
+import { Vector2 } from "../utils/math";
+
+const CACHE_LIMIT = 20;
 
 export class GridManager {
   private grid: Map<string, GridTileEntity> = new Map();
   private ecs: ECS;
   private _rows = 0;
   private _columns = 0;
+
+  private flowFields = new LRUCache<string, [number, number][][]>(CACHE_LIMIT); // TODO: Determine memory usage and valid size limit. Probably pretty high.
 
   constructor(ecs: ECS) {
     this.ecs = ecs;
@@ -161,6 +167,74 @@ export class GridManager {
   getPathAtoB(start: GridCoord, target: GridCoord) {
     return shortestPathBFS(this, start, target);
   }
+
+  // TODO: Floor the vector for grid tile?
+  generateFlowField = (
+    targetTile: Vector2 | { x: number; y: number }
+  ): [number, number][][] | undefined => {
+    if (!this.isTileAccessible(targetTile.x, targetTile.y)) return;
+
+    const cacheKey = `${targetTile.x}-${targetTile.y}`;
+
+    // We are going to use a cache that cant account for changes to the environment. So need to keep that in mind if I start adding doors and moving walls. Can use those as signals to clear the LRU cache (not ideal but simpler)
+    const cachedFlowField = this.flowFields.get(cacheKey);
+    if (cachedFlowField) {
+      return cachedFlowField;
+    }
+
+    const flowField: [number, number][][] = new Array(this.height)
+      .fill([])
+      .map(() => new Array(this.width).fill([0, 0]));
+
+    const visited: boolean[][] = new Array(this.height)
+      .fill([])
+      .map(() => new Array(this.width).fill(false));
+
+    // Queue for Dijkstra's algorithm
+    const queue: [number, number][] = [[targetTile.x, targetTile.y]];
+
+    // Set the target cell's vector to [0, 0]
+    flowField[targetTile.y][targetTile.x] = [0, 0];
+    while (queue.length > 0) {
+      const [x, y] = queue.shift()!;
+
+      const neighbors: [number, number][] = [
+        [x - 1, y],
+        [x + 1, y],
+        [x, y - 1],
+        [x, y + 1],
+      ];
+
+      for (const [nx, ny] of neighbors) {
+        // Check if the neighbor is within bounds and not a wall
+        if (
+          nx >= 0 &&
+          nx < this.width &&
+          ny >= 0 &&
+          ny < this.height &&
+          this.isTileAccessible(nx, ny) &&
+          !visited[ny][nx]
+        ) {
+          // Calculate the vector to the neighbor from the current cell
+          const dx = x - nx;
+          const dy = y - ny;
+          const vector: [number, number] = [dx, dy];
+
+          // If the vector is different from the existing vector, update it
+          if (
+            vector[0] !== flowField[ny][nx][0] ||
+            vector[1] !== flowField[ny][nx][1]
+          ) {
+            flowField[ny][nx] = vector;
+            visited[ny][nx] = true;
+            queue.push([nx, ny]);
+          }
+        }
+      }
+    }
+    this.flowFields.set(cacheKey, flowField);
+    return flowField;
+  };
 
   // removeEntity() // TODO: Maybe later. But for now, since it's just grid tiles, we never remove anything. When we add in other things with grid location, maybe (like lights or effects or...I dunno.)
 }
