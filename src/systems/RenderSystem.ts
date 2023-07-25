@@ -935,6 +935,9 @@ export class RenderSystem implements System {
       return;
     }
     const equippedWeaponAnimation = this.camera.equippedWeaponAnimation;
+    if (!equippedWeaponAnimation) {
+      return;
+    }
     const activeFrame =
       equippedWeaponAnimation.frames[equippedWeaponAnimation.currentFrame];
 
@@ -943,6 +946,9 @@ export class RenderSystem implements System {
       return;
     }
     const equipedWeaponSprite = this.camera.equippedWeaponSprite;
+    if (!equipedWeaponSprite) {
+      return;
+    }
 
     // Now, we'll need to determine if the sprite is as wide as the given width. If it's not, we need to pad (offset).
 

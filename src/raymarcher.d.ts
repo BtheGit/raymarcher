@@ -44,8 +44,8 @@ export interface PlayerEntity {
   collisionLayer: CollisionLayerComponent;
   state: PlayerStateComponent;
   equippedWeapon: EquipableWeaponComponent;
-  equippedWeaponAnimation: AnimationState;
-  equippedWeaponSprite: EquipableWeaponSprite;
+  equippedWeaponAnimation?: AnimationState;
+  equippedWeaponSprite?: EquipableWeaponSprite;
   // TODO: Inventory or weaponinventory to make some things not immediately available.
 }
 

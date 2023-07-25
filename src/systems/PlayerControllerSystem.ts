@@ -240,6 +240,9 @@ export class PlayerControllerSystem implements System {
     // NOTE: this needs to be constrained to a frame rate, but we don't want that constraint in the update call since we want to respond immediately to a fire press, rather than wait x frames (since the weapon framerate will be lowish).
 
     const animation = this.player.equippedWeaponAnimation;
+    if (!animation) {
+      return;
+    }
     const { currentFrame, frames, events, timeSinceLastFrame } = animation;
     const time = Date.now();
     const delta = time - timeSinceLastFrame;
