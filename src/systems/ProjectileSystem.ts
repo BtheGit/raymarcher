@@ -39,16 +39,17 @@ export class ProjectileSystem implements System {
     }
   };
 
-  handleDestroyProjectile = (projectileEntity: ProjectileEntity) => {
+  handleDestroyProjectile = (e) => {
     // For now, blindly remove the entity.
-    this.ecs.entityManager.remove(projectileEntity);
+    this.ecs.entityManager.remove(e.projectile);
   };
 
-  emitCollisionEvent = (collision) => {
+  emitCollisionEvent = (projectile, collision) => {
     this.broker.emit(EventMessageName.ProjectileCollision, {
       name: EventMessageName.ProjectileCollision,
       projectileType: "magic_shot",
       emitter: "player",
+      entityEmitter: projectile,
       timestamp: Date.now(), // Since this isn't the same exact event as the initial collision, probabl ya  new timestamp?
       collidedWith: collision.collidedWith, // This reference shoudl still be there, but the ball won't be, so we need to include pertinent information. If there were physics we'd include that kind of stuff, but not right now.
       collisionLayer: CollisionLayer.PlayerProjectile, // TODO: Support NPC projectiles?
@@ -176,7 +177,9 @@ export class ProjectileSystem implements System {
     newEntity.state.states[ProjectileState.Destroying].animation.events!.push({
       frameId: "D2FXL",
       eventType: EventMessageName.DestroyProjectile,
-      eventPayload: newEntity,
+      eventPayload: {
+        projectile: newEntity,
+      },
     });
     this.test = newEntity;
   };
@@ -188,7 +191,7 @@ export class ProjectileSystem implements System {
       if (projectile.collisions?.length) {
         // TODO: ? Ok, so I've been having trouble resolving projectile collisions with enemies because the enemies lose their reference to the projectile when it's removed, before they act on it. There are lots of solutions. But really, I like event systems anyway, so I'd rather move in that direction. Even if it's not appropriate. So we're going to publish an event on projectile collision with an entity. Later we can worry about layers, but right now, meh. Let the different controllers listen and determine if they care. Now, because I'm doing it this way, I can just pass the entity reference. Not ideal but, stop me. I'm sleepy and I want this feature. :) I could be doing this right in the physics system as well of course... But this preserves order of operations at least I guess. As in, the bullet detects the hit and then hits the character in turn.
         for (const collision of projectile.collisions) {
-          this.emitCollisionEvent(collision);
+          this.emitCollisionEvent(projectile, collision);
         }
 
         // I want projectile animations (like explosions) to render in front of what it collided with, so I need to move the projectile back along the plane to just before the point of intersection. I'm guessing this will be painful, but I'm going to take a rough first stab.

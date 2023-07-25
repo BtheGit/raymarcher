@@ -106,6 +106,13 @@ export class AIDogFriendlySystem {
     entity.state.previousState = currentState;
     entity.state.currentState = newState;
     entity.state.lastStateChange = Date.now();
+
+    if (stateObject.sound) {
+      this.broker.emit(EventMessageName.PlaySound, {
+        ...stateObject.sound,
+        entityEmitter: entity,
+      });
+    }
   };
 
   update = (dt: number, entity: DogFriendlyEntity) => {
@@ -129,7 +136,7 @@ export class AIDogFriendlySystem {
       entity.transform.position
     );
 
-    if (distanceToPlayer <= 1 && currentState !== "state__hit") {
+    if (distanceToPlayer <= 1.5 && currentState !== "state__hit") {
       // Clear the path and target, and switch to idle state
       entity.ai.seekPath.path = null;
       entity.ai.seekTarget.target = null;

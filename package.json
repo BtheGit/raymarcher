@@ -32,5 +32,8 @@
   "homepage": "https://github.com/BtheGit/raymarcher#readme",
   "devDependencies": {
     "vite": "^4.3.9"
+  },
+  "dependencies": {
+    "howler": "^2.2.3"
   }
 }

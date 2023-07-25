@@ -95,6 +95,8 @@ In the interests of making lists that never get completed, here are some potenti
 - [] Make my own sprites (not engine related though)
 - [] Projectiles with gravity
 - [x] Flow field pathfinding for swarms. Sort of
+- [] ECS doesn't allow multiple components of the same type (audio) since it uses component types as keys
+- [] Add generic onstart and onend for events in animations, that can be managed outside of the animation system (could also have set sound types per AI type...)
 
 ### Alternate fun ideas with raycasters:
 

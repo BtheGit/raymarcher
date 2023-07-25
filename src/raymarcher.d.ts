@@ -181,7 +181,9 @@ export interface FrameEvent {
   eventPayload: any; // TODO:
 }
 
-export interface SoundComponent {}
+export interface SoundComponent {
+  name: string;
+}
 
 export interface EntityStateComponent {
   currentState: string | number;
@@ -563,6 +565,7 @@ export interface WAD {
     firstMap: string;
   };
   textures: any;
+  sounds: any;
   sprites: any;
   animations: WADAnimation[];
   textureAnimations: WADTextureAnimation[];
@@ -572,6 +575,8 @@ export interface WAD {
 }
 
 export interface EventMessageBase {
+  name: EventMessageName;
+  emitterEntity: Entity;
   // Events in side of events? Ha. Well, it's turtles all the way down. The thought is to be able to associate an arbitrary set of single instructions with an event, so I can worry less about composing one large object of flags. This may be more overkill ironically :)
   // We don't need to pass these as long as we're passing entities. These are already in a component
   // directives: InteractionDirective[];
@@ -601,8 +606,14 @@ export interface DestroyProjectileEvent extends EventMessageBase {
 export interface PlayerActorCollisionEvent extends EventMessageBase {
   name: EventMessageName.PlayerActorCollision;
   actor: GameActorType;
-  entity: Entity;
+  collidedWithEntity: Entity;
   // ...
+}
+
+export interface PlaySoundEvent extends EventMessageBase {
+  name: EventMessageName.PlaySound;
+  origin: Vector2;
+  // TODO: Base Volume (before considering distance)
 }
 
 export type EventMessage =

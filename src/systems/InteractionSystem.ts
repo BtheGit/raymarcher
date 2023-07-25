@@ -25,7 +25,7 @@ export class InteractionSystem implements System {
     switch (event.actor) {
       case GameActorType.Portal: {
         // Prevent any more collisions before anything else.
-        this.ecs.entityManager.remove(event.entity);
+        this.ecs.entityManager.remove(event.collidedWithEntity);
         // Emit level change action. (Hard coding this behavior for now.)
         // TODO: add level specification.
         // TODO: Generify portal to allow other actions? Or make a trigger instead and forget portal, it's just one trigger behavior?
@@ -43,7 +43,7 @@ export class InteractionSystem implements System {
       }
       case GameActorType.Book:
       case GameActorType.Coin: {
-        this.ecs.entityManager.remove(event.entity);
+        this.ecs.entityManager.remove(event.collidedWithEntity);
       }
     }
   };
@@ -57,7 +57,6 @@ export class InteractionSystem implements System {
     for (const portal of portals) {
       // NOTE: There should be one for now, so we hard code the action (including the level change. Just to test)
       if (portal.collisions?.length) {
-        console.log(portal.collisions);
       }
     }
   }

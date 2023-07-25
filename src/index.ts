@@ -3,6 +3,7 @@ import { WeaponAssetManger } from "./WeaponAssetManager/WeaponAssetManager";
 import { PlayerControllerSystem } from "./systems/PlayerControllerSystem";
 import { RaycasterSystem } from "./systems/RaycasterSystem";
 import { RenderSystem } from "./systems/RenderSystem";
+import { AudioSystem } from "./systems/AudioSystem";
 import { PhysicsSystem } from "./systems/PhysicsSystem";
 import { AIControllerSystem } from "./systems/AIControllerSystem";
 import { ProjectileSystem } from "./systems/ProjectileSystem";
@@ -32,12 +33,18 @@ import {
   WAD,
   WADTextureAnimationSprite,
 } from "./raymarcher";
-import { CollisionLayer, EquipableWeapon, EquipableWeaponState } from "./enums";
+import {
+  CollisionLayer,
+  EquipableWeapon,
+  EquipableWeaponState,
+  EventMessageName,
+} from "./enums";
 // TO Allay future confusion, event manager is not an event system. Ideally it shoudl be replaced with an event system though.
 import { EventManager } from "./EventManager/EventManager";
 import { AnimationSystem } from "./systems/AnimationSystem";
 import { SpriteManager } from "./SpriteManager/SpriteManager";
 import { AnimationManager } from "./AnimationManager/AnimationManager";
+import { AudioManager } from "./AudioManager/AudioManager";
 import { Broker } from "./utils/events";
 import { FlowingMovementSystem } from "./systems/FlowingMovementSystem";
 
@@ -71,6 +78,7 @@ const loadLevel = async (
   const broker = new Broker();
   const textureManager = new TextureManager();
   const spriteManager = new SpriteManager(textureManager);
+  const audioManager = new AudioManager();
   const animationManager = new AnimationManager();
   const gridManager = new GridManager(ecs);
   const weaponAssetManager = WeaponAssetManger.getInstance();
@@ -109,6 +117,8 @@ const loadLevel = async (
     ) as WADTextureAnimationSprite[]
   );
   animationManager.loadAnimations(wad.animations);
+
+  audioManager.loadSounds(wad.sounds);
 
   const grid: WADGridCell[][] = levelMap.grid!;
   gridManager.loadGrid(grid);
@@ -179,7 +189,15 @@ const loadLevel = async (
           directions: 0, // I want to make this optional so I don't need it for hud animations ideally.
         },
       ],
-      events: [],
+      events: [
+        {
+          frameId: "CONEE0",
+          eventType: EventMessageName.PlaySound,
+          eventPayload: {
+            name: "magic_shot",
+          },
+        },
+      ],
     },
     sprite: {
       width: 228,
@@ -377,6 +395,17 @@ const loadLevel = async (
     ecs.entityManager.add(objectEntity);
   });
 
+  // Once again, we're cheating a bit to avoid extra lookups until we have a better ECS system. I'm going to persist a skybox reference here.
+  const skyboxEntity: SkyboxEntity = {
+    skybox: {
+      surface: levelMap.sky.type,
+      texture: levelMap.sky.texture,
+    },
+  };
+  ecs.entityManager.add(skyboxEntity);
+
+  // ##### Systems
+
   const UserInputSystem = SingletonInputSystem.getInstance(settings.canvasId);
 
   ecs.systems.add(
@@ -412,15 +441,7 @@ const loadLevel = async (
   // The animation system is just going to do us a solid of calling update on the tile manager per tick (and later) frame.
   ecs.systems.add(new AnimationSystem(ecs, textureManager, broker));
 
-  // Once again, we're cheating a bit to avoid extra lookups until we have a better ECS system. I'm going to persist a skybox reference here.
-  const skyboxEntity: SkyboxEntity = {
-    skybox: {
-      surface: levelMap.sky.type,
-      texture: levelMap.sky.texture,
-    },
-  };
-
-  ecs.entityManager.add(skyboxEntity);
+  ecs.systems.add(new AudioSystem(ecs, audioManager, broker, playerEntity));
 
   ecs.systems.add(
     new RenderSystem(
@@ -456,6 +477,8 @@ const loadLevel = async (
       broker
     )
   );
+
+  // ########## LOOP
 
   let animationFrame;
 

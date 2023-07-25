@@ -124,11 +124,11 @@ export class HUDSystem implements System {
   }
 
   handleItemPickup = (event: PlayerActorCollisionEvent) => {
-    if (!event.entity?.interactionDirectives?.length) {
+    if (!event.collidedWithEntity?.interactionDirectives?.length) {
       return;
     }
 
-    for (const directive of event.entity.interactionDirectives) {
+    for (const directive of event.collidedWithEntity.interactionDirectives) {
       switch (directive.type) {
         case InteractionDirectiveName.ShowMessage: {
           this.queueTextMessage(directive.body, directive.priority);

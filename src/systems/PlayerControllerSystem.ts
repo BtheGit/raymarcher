@@ -211,6 +211,7 @@ export class PlayerControllerSystem implements System {
       this.broker.emit(EventMessageName.EmitProjectile, {
         name: EventMessageName.EmitProjectile,
         projectileType: "magic_shot",
+        emitterEntity: this.player,
         emitter: "player", // Probably shouldn't pass the whole entity. So going to break out all the relevant stuff. I do want to know who emitted it for collision resolutions. But can probably just use an enum value like player | npc.
         origin: this.player.transform.position,
         // Do we need this with velocity?
@@ -256,6 +257,21 @@ export class PlayerControllerSystem implements System {
     } else {
       animation.currentFrame = nextFrame;
       animation.timeSinceLastFrame = time;
+
+      // Check for any events and fire them off. This is ugly, because we know what we're looking for, so the whole point of a generic event system breaks down. We'll reconsider this some day. (Same issues with different animation systems too...)
+      if (animation.events?.length) {
+        animation.events.map((event) => {
+          if (event.frameId !== frames[animation.currentFrame].frameId) {
+            return;
+          }
+
+          // TODO: This isn't generic. We have to know how to make a play sound broadcast event. The goal right now is to share lcoation for 3d sounds.
+          this.broker.emit(event.eventType, {
+            ...event.eventPayload,
+            entityEmitter: this.player,
+          });
+        });
+      }
     }
   };
 
@@ -280,7 +296,8 @@ export class PlayerControllerSystem implements System {
           this.broker.emit(EventMessageName.PlayerActorCollision, {
             name: EventMessageName.PlayerActorCollision,
             actor: collision.collidedWith.actor,
-            entity: collision.collidedWith,
+            collidedWithEntity: collision.collidedWith,
+            emitterEntity: this.player,
           } as PlayerActorCollisionEvent);
         }
       }

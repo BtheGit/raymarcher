@@ -68,7 +68,11 @@ export class AnimationSystem implements System {
             activeAnimation.frames[activeAnimation.currentFrame];
           for (const event of activeAnimation.events) {
             if (event.frameId === activeFrame.frameId) {
-              this.broker.emit(event.eventType, event.eventPayload);
+              // TODO: This won't be enough for positional sound if we need emitter. Should attach certain elements to all.
+              this.broker.emit(event.eventType, {
+                ...event.eventPayload,
+                emitterEntity: entity,
+              });
             }
           }
         }

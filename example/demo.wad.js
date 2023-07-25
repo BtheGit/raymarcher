@@ -36,6 +36,11 @@ import Pickups1 from "./images/sprites/pickups_1.json" assert { type: "json" };
 // Probably would be useful to have texture dimensions here too.  So really a loader that reads from the directory
 // then generates this would be great since it would approximate an editor experience (which is what is really missing at this point).
 
+const sounds = {
+  magic_shot: "./audio/sounds/ARTACT1.wav",
+  pbj_time: "./audio/sounds/pbjtime1.mp3",
+};
+
 const textures = {
   background__clouds1: "./images/textures/background__clouds1.jpg",
   background__holographic_twilight_hills_sm:
@@ -358,7 +363,7 @@ const animations = [
         directions: 8,
       },
     ],
-    looping: true,
+    looping: false,
     frameDuration: 1000,
   },
   {
@@ -1867,6 +1872,9 @@ const map_1 = {
         {
           name: "state__hit",
           animation: "bananaman__stand",
+          sound: {
+            name: "pbj_time",
+          },
         },
         {
           name: "state__swarm",
@@ -2406,6 +2414,7 @@ const wadSettings = {
 
 const wad = {
   textures,
+  sounds,
   sprites: spriteDatas,
   animations,
   textureAnimations,
