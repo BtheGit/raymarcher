@@ -47,6 +47,14 @@ export class AudioManager {
     this.audioSprite.loop(status, nameOrId);
   };
 
+  updateSoundVolume = (nameOrId, volume) => {
+    if (!this.audioSprite || !nameOrId) {
+      return;
+    }
+
+    this.audioSprite.volume(volume, nameOrId);
+  };
+
   playSound = (nameOrId) => {
     if (!this.audioSprite) {
       return;

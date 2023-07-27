@@ -83,19 +83,21 @@ export class AudioSystem implements System {
           audioSourceEntity.audioSource!["spriteId"] = spriteId;
           if (looping) {
             this.audioManager.updateSoundLoopValue(spriteId, true);
-            // TODO: I shouldn't be directly manipulating howler properties. All of this should go through audio manager (though, I have no intent of changing the library so...myabe that's unnecessary)
-            // const sound = this.audioManager.getSound(name);
-            // if (sound) {
-            //   sound.loop(true, spriteId);
-            // }
           }
         }
-        // How does pausing work if multiple people use the same sound??
-        // this.audioManager.pauseSound(name);
       }
-      // TODO: Need to come back to this sequencing.
+
       if (spriteId && !this.audioManager.isPlaying(spriteId)) {
         this.audioManager.playSound(spriteId);
+      }
+
+      // NOTE: I thought I was going to use Howler's 3d sound capabilities. But I think I'll start with my own basic implementation. Especially since I don't care about panning for now.
+      if (spriteId && this.audioManager.isPlaying(spriteId)) {
+        let nextVolume = volume;
+        if (distanceTolistener > fullVolumeRadius) {
+          nextVolume = Math.max(1 - distanceTolistener / anyVolumeRadius, 0.1);
+        }
+        this.audioManager.updateSoundVolume(spriteId, nextVolume);
       }
     }
   }
