@@ -99,7 +99,8 @@ In the interests of making lists that never get completed, here are some potenti
 - [] ECS doesn't allow multiple components of the same type (audio) since it uses component types as keys
 - [] Add generic onstart and onend for events in animations, that can be managed outside of the animation system (could also have set sound types per AI type...)
 - [] Move wad ingestion and setup out of main function for better clarity
-- [] audiosprites
+- [] Deepclone all wad stuff so we have fresh copy on level change. Not a mutated one.
+- [x] audiosprites
 
 ### Alternate fun ideas with raycasters:
 

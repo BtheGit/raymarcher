@@ -1655,8 +1655,8 @@ const map_1 = {
       audioSource: {
         name: "looping_groaning",
         looping: true,
-        fullVolumeRadius: 0.5,
-        anyVolumeRadius: 3,
+        fullVolumeRadius: 1,
+        anyVolumeRadius: 4,
         volume: 1,
         isPlaying: false,
       },
@@ -2280,6 +2280,14 @@ const map_2 = {
         width: 0.2,
         height: 0.8,
         solid: false,
+      },
+      audioSource: {
+        name: "looping_groaning",
+        looping: true,
+        fullVolumeRadius: 1,
+        anyVolumeRadius: 4,
+        volume: 1,
+        isPlaying: false,
       },
     },
     {

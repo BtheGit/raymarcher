@@ -308,23 +308,23 @@ const loadLevel = async (
     if (movementSettings) {
       (objectEntity as ObjectEntity).movement = {
         speed: 0,
-        settings: movementSettings,
+        settings: { ...movementSettings },
       };
     }
 
     if (collider) {
-      (objectEntity as ObjectEntity).collider = collider;
+      (objectEntity as ObjectEntity).collider = { ...collider };
       (objectEntity as ObjectEntity).collisions = [];
     }
 
     if (ai) {
       // TODO: Move derived value instantiation out of the wad (stuff like idleTimer)
       // For now, we'll just force the wad to match the component shape so we can fry bigger fish.
-      (objectEntity as ObjectEntity).ai = ai;
+      (objectEntity as ObjectEntity).ai = { ...ai };
     }
 
     if (audioSource) {
-      (objectEntity as ObjectEntity).audioSource = audioSource;
+      (objectEntity as ObjectEntity).audioSource = { ...audioSource };
     }
 
     // TODO: Right now, we don't have an initializer per actor type, so lots of rules gonna be shoved together. That means, birds are going to spawn in idle state without a bobbingMovement component set. Could do it in the wad too, or just have something do the check here. WADs are pretty overloadeed as it is.
@@ -336,15 +336,16 @@ const loadLevel = async (
     }
 
     if (interactionDirectives) {
-      (objectEntity as ObjectEntity).interactionDirectives =
-        interactionDirectives;
+      (objectEntity as ObjectEntity).interactionDirectives = [
+        ...interactionDirectives,
+      ];
     }
 
     if (sprite) {
       (objectEntity as StaticObjectEntity) = {
         ...objectEntity,
         objectType: "object__static",
-        sprite,
+        sprite: { ...sprite },
       };
     } else {
       if (!states || !states.length || !initialState) {
@@ -373,11 +374,13 @@ const loadLevel = async (
 
         const entityState: EntityState = {
           name,
-          animation,
+          animation: {
+            ...animation,
+          },
         };
 
         if (sound) {
-          entityState.sound = sound;
+          entityState.sound = { ...sound };
         }
 
         entityState.height = height ?? objectEntity.transform.height;
