@@ -566,7 +566,11 @@ export type WADTextureAnimation =
   | WADTextureAnimationFlatWarp
   | WADTextureAnimationSprite;
 
+export interface WADMapSettings {
+  onLoad?: InteractionDirective[];
+}
 export interface WADMap {
+  settings?: WADMapSettings;
   grid: WADGrid;
   sky: any;
   start: any;

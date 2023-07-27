@@ -52,6 +52,7 @@ export enum EventMessageName {
   EmitProjectile = "EmitProjectile",
   ProjectileCollision = "ProjectileCollision",
   PlaySound = "PlaySound",
+  InteractionDirective = "InteractionDirective",
 }
 
 export enum InteractionDirectiveName {

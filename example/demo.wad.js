@@ -45,30 +45,8 @@ const textures = {
   background__holographic_twilight_hills_sm:
     "./images/textures/background__holographic_twilight_hills_sm.jpg",
   grass1: "./images/textures/retro_texture_pack_9/GRASS_1A.png",
-  // hedge1: "./images/textures/hedge1.jpg",
-  // floor_grass1: "./images/textures/floor_grass1.jpg",
-  // floor_carpet1: "./images/textures/floor_carpet1.jpg",
-  // floor1: "./images/textures/floor1.jpg",
   light_brick1: "./images/textures/light_brick1_sm.jpg",
-  // marble1: "./images/textures/marble1.jpg",
-  // concrete1: "./images/textures/concrete1.jpg",
-  // rusted_steel1: "./images/textures/rusted_steel1.jpg",
-  // cliff1: "./images/textures/cliff1.jpg",
-  // concrete_brick1: "./images/textures/concrete_brick1.jpg",
-  // concrete_brick2: "./images/textures/concrete_brick2.jpg",
-  // concrete_tile1: "./images/textures/concrete_tile1.jpg",
-  // concrete_tile2: "./images/textures/concrete_tile2.jpg",
-  // concrete_tile3: "./images/textures/concrete_tile3.jpg",
-  // concrete2: "./images/textures/concrete2.jpg",
   dots1: "./images/textures/dots1_sm.jpg",
-  // fresco1: "./images/textures/fresco1.jpg",
-  // granite1: "./images/textures/granite1.jpg",
-  // plaster1: "./images/textures/plaster1.jpg",
-  // rust1: "./images/textures/rust1.jpg",
-  // rust2: "./images/textures/rust2.jpg",
-  // stone2: "./images/textures/stone2.jpg",
-  // tile_blue1: "./images/textures/tile_blue1.jpg",
-  // stripes_creamsicle1: "./images/textures/stripes_creamsicle1.jpg",
   lava: "./images/textures/lava.png",
   sparkle: "./images/textures/sparkle.png",
   brick_grass_edge: "./images/textures/retro_texture_pack_9/BRICK_3C.png",
@@ -669,7 +647,16 @@ const wall_default = {
 };
 
 const map_1 = {
-  settings: {},
+  settings: {
+    // For now, I only have a use case to generically trigger standard events, like a sound or music, or text. So, we'll just have an array of standard events. The difference will be no emitter...except the level itself. Which I suppose, for the sake of simplicity (in terms of audio at least), can just be the player.
+    onLoad: [
+      {
+        type: "ShowMessage",
+        priority: 5,
+        body: "Welcome to my brain!",
+      },
+    ],
+  },
   grid: [
     [
       wall_default,

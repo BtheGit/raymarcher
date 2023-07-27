@@ -488,6 +488,15 @@ const loadLevel = async (
     )
   );
 
+  // ######### Level Lifecycle: LOAD
+
+  // Short term, just going to reuse interaction directives as intended for playeractor collisions. Since those are about the same. Deeper scripting would come later, if ever. We just want text and audio stuff for now.
+  if (levelMap.settings?.onLoad?.length) {
+    for (const directive of levelMap.settings.onLoad) {
+      broker.emit(EventMessageName.InteractionDirective, directive);
+    }
+  }
+
   // ########## LOOP
 
   let animationFrame;

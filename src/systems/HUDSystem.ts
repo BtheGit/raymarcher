@@ -121,7 +121,24 @@ export class HUDSystem implements System {
       EventMessageName.PlayerActorCollision,
       this.handleItemPickup
     );
+
+    this.broker.subscribe(
+      EventMessageName.InteractionDirective,
+      this.handleInteractionDirectiveEvent
+    );
   }
+
+  handleInteractionDirectiveEvent = (e) => {
+    this.handleInteractionDirective(e);
+  };
+
+  handleInteractionDirective = (directive) => {
+    switch (directive.type) {
+      case InteractionDirectiveName.ShowMessage: {
+        this.queueTextMessage(directive.body, directive.priority);
+      }
+    }
+  };
 
   handleItemPickup = (event: PlayerActorCollisionEvent) => {
     if (!event.collidedWithEntity?.interactionDirectives?.length) {
@@ -129,11 +146,7 @@ export class HUDSystem implements System {
     }
 
     for (const directive of event.collidedWithEntity.interactionDirectives) {
-      switch (directive.type) {
-        case InteractionDirectiveName.ShowMessage: {
-          this.queueTextMessage(directive.body, directive.priority);
-        }
-      }
+      this.handleInteractionDirective(directive);
     }
   };
 
