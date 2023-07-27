@@ -185,6 +185,17 @@ export interface SoundComponent {
   name: string;
 }
 
+export interface AudioSourceComponent {
+  name: string;
+  fullVolumeRadius: number; // Less than this radius and no need to dampen sound.
+  anyVolumeRadius: number; // Equivalent to bounding box for sound collision detection
+  volume: number;
+  looping: boolean;
+  isPlaying: boolean;
+  spriteId?: number; // Returned by howler.
+  // TTL?
+}
+
 export interface EntityStateComponent {
   currentState: string | number;
   previousState: string | number | null;
@@ -281,6 +292,7 @@ export interface BaseObjectEntity {
   flowingMovement?: FlowingMovementComponent;
   interactionDirectives?: InteractionDirective[];
   ai?: AIComponent;
+  audioSource?: AudioSourceComponent;
   collider?: ColliderComponent;
   collisions?: CollisionReport[];
   collisionLayer?: CollisionLayerComponent;
@@ -517,6 +529,7 @@ export interface WADObjectEntity {
   movementSettings?: MovementSettings;
   collisionLayer?: number;
   ai?: any;
+  audioSource?: AudioSourceComponent;
 }
 
 export interface WADAnimation {
@@ -566,6 +579,7 @@ export interface WAD {
   };
   textures: any;
   sounds: any;
+  audioSpritemap: any;
   sprites: any;
   animations: WADAnimation[];
   textureAnimations: WADTextureAnimation[];

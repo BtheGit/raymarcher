@@ -1,0 +1,9 @@
+{
+  "src": ["./audio/sprites/spritemap.mp3"],
+  "sprite": {
+    "looping_groaning": [0, 14520],
+    "pbjtime1": [16000, 1989.9999999999984],
+    "swoosh1": [19000, 572.6984126984114],
+    "swoosh2": [21000, 1487.50566893424]
+  }
+}

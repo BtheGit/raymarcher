@@ -68,14 +68,15 @@ In the interests of making lists that never get completed, here are some potenti
 - [x] Fix enemies getting very close to wall boundaries and effectively stuck.
 - [] Support spawner type. So I can generically spawn entities into the world based on rules - like stepping on a portal, or after x minute (passive spawner vs active spawner maybe).
 - [] Sound
-  - [] Sound effects on trigger
+  - [x] Sound effects on trigger
   - [] Ambient sound effects
   - [] Sound modulated by distance with falloff
+  - [] Music
 - [x] Another AI Type (Birds.)
 - [x] Item pickups (which I can use to trigger events)
 - [x] Another interaction type taht triggers text/dialogue
   - [] Characters can talk (ignore dialogue trees for now, just a canned response (or one from a random pool))
-  - [] Walls can reveal text
+  - [] Walls can reveal text (New interaction for changing textures)
 - [] Support links? Like a portal pad that takes you to a new level (or different page)
 - [x] Special effects
   - [x] Ball burst
@@ -97,6 +98,8 @@ In the interests of making lists that never get completed, here are some potenti
 - [x] Flow field pathfinding for swarms. Sort of
 - [] ECS doesn't allow multiple components of the same type (audio) since it uses component types as keys
 - [] Add generic onstart and onend for events in animations, that can be managed outside of the animation system (could also have set sound types per AI type...)
+- [] Move wad ingestion and setup out of main function for better clarity
+- [] audiosprites
 
 ### Alternate fun ideas with raycasters:
 

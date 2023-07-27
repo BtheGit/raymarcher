@@ -67,6 +67,12 @@ export class Vector2 {
     return Math.sqrt(this.x * this.x + this.y * this.y);
   };
 
+  distanceTo = (vector) => {
+    const dx = this.x - vector.x;
+    const dy = this.y - vector.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
   angle(vector) {
     const dot = this.dot(vector);
     const magnitudeProduct = this.magnitudeProduct(vector);

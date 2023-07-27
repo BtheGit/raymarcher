@@ -18,7 +18,8 @@
     "dev": "vite",
     "watch": "vite build --watch",
     "build": "vite build",
-    "publish": "npm run build && mkdir demo && cp -r ./dist ./demo/dist && cp -r ./example ./demo/example"
+    "publish": "npm run build && mkdir demo && cp -r ./dist ./demo/dist && cp -r ./example ./demo/example",
+    "dev:spritemap": "npx audiosprite --format howler2 --export mp3 --output example/audio/sprites/spritemap example/audio/sounds/*.*"
   },
   "repository": {
     "type": "git",

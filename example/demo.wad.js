@@ -11,6 +11,7 @@ import MagicHands from "./images/sprites/magic_hands.json" assert { type: "json"
 import MagicDust from "./images/sprites/magic_dust.json" assert { type: "json" };
 import Bat from "./images/sprites/bat_1.json" assert { type: "json" };
 import Pickups1 from "./images/sprites/pickups_1.json" assert { type: "json" };
+import audioSpritemap from "./audio/sprites/spritemap.json" assert { type: "json" };
 
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
@@ -36,10 +37,7 @@ import Pickups1 from "./images/sprites/pickups_1.json" assert { type: "json" };
 // Probably would be useful to have texture dimensions here too.  So really a loader that reads from the directory
 // then generates this would be great since it would approximate an editor experience (which is what is really missing at this point).
 
-const sounds = {
-  magic_shot: "./audio/sounds/ARTACT1.wav",
-  pbj_time: "./audio/sounds/pbjtime1.mp3",
-};
+const sounds = {};
 
 const textures = {
   background__clouds1: "./images/textures/background__clouds1.jpg",
@@ -1654,6 +1652,14 @@ const map_1 = {
         height: 0.8,
         solid: false,
       },
+      audioSource: {
+        name: "looping_groaning",
+        looping: true,
+        fullVolumeRadius: 0.5,
+        anyVolumeRadius: 3,
+        volume: 1,
+        isPlaying: false,
+      },
     },
     {
       transform: {
@@ -1873,7 +1879,7 @@ const map_1 = {
           name: "state__hit",
           animation: "bananaman__stand",
           sound: {
-            name: "pbj_time",
+            name: "pbjtime1",
           },
         },
         {
@@ -1931,6 +1937,9 @@ const map_1 = {
         {
           name: "state__hit",
           animation: "bananaman__stand",
+          sound: {
+            name: "pbjtime1",
+          },
         },
         {
           name: "state__swarm",
@@ -1987,6 +1996,9 @@ const map_1 = {
         {
           name: "state__hit",
           animation: "bananaman__stand",
+          sound: {
+            name: "pbjtime1",
+          },
         },
         {
           name: "state__swarm",
@@ -2415,6 +2427,7 @@ const wadSettings = {
 const wad = {
   textures,
   sounds,
+  audioSpritemap,
   sprites: spriteDatas,
   animations,
   textureAnimations,

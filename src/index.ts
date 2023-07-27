@@ -47,6 +47,7 @@ import { AnimationManager } from "./AnimationManager/AnimationManager";
 import { AudioManager } from "./AudioManager/AudioManager";
 import { Broker } from "./utils/events";
 import { FlowingMovementSystem } from "./systems/FlowingMovementSystem";
+import { Howler } from "howler";
 
 const TILE_SIZE = 256;
 
@@ -118,7 +119,8 @@ const loadLevel = async (
   );
   animationManager.loadAnimations(wad.animations);
 
-  audioManager.loadSounds(wad.sounds);
+  // audioManager.loadSounds(wad.sounds);
+  audioManager.loadSpritemap(wad.audioSpritemap);
 
   const grid: WADGridCell[][] = levelMap.grid!;
   gridManager.loadGrid(grid);
@@ -191,10 +193,10 @@ const loadLevel = async (
       ],
       events: [
         {
-          frameId: "CONEE0",
+          frameId: "CONEC0",
           eventType: EventMessageName.PlaySound,
           eventPayload: {
-            name: "magic_shot",
+            name: "swoosh1",
           },
         },
       ],
@@ -288,6 +290,7 @@ const loadLevel = async (
       actor,
       interactionDirectives,
       bobbingMovement,
+      audioSource,
     } = object;
 
     let objectEntity = {
@@ -318,6 +321,10 @@ const loadLevel = async (
       // TODO: Move derived value instantiation out of the wad (stuff like idleTimer)
       // For now, we'll just force the wad to match the component shape so we can fry bigger fish.
       (objectEntity as ObjectEntity).ai = ai;
+    }
+
+    if (audioSource) {
+      (objectEntity as ObjectEntity).audioSource = audioSource;
     }
 
     // TODO: Right now, we don't have an initializer per actor type, so lots of rules gonna be shoved together. That means, birds are going to spawn in idle state without a bobbingMovement component set. Could do it in the wad too, or just have something do the check here. WADs are pretty overloadeed as it is.
@@ -502,6 +509,7 @@ const loadLevel = async (
     levelName,
     unload: () => {
       cancelAnimationFrame(animationFrame);
+      Howler.stop();
     },
   };
 };
