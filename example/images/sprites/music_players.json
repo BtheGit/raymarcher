@@ -1,0 +1,65 @@
+{
+  "frames": {
+    "boombox0": {
+      "frame": {
+        "x": 3,
+        "y": 3,
+        "w": 100,
+        "h": 88
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 88
+      },
+      "sourceSize": {
+        "w": 100,
+        "h": 88
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "victorola0": {
+      "frame": {
+        "x": 109,
+        "y": 3,
+        "w": 64,
+        "h": 113
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 113
+      },
+      "sourceSize": {
+        "w": 64,
+        "h": 113
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "music_players.png",
+    "name": "music_players",
+    "id": "music_players",
+    "format": "RGBA8888",
+    "size": {
+      "w": 176,
+      "h": 119
+    },
+    "scale": 1
+  }
+}

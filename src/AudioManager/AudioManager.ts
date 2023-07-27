@@ -56,6 +56,7 @@ export class AudioManager {
   };
 
   playSound = (nameOrId) => {
+    console.log(this.audioSprite);
     if (!this.audioSprite) {
       return;
     }

@@ -1,3 +1,4 @@
+import audioSpritemap from "./audio/sprites/spritemap.json" assert { type: "json" };
 import SpriteScientist from "./images/sprites/scientist.json" assert { type: "json" };
 import SpriteTree_1 from "./images/sprites/tree_1.json" assert { type: "json" };
 import BananaMan from "./images/sprites/banana.json" assert { type: "json" };
@@ -11,7 +12,7 @@ import MagicHands from "./images/sprites/magic_hands.json" assert { type: "json"
 import MagicDust from "./images/sprites/magic_dust.json" assert { type: "json" };
 import Bat from "./images/sprites/bat_1.json" assert { type: "json" };
 import Pickups1 from "./images/sprites/pickups_1.json" assert { type: "json" };
-import audioSpritemap from "./audio/sprites/spritemap.json" assert { type: "json" };
+import MusicPlayers from "./images/sprites/music_players.json" assert { type: "json" };
 
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
@@ -87,6 +88,7 @@ const spriteDatas = [
   MagicDust,
   Bat,
   Pickups1,
+  MusicPlayers,
 ];
 
 // const spriteMaps = spriteDatas.reduce((acc, curr) => {
@@ -1686,6 +1688,76 @@ const map_1 = {
         width: 0.8,
         height: 0.8,
         solid: true,
+      },
+    },
+    {
+      transform: {
+        position: {
+          x: 20,
+          y: 12,
+        },
+        rotation: 0,
+        // scale: {
+        //   x: 1,
+        //   y: 1,
+        // },
+        height: 128,
+        elevation: 0,
+      },
+      actor: "Prop",
+      sprite: {
+        name: "victorola",
+        directions: 0,
+      },
+      collider: {
+        type: "aabb",
+        radius: 0.2,
+        width: 0.1,
+        height: 0.1,
+        solid: true,
+      },
+      audioSource: {
+        name: "ragtime_piano_2",
+        looping: true,
+        fullVolumeRadius: 0.5,
+        anyVolumeRadius: 5,
+        volume: 0.4,
+        isPlaying: false,
+      },
+    },
+    {
+      transform: {
+        position: {
+          x: 3,
+          y: 12,
+        },
+        rotation: 0,
+        // scale: {
+        //   x: 1,
+        //   y: 1,
+        // },
+        height: 64,
+        elevation: 0,
+      },
+      actor: "Prop",
+      sprite: {
+        name: "boombox",
+        directions: 0,
+      },
+      collider: {
+        type: "aabb",
+        radius: 0.2,
+        width: 0.1,
+        height: 0.1,
+        solid: true,
+      },
+      audioSource: {
+        name: "disco_2",
+        looping: true,
+        fullVolumeRadius: 0.5,
+        anyVolumeRadius: 5,
+        volume: 0.4,
+        isPlaying: false,
       },
     },
     {

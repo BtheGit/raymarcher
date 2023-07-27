@@ -61,9 +61,6 @@ export class AudioSystem implements System {
         spriteId,
       } = audioSource!;
 
-      if (spriteId) {
-      }
-
       const distanceTolistener =
         audioSourcePosition.distanceTo(listenerPosition);
 
@@ -72,7 +69,7 @@ export class AudioSystem implements System {
         if (isPlaying && spriteId) {
           // How does pausing work if multiple people use the same sound??
           // Apparently when pausing we get an id back, and we need to use that...
-          this.audioManager.pauseSound(spriteId);
+          this.audioManager.updateSoundVolume(spriteId, 0);
         }
         continue;
       }
@@ -80,7 +77,6 @@ export class AudioSystem implements System {
       if (!isPlaying && !spriteId) {
         // This should be the first and only time an audio source is started. (Only looping ones should not be removed on completion IMHO)
         const spriteId = this.audioManager.playSound(name);
-        console.log(spriteId);
         audioSourceEntity.audioSource!.isPlaying = true;
         // There shoudl be a sprite/ID, but howler typings are not very accurate.
         if (spriteId) {
@@ -97,7 +93,6 @@ export class AudioSystem implements System {
           // Well, the sound we just tried playing is gone from the pool.
           // We need to start over. Easiest way is to clea the spriteId and let the already existed logic start again.
           delete audioSourceEntity.audioSource?.spriteId;
-          console.log(audioSourceEntity.audioSource);
         }
       }
 

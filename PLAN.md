@@ -101,6 +101,7 @@ In the interests of making lists that never get completed, here are some potenti
 - [] Move wad ingestion and setup out of main function for better clarity
 - [] Deepclone all wad stuff so we have fresh copy on level change. Not a mutated one.
 - [x] audiosprites
+- [] Support textures as well as sprites for objects.
 
 ### Alternate fun ideas with raycasters:
 
