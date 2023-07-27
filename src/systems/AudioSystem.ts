@@ -101,7 +101,8 @@ export class AudioSystem implements System {
       if (spriteId && this.audioManager.isPlaying(spriteId)) {
         let nextVolume = volume;
         if (distanceTolistener > fullVolumeRadius) {
-          nextVolume = Math.max(1 - distanceTolistener / anyVolumeRadius, 0.1);
+          nextVolume = Math.max(1 - distanceTolistener / anyVolumeRadius, 0);
+          // nextVolume = Math.max( 1 / (distanceTolistener / anyVolumeRadius + 1), 0.1);
         }
         this.audioManager.updateSoundVolume(spriteId, nextVolume);
       }
