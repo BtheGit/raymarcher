@@ -136,6 +136,13 @@ export class HUDSystem implements System {
     switch (directive.type) {
       case InteractionDirectiveName.ShowMessage: {
         this.queueTextMessage(directive.body, directive.priority);
+        break;
+      }
+      case InteractionDirectiveName.PlayAudio: {
+        this.broker.emit(EventMessageName.PlaySound, {
+          name: directive.name,
+          // volume: directive.volume, // Not being used right now (Nor is priority with this mechanism that is just passing it on.)
+        });
       }
     }
   };
@@ -200,6 +207,7 @@ export class HUDSystem implements System {
     const nextMessage = this.messageQueue.shift();
     this.activeMessage = nextMessage.body;
     this.messageTimeout = setTimeout(() => {
+      // TODO: Let each mesage set its own on screen length.
       this.bufferTextMessage();
     }, 2000);
   };

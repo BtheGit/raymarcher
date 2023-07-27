@@ -655,6 +655,11 @@ const map_1 = {
         priority: 5,
         body: "Welcome to my brain!",
       },
+      {
+        type: "PlayAudio",
+        priority: 5,
+        name: "pbjtime1",
+      },
     ],
   },
   grid: [

@@ -57,4 +57,5 @@ export enum EventMessageName {
 
 export enum InteractionDirectiveName {
   ShowMessage = "ShowMessage",
+  PlayAudio = "PlayAudio",
 }

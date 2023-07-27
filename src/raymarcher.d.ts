@@ -244,7 +244,17 @@ export interface MessageInteractionDirective extends BaseInteractionDirective {
   body: string;
 }
 
-export type InteractionDirective = MessageInteractionDirective;
+// Note: This audio will be emitted by the hud/player. So dont need positional info. Also, no looping.
+export interface PlayAudioInteractionDirective
+  extends BaseInteractionDirective {
+  type: InteractionDirectiveName.PlayAudio;
+  name: string;
+  volume: number;
+}
+
+export type InteractionDirective =
+  | MessageInteractionDirective
+  | PlayAudioInteractionDirective;
 
 export interface BaseAIComponent {
   aiType: string;
