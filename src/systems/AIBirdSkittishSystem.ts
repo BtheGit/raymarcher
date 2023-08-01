@@ -112,6 +112,7 @@ export class AIBirdSkittishSystem {
     // entity.transform.direction = direction;
     // entity.velocity = new Vector2(0, 0);
     this.updateState(entity, "state__flee");
+    entity.movement.speed = entity.movement.settings?.runSpeed || 0;
     const newTarget = this.getFleeTarget(entity);
     if (!newTarget) {
       return;

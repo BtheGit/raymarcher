@@ -2493,7 +2493,7 @@ const map_2 = {
 };
 
 const wadSettings = {
-  firstMap: "map_1",
+  firstMap: "map_2",
 };
 
 const wad = {
