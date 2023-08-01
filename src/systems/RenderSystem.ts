@@ -17,7 +17,12 @@ import {
   ObjectEntity,
 } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
-import { apparentDirectionAngle, toDegrees, lerp } from "../utils/math";
+import {
+  apparentDirectionAngle,
+  toDegrees,
+  lerp,
+  Vector2,
+} from "../utils/math";
 import { SpriteManager } from "../SpriteManager/SpriteManager";
 import { EquipableWeapon } from "../enums";
 
@@ -1031,10 +1036,18 @@ export class RenderSystem implements System {
 
     const y = this.canvas.height - scaledTextureHeight;
 
+    // Create bobbing effect when moving. Right now we have no run, so we can just cheat and see if the player is moving at all.
+    const isMoving = !this.camera.velocity.equals(new Vector2(0, 0));
+    const time = Date.now();
+    const bobX = isMoving ? x + Math.sin((5 * time) / 1000) * 15 : x;
+    const bobY = isMoving
+      ? Math.max(y + Math.sin((10 * time) / 1000) * 10, y)
+      : y;
+
     this.offscreenCtx.drawImage(
       texture?.canvas,
-      x,
-      y,
+      bobX,
+      bobY,
       scaledTextureWidth,
       scaledTextureHeight
     );

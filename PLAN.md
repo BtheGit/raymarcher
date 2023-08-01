@@ -104,7 +104,7 @@ In the interests of making lists that never get completed, here are some potenti
 - [] Deepclone all wad stuff so we have fresh copy on level change. Not a mutated one.
 - [] Different weapons and switching between them
 - [] An interaction button for walls and sprites. So it's independent of weapon.
-- [] Weapon bobbing
+- [x] Weapon bobbing (would be easier if I had a flag for moving)
 - [] Confirm option for messages (so I can trigger audio at level start)
 
 ### Immediate bug fixes
