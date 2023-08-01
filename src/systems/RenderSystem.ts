@@ -129,6 +129,7 @@ export class RenderSystem implements System {
   worldCtx = this.worldCanvas.getContext("2d", {
     willReadFrequently: true,
   })!;
+  worldPixelData: ImageData;
 
   // Individual Buffer for Sprites
   spriteCanvas = document.createElement("canvas");
@@ -204,6 +205,11 @@ export class RenderSystem implements System {
     this.generateFloorBrightnessModifierLookupTable();
     this.generateWallBrightnessModifierLookupTable();
     this.generateDistanceOffsetLookupTable();
+
+    this.worldPixelData = this.worldCtx.createImageData(
+      this.gameSettings.width,
+      this.gameSettings.height
+    );
 
     this.floorCeilingPixelData = this.floorCeilingCtx.createImageData(
       this.gameSettings.width,
@@ -369,15 +375,11 @@ export class RenderSystem implements System {
     if (nextRayFrame.id === this.currentRayFrame) {
       return;
     }
-    this.worldCtx.clearRect(
-      0,
-      0,
-      this.worldCanvas.width,
-      this.worldCanvas.height
-    );
     this.currentRayFrame = nextRayFrame.id;
+
     // We'll need to record the perpendicular distance of each column for sprite clipping later.
     for (let i = 0; i < nextRayFrame.rays.length; i++) {
+      const x = i;
       const ray = nextRayFrame.rays[i];
       const {
         normalizedDistance,
@@ -390,12 +392,12 @@ export class RenderSystem implements System {
       } = ray;
 
       // TODO: Should I round this properly?
-      const columnHeight = Math.ceil(
-        this.gameSettings.height / normalizedDistance
+      const columnHeight = Math.round(
+        this.gameSettings.height / normalizedDistance - 0.1
       );
       const top = this.projectionPlane - columnHeight / 2;
 
-      // This is funcky without the unnormalized distance. But still working on that...
+      // This is funky without the unnormalized distance. But still working on that...
       const brightnessIndex =
         (normalizedDistance / this.maxRenderDistance) * this.projectionPlane;
       const indexFloor = Math.floor(brightnessIndex);
@@ -403,6 +405,7 @@ export class RenderSystem implements System {
       const a = this.lookupWallBrightnessModifier[indexFloor];
       const b = this.lookupWallBrightnessModifier[indexFloor + 1];
       const brightness = lerp(a, b, fractionalDifference);
+
       // Old way, just in case
       // const VIEW_DISTANCE = 18;
       // const darknessMultiplier = 0.9;
@@ -417,43 +420,66 @@ export class RenderSystem implements System {
 
       // ## WALL
       // This is pointless in small spaces. Saving for big areas to test using unnormalized distance when I have it.
-      if (brightness < 0) {
-        const rgb = `rgb(0,0,0)`;
-        this.worldCtx.fillStyle = rgb;
-        this.worldCtx.beginPath();
-        this.worldCtx.fillRect(i, top, 1, columnHeight);
-        this.worldCtx.closePath();
-      } else {
-        try {
-          // Check if there is a face specific config (Bjorn Strastroup says this is better than a map of directions :) )
-          const face = wall!.wallTile?.wallFaces?.find(
-            (face) => face.wallFace === wallFace
-          );
 
-          const wallTextureConfig = face ? face : wall!.wallTile!;
-          const { surface, color, texture } = wallTextureConfig;
+      try {
+        // Check if there is a face specific config (Bjorn Strastroup says this is better than a map of directions :) )
+        const face = wall!.wallTile?.wallFaces?.find(
+          (face) => face.wallFace === wallFace
+        );
 
-          // TODO: I tried to support brightness for wall colors previously, but I don't think I actually did the calculation correctly. Should try again soon.
-          switch (surface) {
-            case "color":
+        const wallTextureConfig = face ? face : wall!.wallTile!;
+        const { surface, color, texture } = wallTextureConfig;
+
+        // TODO: I tried to support brightness for wall colors previously, but I don't think I actually did the calculation correctly. Should try again soon.
+        switch (surface) {
+          case "color":
+            if (brightness < 0) {
+              const rgb = `rgb(0,0,0)`;
+              this.worldCtx.fillStyle = rgb;
+              this.worldCtx.beginPath();
+              this.worldCtx.fillRect(i, top, 1, columnHeight);
+              this.worldCtx.closePath();
+            } else {
               this.worldCtx.fillStyle = `rgb(${color!.r},${color!.g},${
                 color!.b
               })`;
               this.worldCtx.beginPath();
               this.worldCtx.fillRect(i, top, 1, columnHeight);
               this.worldCtx.closePath();
-              break;
-            case "spriteTexture":
-            case "animatedTexture":
-            case "texture":
+            }
+            break;
+          case "spriteTexture":
+          case "animatedTexture":
+          case "texture":
+            const rowOrigin = 4 * this.gameSettings.width;
+            const currX = 4 * i;
+
+            if (brightness < 0) {
+              for (let y = 0; y < columnHeight; y++) {
+                const currY = rowOrigin * Math.floor(top + y);
+                const pixelStart = currY + currX;
+                if (
+                  pixelStart < 0 ||
+                  pixelStart > this.worldPixelData.data.length
+                )
+                  continue;
+
+                this.worldPixelData.data[pixelStart] = 0;
+                this.worldPixelData.data[pixelStart + 1] = 0;
+                this.worldPixelData.data[pixelStart + 2] = 0;
+                this.worldPixelData.data[pixelStart + 3] = 255;
+              }
+            } else {
               const wallTextureImageBuffer = this.textureManager.getTexture(
                 texture!.name,
                 surface
               );
 
-              const wallTexture = wallTextureImageBuffer!.canvas;
+              // const wallTexture = wallTextureImageBuffer!.canvas;
+              const transposedBitmap = wallTextureImageBuffer!.transposedBitmap;
 
-              const textureWidth = wallTexture.width;
+              const textureWidth = wallTextureImageBuffer!.width;
+              const textureHeight = wallTextureImageBuffer!.height;
 
               let wallIntersectionOffset;
               if (wallOrientation === "horizontal") {
@@ -473,52 +499,77 @@ export class RenderSystem implements System {
                     1 - (wallIntersection - Math.floor(wallIntersection));
                 }
               }
-              let textureStripLeft = Math.floor(
+
+              // Gives percentage across texture to start drawing from
+              let texelColumn = Math.floor(
                 wallIntersectionOffset * textureWidth
               );
-              this.worldCtx.drawImage(
-                wallTexture,
-                textureStripLeft,
-                0,
-                1,
-                wallTexture.height,
-                i,
-                top,
-                1,
-                columnHeight
-              );
 
-              // TODO: Change this to color shift the pixels directly instead of messing with a semi-opaque overlay.
-              this.worldCtx.fillStyle = "black";
-              this.worldCtx.globalAlpha = 1 - brightness;
-              // this.worldCtx.globalAlpha =
-              //   1 -
-              //   (VIEW_DISTANCE - normalizedDistance * darknessMultiplier) /
-              //     VIEW_DISTANCE;
-              this.worldCtx.fillRect(i, top, 1, columnHeight);
-              this.worldCtx.globalAlpha = 1;
-              break;
-          }
-        } catch (err) {
-          console.warn(err);
-          console.warn("Error loading wall texture, using fallback");
-          const wallHue = 0; // Anything without a fallback hue will be crazy red and obvious.
-          // const hsl = `hsl(${wallHue}, 100%, ${brightness}%)`;
-          const hsl = `hsl(${wallHue}, 100%, 50%)`;
-          this.worldCtx.fillStyle = hsl;
-          this.worldCtx.beginPath();
-          this.worldCtx.fillRect(i, top, 1, columnHeight);
-          this.worldCtx.closePath();
+              // Iterates through the column of pixels in transposed bitmap and draws them to the offscreen canvas
+              // Since we have transposed the bitmap, contiguous array members are read from the bottom of the column to the top, so we need to draw up the screen, starting at the bottom, instead of down.
+              const scaleFactorDown =
+                columnHeight / wallTextureImageBuffer!.height;
+              const scaleFactorUp =
+                wallTextureImageBuffer!.height / columnHeight;
+              const scaleFactor =
+                columnHeight > textureHeight ? scaleFactorUp : scaleFactorDown;
+              // We don't need to floor values becauses we are using a uint8clamparray
+
+              // Translate pixel start back into x,y coordinates
+
+              for (let y = 0; y < columnHeight; y++) {
+                // The column we want will start at an offset of the x value times the texturewidth times 4 (for the 4 channels) and go until the x times the texturewidth times 4 + the texturewidth times 4. But that will draw the pixels upside down if we start at y = 0. So we might want to flip y.
+
+                const texelRow = Math.floor((y / columnHeight) * textureHeight);
+
+                // Maybe min here helps me from having it go out of bounds?
+                const texelStart = Math.min(
+                  4 * (texelColumn * textureHeight + texelRow),
+                  transposedBitmap.length - 4
+                );
+                const red = transposedBitmap[texelStart];
+                const green = transposedBitmap[texelStart + 1];
+                const blue = transposedBitmap[texelStart + 2];
+                const alpha = transposedBitmap[texelStart + 3] || 255;
+
+                // Determine where on the full screen to start copying the scaled texture to.
+                // The column is i. The row is top + y. The width is 1. The height is columnHeight.
+                const currY = rowOrigin * Math.floor(top + y);
+                const pixelStart = currY + currX;
+
+                if (
+                  pixelStart < 0 ||
+                  pixelStart > this.worldPixelData.data.length
+                )
+                  continue;
+
+                this.worldPixelData.data[pixelStart] = brightness * red;
+                this.worldPixelData.data[pixelStart + 1] = brightness * green;
+                this.worldPixelData.data[pixelStart + 2] = brightness * blue;
+                this.worldPixelData.data[pixelStart + 3] = alpha;
+              }
+            }
+            break;
         }
+      } catch (err) {
+        console.warn(err);
+        console.warn("Error loading wall texture, using fallback");
+        const wallHue = 0; // Anything without a fallback hue will be crazy red and obvious.
+        // const hsl = `hsl(${wallHue}, 100%, ${brightness}%)`;
+        const hsl = `hsl(${wallHue}, 100%, 50%)`;
+        this.worldCtx.fillStyle = hsl;
+        this.worldCtx.beginPath();
+        this.worldCtx.fillRect(i, top, 1, columnHeight);
+        this.worldCtx.closePath();
       }
 
       // This creates artificial shading on half the vertices to give them extra three dimensional feel.
-      if (wallOrientation === "horizontal") {
-        this.worldCtx.globalAlpha = 0.2;
-        this.worldCtx.fillStyle = "black";
-        this.worldCtx.fillRect(i, top, 1, columnHeight);
-        this.worldCtx.globalAlpha = 1;
-      }
+      // if (wallOrientation === "horizontal") {
+      //   this.worldCtx.globalAlpha = 0.2;
+      //   this.worldCtx.fillStyle = "black";
+      //   this.worldCtx.fillRect(i, top, 1, columnHeight);
+      //   this.worldCtx.globalAlpha = 1;
+      // }
 
       // ## Floor
       // TODO: Figure out what is happening here.
@@ -540,18 +591,17 @@ export class RenderSystem implements System {
         floorYWall = activeCell.y + 1.0;
       }
 
-      // draw the floor from columnBottom to the bottom of the screen
+      // draw the floor from wallBottom to the bottom of the screen
       // TODO: Uh, man, I need to find the original ideas here. It's not complicated, but it's a bit confusing at a glance.
-      const columnBottom =
+      const wallBottom =
         Math.floor(top + columnHeight) >= 0
           ? Math.floor(top + columnHeight)
           : this.gameSettings.height;
-      const floorColumnHeight = this.gameSettings.height - columnBottom;
+      const floorColumnHeight = this.gameSettings.height - wallBottom;
 
       if (floorColumnHeight > 0) {
         // Column bottom here I think means visually the highest point on the screen since y increments downwards. So we start at the bottom of the wall and move to the bottom of the screen.
-        for (let y = columnBottom; y < this.gameSettings.height; y++) {
-          const x = i;
+        for (let y = wallBottom; y < this.gameSettings.height; y++) {
           const currentDist = this.lookupCurrentDist[y];
           const weight = currentDist / normalizedDistance;
 
@@ -589,7 +639,7 @@ export class RenderSystem implements System {
               // TODO: Preprocess wads to coerce all color values into RGB (or require it from the get go, to save stuff like this). Can do this immediately.
               const { r, g, b } = gridCell.floorTile.color!;
 
-              const index = (y * this.gameSettings.width + x) * 4;
+              const index = (y * this.gameSettings.width + i) * 4;
               this.floorCeilingPixelData.data[index] = r * brightnessModifier;
               this.floorCeilingPixelData.data[index + 1] =
                 g * brightnessModifier;
@@ -635,7 +685,7 @@ export class RenderSystem implements System {
                   brightnessModifier;
                 const alpha = floorTexturePixels.data[textureIndex + 3];
 
-                const index = (y * this.gameSettings.width + x) * 4;
+                const index = (y * this.gameSettings.width + i) * 4;
                 this.floorCeilingPixelData.data[index] = red;
                 this.floorCeilingPixelData.data[index + 1] = green;
                 this.floorCeilingPixelData.data[index + 2] = blue;
@@ -666,7 +716,7 @@ export class RenderSystem implements System {
               const { r, g, b } = ceiling.color!;
 
               const index =
-                ((this.gameSettings.height - y) * this.gameSettings.width + x) *
+                ((this.gameSettings.height - y) * this.gameSettings.width + i) *
                 4;
               this.floorCeilingPixelData.data[index] =
                 r * ceilingBrightnessModifier;
@@ -713,7 +763,7 @@ export class RenderSystem implements System {
 
                 const index =
                   ((this.gameSettings.height - y) * this.gameSettings.width +
-                    x) *
+                    i) *
                   4;
                 this.floorCeilingPixelData.data[index] = red;
                 this.floorCeilingPixelData.data[index + 1] = green;
@@ -727,6 +777,14 @@ export class RenderSystem implements System {
       }
     }
 
+    this.worldCtx.putImageData(this.worldPixelData, 0, 0);
+    this.offscreenCtx.drawImage(this.worldCanvas, 0, 0);
+
+    this.worldPixelData = this.worldCtx.createImageData(
+      this.gameSettings.width,
+      this.gameSettings.height
+    );
+
     // ## Floor Rendering.
     // We don't need to put image data on each ray, it makes sense to blit once per frame. We're just calculating on the same pass as the wall.
     this.floorCeilingCtx.putImageData(this.floorCeilingPixelData, 0, 0);
@@ -736,7 +794,6 @@ export class RenderSystem implements System {
       this.gameSettings.width,
       this.gameSettings.height
     );
-    this.offscreenCtx.drawImage(this.worldCanvas, 0, 0);
   }
 
   renderObjects() {
@@ -989,8 +1046,8 @@ export class RenderSystem implements System {
 
   // TODO: Framerate limit this.
   update(dt: number) {
-    // TODO: Can we break up rendering to each layer into separate threads with offscreen canvas? Yes, but later.
-
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.offscreenCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     // TODO: Render Sky
     this.renderSkybox();
     // TODO: Render World (Walls, Floors, Ceilings, Sprites)

@@ -63,50 +63,49 @@ In the interests of making lists that never get completed, here are some potenti
 
 - [x] Support multiple maps.
 - [x] Support portals between maps. (no transition effects for now)
-- [] Somehow on load determine sprite height and width so we can use those for ratio scaling later. Anything where the sizes change is not working. Maybe I can just plug those numbers in short term or long term. Ideally I would just have everything the same size and save myself this extra hassle. But I like to be special. I'm going to add them to the sprites for now, textures are uh, on their own I guess. Wait, let's try just using the maximum height for now and seeing if that's enough.
 - [x] Improve bird flight styles. Improve bird idle (sine wave)
 - [x] Fix enemies getting very close to wall boundaries and effectively stuck.
+- [x] Another AI Type (Birds.)
+- [x] Item pickups (which I can use to trigger events)
+- [x] Special effects
+  - [x] Ball burst
+- [x] NPCs getting stuck in walls.
+- [x] Pickups that trigger events like dialogue boxes.
+- [x] Support multiple levels and portals between them.
+- [x] Support portals in general (with a teleport effect I think to make it clear)
+- [x] On level load actions/directives
+- [x] Flow field pathfinding for swarms. Sort of
+- [x] audiosprites
+- [] Somehow on load determine sprite height and width so we can use those for ratio scaling later. Anything where the sizes change is not working. Maybe I can just plug those numbers in short term or long term. Ideally I would just have everything the same size and save myself this extra hassle. But I like to be special. I'm going to add them to the sprites for now, textures are uh, on their own I guess. Wait, let's try just using the maximum height for now and seeing if that's enough.
 - [] Support spawner type. So I can generically spawn entities into the world based on rules - like stepping on a portal, or after x minute (passive spawner vs active spawner maybe).
 - [] Sound
   - [x] Sound effects on trigger
   - [] Ambient sound effects
   - [] Sound modulated by distance with falloff
   - [] Music
-- [x] Another AI Type (Birds.)
-- [x] Item pickups (which I can use to trigger events)
 - [x] Another interaction type taht triggers text/dialogue
   - [] Characters can talk (ignore dialogue trees for now, just a canned response (or one from a random pool))
   - [] Walls can reveal text (New interaction for changing textures)
 - [] Support links? Like a portal pad that takes you to a new level (or different page)
-- [x] Special effects
-  - [x] Ball burst
 - [] Dialogue system?
 - [] Sky gradient support (animated!)
 - [] More HUD Elements...
 - [] Sprite fisheye effect causing them to appear to move up at periphery
-- [x] NPCs getting stuck in walls.
 - [] Would be cool to support transitioning tile textures and skybox texture (to simulate day / night or something)
-- [x] Pickups that trigger events like dialogue boxes.
-- [x] Support multiple levels and portals between them.
-- [x] Support portals in general (with a teleport effect I think to make it clear)
-- [] On level load actions/directives
 - [] Doors
 - [] Multiple skyboxes with set depth to support parallax
-- [] Different weapons and switching between them
 - [] Make my own sprites (not engine related though)
 - [] Projectiles with gravity
-- [x] Flow field pathfinding for swarms. Sort of
 - [] ECS doesn't allow multiple components of the same type (audio) since it uses component types as keys
 - [] Add generic onstart and onend for events in animations, that can be managed outside of the animation system (could also have set sound types per AI type...)
+- [] Support textures as well as sprites for objects.
+- [] Sound drop off more naturally
 - [] Move wad ingestion and setup out of main function for better clarity
 - [] Deepclone all wad stuff so we have fresh copy on level change. Not a mutated one.
-- [x] audiosprites
-- [] Support textures as well as sprites for objects.
-
-### Alternate fun ideas with raycasters:
-
-- A few dots running around shooting rays that get brighter where they intersect or illuminating bubbles flying around.
-- Try voxel terrain instead (need height maps)
+- [] Different weapons and switching between them
+- [] An interaction button for walls and sprites. So it's independent of weapon.
+- [] Weapon bobbing
+- [] Confirm option for messages (so I can trigger audio at level start)
 
 ### Immediate bug fixes
 
