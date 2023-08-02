@@ -29,6 +29,12 @@ export class Vector2 {
     return new Vector2(newX, newY);
   }
 
+  static distance = (vector1, vector2) => {
+    const dx = vector1.x - vector2.x;
+    const dy = vector1.y - vector2.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
   normalize() {
     return Vector2.normalize(this);
   }

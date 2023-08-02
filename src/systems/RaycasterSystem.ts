@@ -5,7 +5,13 @@
 
 import { Vector2 } from "../utils/math";
 import { GridManager } from "../GridManager/GridManager";
-import { Entity, GridTileEntity, PlayerEntity, Ray } from "../raymarcher";
+import {
+  Entity,
+  GridTileEntity,
+  ObjectEntity,
+  PlayerEntity,
+  Ray,
+} from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 import { EventMessageName } from "../enums";
@@ -16,6 +22,7 @@ export class RaycasterSystem implements System {
   camera: PlayerEntity;
   width: number;
   rays: Ray[] = [];
+  intersectedObjects: Set<ObjectEntity>;
 
   constructor(
     gridManager: GridManager,
@@ -31,7 +38,15 @@ export class RaycasterSystem implements System {
     // this.width = ecs.entityManager.with(["gameSettings"])[0].gameSettings.width;
     this.camera = camera;
     this.width = width;
+    this.intersectedObjects = new Set<ObjectEntity>();
   }
+
+  addIntersectedObjects = (x, y) => {
+    const objects = this.gridManager.getObjectEntitiesByGridLocation(x, y);
+    for (const object of objects) {
+      this.intersectedObjects.add(object);
+    }
+  };
 
   // TODO: add in an early return for maximum cast distance
   castRay(cameraX, castDistance = Infinity) {
@@ -40,6 +55,7 @@ export class RaycasterSystem implements System {
       .add(this.camera.transform.direction);
     // NOTE: Interestingly Lode uses what looks like a round, not floor here. but taht doesnt work for me. Maybe its different in c++ and always casts ints with floor.
     const activeCell = this.camera.transform.position.map(Math.floor);
+    this.addIntersectedObjects(activeCell.x, activeCell.y);
 
     // The distance from the nearest cell walls
     const distanceDelta = rayDirection.map((scalar) => Math.abs(1 / scalar));
@@ -92,6 +108,10 @@ export class RaycasterSystem implements System {
       if (currentCell.type === "wall") {
         wall = currentCell;
       }
+      this.addIntersectedObjects(
+        currentCell.gridLocation.x,
+        currentCell.gridLocation.y
+      );
     }
 
     const normalizedDistance =
@@ -127,6 +147,7 @@ export class RaycasterSystem implements System {
   // TODO: probably should only run this on a framerate tick. The game can do what it wants, but the render stuff should be less frequent.
   update(dt: number) {
     const rays: Ray[] = [];
+    this.intersectedObjects = new Set<ObjectEntity>();
 
     // For each pixel, cast a ray and push to a ray map.
     // TODO: Can I reverse this?
@@ -140,6 +161,7 @@ export class RaycasterSystem implements System {
       name: EventMessageName.RaysUpdated,
       rays,
       timestamp: Date.now(),
+      intersectedObjects: [...this.intersectedObjects],
     });
   }
 }

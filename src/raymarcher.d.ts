@@ -292,9 +292,17 @@ export interface BirdAIComponent extends BaseAIComponent {
 
 export type AIComponent = DogAIComponent | BirdAIComponent;
 
+// This is an experiment to support preprocessing a few useful things for spatial partitioning.
+export interface SpatialPartitioningSettingsComponent {
+  width: number;
+  gridLocations: Set<string>;
+  // TODO: visibility
+}
+
 export interface BaseObjectEntity {
   actor: GameActorType;
   objectType: string;
+  spatialPartitioningSettings: SpatialPartitioningSettingsComponent;
   transform: TransformComponent;
   velocity: VelocityComponent;
   movement?: MovementComponent;
@@ -618,6 +626,7 @@ export interface RaysUpdatedEvent extends EventMessageBase {
   name: EventMessageName.RaysUpdated;
   rays: Ray[];
   timestamp: number;
+  intersectedObjects: ObjectEntity[];
 }
 
 export interface EmitProjectileEvent extends EventMessageBase {

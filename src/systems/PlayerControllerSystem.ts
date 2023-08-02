@@ -4,6 +4,8 @@ import {
   Entity,
   PlayerActorCollisionEvent,
   PlayerEntity,
+  Ray,
+  RaysUpdatedEvent,
 } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
 import SingletonInputSystem from "./SingletonInputSystem";
@@ -26,6 +28,9 @@ export class PlayerControllerSystem implements System {
   // TEMP: Throttle balls to prevent system brainfartage.
   private lastBall = Date.now();
   private ballTimeout = 1000;
+  private lastInteractionAttempt = Date.now();
+  private interactionTimeout = 500;
+  private rays: Ray[] = [];
 
   constructor(
     ecs: ECS,
@@ -51,7 +56,13 @@ export class PlayerControllerSystem implements System {
 
     // 1) Set the correct equipped weapon based on the state and add the appropriate animation setup.
     this.switchWeapon(this.player.equippedWeapon.type);
+
+    this.broker.subscribe(EventMessageName.RaysUpdated, this.handleRaysUpdated);
   }
+
+  handleRaysUpdated = (e: RaysUpdatedEvent) => {
+    this.rays = e.rays;
+  };
 
   /**
    * Note: This function allows us to instantiate teh animationcomponent on load as well.
@@ -229,6 +240,24 @@ export class PlayerControllerSystem implements System {
     }
   };
 
+  // RIght now my handle player actions is not generic at all and really only handles the one weapon projectile. For now, I'm ok just hard coding it.
+  handlePlayerInteractionButton = () => {
+    const newTime = Date.now();
+    const timeLapsed = newTime - this.lastInteractionAttempt;
+    if (timeLapsed < this.interactionTimeout) {
+      return;
+    }
+    if (this.inputSystem.isKeyPressed(" ")) {
+      this.lastInteractionAttempt = newTime;
+      // Now, we need to raycast, see what the closest thing we hit is, if it has a playerInteraction component, and if it within interaction range. If so, we want to emit an event.
+      // However, we can probably just shortcut for now and reuse the most recent raycast result. For simplicity's sake, I'll just have this component store the most recent raycast result.
+      const middleRay = this.rays[Math.floor(this.rays.length / 2)];
+      console.log(middleRay);
+
+      // Actually, maybe I should just have all interactive elements within interaction range be tracked.
+    }
+  };
+
   animateEquippedWeapon = () => {
     // For now, we're going to assume all equipped weapons have only one frame in their idle state. Maybe later we can support more?
     const weaponState = this.player.equippedWeapon.state;
@@ -309,6 +338,7 @@ export class PlayerControllerSystem implements System {
     this.updatePlayerMovement();
     // Temp disable projectile while figuring out positioning bugs
     this.handlePlayerActions();
+    this.handlePlayerInteractionButton();
     this.animateEquippedWeapon();
   }
 }

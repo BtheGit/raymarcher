@@ -8,16 +8,17 @@ import { CollisionLayer, EventMessageName, ProjectileState } from "../enums";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 import { Vector2 } from "../utils/math";
+import { GridManager } from "../GridManager/GridManager";
 
 export class ProjectileSystem implements System {
   private ecs: ECS;
   private broker: Broker;
+  private gridManager: GridManager;
 
-  test: any;
-
-  constructor(ecs: ECS, broker: Broker) {
+  constructor(ecs: ECS, broker: Broker, gridManager: GridManager) {
     this.ecs = ecs;
     this.broker = broker;
+    this.gridManager = gridManager;
     this.broker.subscribe(
       EventMessageName.EmitProjectile,
       this.handleEmitProjectile
@@ -41,7 +42,12 @@ export class ProjectileSystem implements System {
 
   handleDestroyProjectile = (e) => {
     // For now, blindly remove the entity.
-    this.ecs.entityManager.remove(e.projectile);
+    this.removeProjectile(e.projectile);
+  };
+
+  removeProjectile = (entity) => {
+    this.gridManager.removeObjectEntityGridTracking(entity);
+    this.ecs.entityManager.remove(entity);
   };
 
   emitCollisionEvent = (projectile, collision) => {
@@ -173,6 +179,11 @@ export class ProjectileSystem implements System {
       collisionLayer: {
         layer: CollisionLayer.PlayerProjectile,
       },
+      spatialPartitioningSettings: {
+        // These are fudge values since figuring out the width is annoying. 30 should be plenty.
+        width: 30,
+        gridLocations: new Set(),
+      },
     });
     newEntity.state.states[ProjectileState.Destroying].animation.events!.push({
       frameId: "D2FXL",
@@ -181,7 +192,7 @@ export class ProjectileSystem implements System {
         projectile: newEntity,
       },
     });
-    this.test = newEntity;
+    this.gridManager.updateObjectEntityGridTracking(newEntity);
   };
 
   update(dt: number): void {
@@ -205,6 +216,7 @@ export class ProjectileSystem implements System {
           projectile.transform.direction.scale(-1);
         const reverseVector = projectile.transform.direction.scale(overlap);
 
+        // TODO: If there's a bug with projectiles not rendering when they explode, it's probably because I'm not updating their spatial partition tracking after this little adjustment (to avoid going in walls).
         projectile.transform.position =
           projectile.transform.position.subtract(reverseVector);
         // now, all we do is walk back the position as much as the overlap, and add a fraction for padding. Issue is going to be negative or positive first.
@@ -224,7 +236,7 @@ export class ProjectileSystem implements System {
       if (projectile.projectileType === "magic_shot") {
         if (projectile.lifetime < 0) {
           // Simply remove the entity, no animations.
-          this.ecs.entityManager.remove(projectile);
+          this.removeProjectile(projectile);
           continue;
         }
         // Short term, destroy on collision with anything. (Obviously lots of issues with short sprites and such. Someday a z axis...)

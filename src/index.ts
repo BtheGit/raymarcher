@@ -48,7 +48,7 @@ import { Broker } from "./utils/events";
 import { FlowingMovementSystem } from "./systems/FlowingMovementSystem";
 import { Howler } from "howler";
 
-const TILE_SIZE = 256;
+export const TILE_SIZE = 256;
 
 const DEFAULT_SETTINGS = {
   width: 768,
@@ -302,6 +302,10 @@ const loadLevel = async (
         elevation: transform.elevation,
       },
       velocity: new Vector2(0, 0),
+      spatialPartitioningSettings: {
+        width: 0,
+        gridLocations: new Set<string>(),
+      },
     };
 
     if (movementSettings) {
@@ -346,6 +350,11 @@ const loadLevel = async (
         objectType: "object__static",
         sprite: { ...sprite },
       };
+
+      // Set the spatial partitioning width to the sprite width
+      const spriteName = `${sprite.name}${sprite.directions === 0 ? "0" : "1"}`;
+      objectEntity.spatialPartitioningSettings.width =
+        spriteManager.getSpriteFrame(spriteName)!.spriteSourceSize.w;
     } else {
       if (!states || !states.length || !initialState) {
         throw new Error(
@@ -409,9 +418,31 @@ const loadLevel = async (
           states: entityStates,
         },
       };
+
+      // We want to determine the widest possible sprite (erring on the side of caution).
+      // We'll need to iterate through all the sprite frames of all the states for this object and use the largest one.
+      // NOTE: The way I set all this up to allow arbitrary sprite frames for animations is cool, but way too extensible. This would be so simpler if every object was associated with one sprite sheet (which has the width value already easily accessible). In addition, because I was trying to adhere to doom's sprite id conventions, I now have to imperatively find every associated frame based on directions.
+      for (const state of states) {
+        const animation = animationManager.getAnimation(state.animation);
+        if (animation) {
+          const { frames } = animation;
+          for (const frame of frames) {
+            const { frameId, directions } = frame;
+            const textureName = `${frameId}${directions === 0 ? "0" : "1"}`;
+            const sprite = spriteManager.getSpriteFrame(textureName);
+            if (sprite) {
+              objectEntity.spatialPartitioningSettings.width = Math.max(
+                objectEntity.spatialPartitioningSettings.width,
+                sprite.spriteSourceSize.w
+              );
+            }
+          }
+        }
+      }
     }
 
     ecs.entityManager.add(objectEntity);
+    gridManager.updateObjectEntityGridTracking(objectEntity as ObjectEntity);
   });
 
   // Once again, we're cheating a bit to avoid extra lookups until we have a better ECS system. I'm going to persist a skybox reference here.
@@ -443,11 +474,11 @@ const loadLevel = async (
 
   ecs.systems.add(new FlowingMovementSystem(ecs, gridManager));
 
-  ecs.systems.add(new ProjectileSystem(ecs, broker));
+  ecs.systems.add(new ProjectileSystem(ecs, broker, gridManager));
 
   ecs.systems.add(new PhysicsSystem(ecs, broker, gridManager));
 
-  ecs.systems.add(new InteractionSystem(ecs, broker));
+  ecs.systems.add(new InteractionSystem(ecs, broker, gridManager));
 
   // TODO:
   // Once again, I don't know the ideal way to separate concerns here (without huge time overhead for good event stuff), so I'm going to short term undo all my good efforts and hard connect systems. Namely the renderer and the raycaster in this case. In fact, until I get smarter, they really shouldn't be two systems at all. But oh well, the renderer will at least have other concerns like text and a HUD that have nothing to do with raycasting. So I'm going to make a very fake eventBus to pass stuff along short term.

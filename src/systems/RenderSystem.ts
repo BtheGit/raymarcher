@@ -800,8 +800,8 @@ export class RenderSystem implements System {
     );
   }
 
-  renderObjects(rays: Ray[]) {
-    const objects = this.ecs.entityManager.with(["objectType"]);
+  renderObjects(rays: Ray[], objects: ObjectEntity[]) {
+    // const objects = this.ecs.entityManager.with(["objectType"]);
     // Sort the sprites by distance from the camera
     const sortedObjects = objects.sort((a, b) => {
       const aDistance =
@@ -1071,7 +1071,7 @@ export class RenderSystem implements System {
     this.renderWorld(e.rays);
     // console.timeEnd("render world");
     // console.time("render objects");
-    this.renderObjects(e.rays);
+    this.renderObjects(e.rays, e.intersectedObjects);
     // console.timeEnd("render objects");
 
     this.renderEquippedWeapon();

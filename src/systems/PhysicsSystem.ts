@@ -308,6 +308,11 @@ export class PhysicsSystem implements System {
           position: new Vector2(newPosition.x, newPosition.y),
         },
       });
+
+      // Update the spatial partitioning check
+      if (entity !== this.player) {
+        this.gridManager.updateObjectEntityGridTracking(entity as ObjectEntity);
+      }
     }
     // Collision check all entities with a velocity against other colliders. Mark collisions with current velocity.
     // However, instead of bouncing, maybe we should arrest movement on that plane similarly to above, then any extra things can occur. Or we can have collider types

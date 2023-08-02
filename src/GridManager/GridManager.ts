@@ -2,7 +2,12 @@
  * The purpose of the Grid Manager is to sit alongside the regular ECS system and allow O(1) lookups of grid locations. To that end, we're just going to add grid locations through it so we maintain a separate index. (It's really just another layer of abstraction over the straight grid but with shared poitners to the entities in the ECS). Later I'd like to support more (like all entities with a grid location, not just one per location representing the map tile.)
  */
 
-import { GridCoord, GridTileEntity, WADGrid } from "../raymarcher";
+import {
+  GridCoord,
+  GridTileEntity,
+  ObjectEntity,
+  WADGrid,
+} from "../raymarcher";
 import { ECS } from "../utils/ECS/ECS";
 import { shortestPathBFS } from "../utils/bfs";
 import { LRUCache } from "../utils/cache";
@@ -16,11 +21,84 @@ export class GridManager {
   private _rows = 0;
   private _columns = 0;
 
+  private objectEntityGridMap: Map<string, Set<ObjectEntity>> = new Map();
+
   private flowFields = new LRUCache<string, [number, number][][]>(CACHE_LIMIT); // TODO: Determine memory usage and valid size limit. Probably pretty high.
 
   constructor(ecs: ECS) {
     this.ecs = ecs;
   }
+
+  getObjectEntitiesByGridLocation = (x: number, y: number) => {
+    const gridIndexKey = this.getGridIndexKey(x, y);
+    const entitySet = this.objectEntityGridMap.get(gridIndexKey) ?? new Set();
+    return entitySet;
+  };
+
+  updateObjectEntityGridTracking = (entity: ObjectEntity) => {
+    const origin = entity.transform.position;
+    const radius = Math.ceil(entity.spatialPartitioningSettings.width / 2);
+    // NOTE: For now, I'm going to assume the radius is half the sprite width.
+    // However if we have an animated object, the width is stored differently - and inconsistenyl, since each animation frame can have a different width.
+    // In an optimal world I would constrain the sprite texture to a predetermined width, but for now, I'm just gonna use the current frame's width I guess (or maybe I need to proces on load and determine the widest one.) Since this wont be updated on animation frame changes, only location changes, it could cause flickering.... Oh well. Widest would be best.
+    // Also NOTE: I don't really know how to translate the sprite pixels to grid tiles. I was trying to use 256 as a fraction of 1. But I don't think that's how it's working in reality. However, because of what I'm doing here, we can fudge as long as we're consistent, and err on the side of tolerance. We'll start with considering the pixel width as a fraction of 256 and translate that to grid tiles.
+    const normalizedRadius = radius / 256; // TODO: This is to match the constant TILE_SIZE
+
+    // Determine which cells are overlapped....
+    // Calculate the range of grid cells covered by the circle
+    const minGridX = Math.floor(origin.x - normalizedRadius);
+    const maxGridX = Math.ceil(origin.x + normalizedRadius);
+    const minGridY = Math.floor(origin.y - normalizedRadius);
+    const maxGridY = Math.ceil(origin.y + normalizedRadius);
+
+    // Iterate over the range of grid cells and add the entity to each overlapping cell
+    const lastGridLocations =
+      entity.spatialPartitioningSettings.gridLocations ?? new Set();
+    const nextGridLocations = new Set<string>();
+    const newGridLocations: string[] = [];
+    for (let x = minGridX; x <= maxGridX; x++) {
+      for (let y = minGridY; y <= maxGridY; y++) {
+        const gridCellKey = this.getGridIndexKey(x, y);
+        nextGridLocations.add(gridCellKey);
+        if (lastGridLocations.has(gridCellKey)) {
+          lastGridLocations.delete(gridCellKey);
+        } else {
+          newGridLocations.push(gridCellKey);
+        }
+      }
+    }
+
+    // Now, everything that is still in lastGridLocations needs to be deleted.
+    for (const location of lastGridLocations) {
+      const entitySet = this.objectEntityGridMap.get(location);
+      // NOTE: This should be here if an entity is already marked as being in it.
+      if (entitySet) {
+        entitySet.delete(entity);
+      }
+    }
+
+    // Everything that is in new grid locations should be added
+    for (const location of newGridLocations) {
+      const entitySet =
+        this.objectEntityGridMap.get(location) ?? new Set<ObjectEntity>();
+      entitySet.add(entity);
+      this.objectEntityGridMap.set(location, entitySet);
+    }
+
+    // Finally gridLocations on the entity component should be updated.
+    entity.spatialPartitioningSettings.gridLocations = nextGridLocations;
+  };
+
+  removeObjectEntityGridTracking = (entity: ObjectEntity) => {
+    const lastGridLocations = entity.spatialPartitioningSettings.gridLocations;
+    for (const location of lastGridLocations) {
+      const entitySet = this.objectEntityGridMap.get(location);
+      // NOTE: This should be here if an entity is already marked as being in it.
+      if (entitySet) {
+        entitySet.delete(entity);
+      }
+    }
+  };
 
   private getGridIndexKeyFromEntity(entity: GridTileEntity): string {
     const { x, y } = entity.gridLocation;
@@ -91,7 +169,7 @@ export class GridManager {
           }
         }
 
-        this.addEntity(entity);
+        this.addGridTileEntity(entity);
       }
     }
   }
@@ -116,10 +194,11 @@ export class GridManager {
     return this.getGridTile(x, y)?.accessible;
   }
 
-  addEntity(entity: GridTileEntity) {
+  addGridTileEntity(entity: GridTileEntity) {
     const key = this.getGridIndexKeyFromEntity(entity);
     this.grid.set(key, entity);
-    this.ecs.entityManager.add(entity);
+    // TODO: I dunno, short term, we don't have a use for these yet.
+    // this.ecs.entityManager.add(entity);
   }
 
   getGridTile(x: number, y: number) {
