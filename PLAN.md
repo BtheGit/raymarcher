@@ -106,6 +106,7 @@ In the interests of making lists that never get completed, here are some potenti
 - [] An interaction button for walls and sprites. So it's independent of weapon.
 - [x] Weapon bobbing (would be easier if I had a flag for moving)
 - [] Confirm option for messages (so I can trigger audio at level start)
+- [x] BUG Bird state changes suck. bobbing stops after fleeing. Needs to be readded.
 
 ### Immediate bug fixes
 

@@ -362,7 +362,13 @@ const loadLevel = async (
       const entityStates = states.reduce((acc, state) => {
         // TODO: Here we are doing what should be a world object initialization/spawn bit. Need to move this to a spawner
         // or something.
-        const { name, animation: animationKey, sound, height } = state;
+        const {
+          name,
+          animation: animationKey,
+          sound,
+          height,
+          bobbingMovement,
+        } = state;
         // TODO: Animation Manager has no real purpose at this juncture
         const animationConfiguration =
           animationManager.getAnimation(animationKey)!; // TODO: Handle missing animation
@@ -381,6 +387,10 @@ const loadLevel = async (
 
         if (sound) {
           entityState.sound = { ...sound };
+        }
+
+        if (bobbingMovement) {
+          entityState.bobbingMovement = { ...bobbingMovement };
         }
 
         entityState.height = height ?? objectEntity.transform.height;

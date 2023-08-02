@@ -523,6 +523,10 @@ export interface WADObjectEntity {
     animation: string;
     height?: number;
     sound?: any;
+    bobbingMovement?: {
+      amplitude: number;
+      frequency: number;
+    };
   }>;
   collider?: {
     type: "aabb" | "circle";
