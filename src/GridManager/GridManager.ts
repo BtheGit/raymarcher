@@ -2,6 +2,7 @@
  * The purpose of the Grid Manager is to sit alongside the regular ECS system and allow O(1) lookups of grid locations. To that end, we're just going to add grid locations through it so we maintain a separate index. (It's really just another layer of abstraction over the straight grid but with shared poitners to the entities in the ECS). Later I'd like to support more (like all entities with a grid location, not just one per location representing the map tile.)
  */
 
+import { GRID_CACHE_LIMIT, TILE_SIZE } from "../constants";
 import {
   GridCoord,
   GridTileEntity,
@@ -13,8 +14,6 @@ import { shortestPathBFS } from "../utils/bfs";
 import { LRUCache } from "../utils/cache";
 import { Vector2 } from "../utils/math";
 
-const CACHE_LIMIT = 20;
-
 export class GridManager {
   private grid: Map<string, GridTileEntity> = new Map();
   private ecs: ECS;
@@ -23,7 +22,9 @@ export class GridManager {
 
   private objectEntityGridMap: Map<string, Set<ObjectEntity>> = new Map();
 
-  private flowFields = new LRUCache<string, [number, number][][]>(CACHE_LIMIT); // TODO: Determine memory usage and valid size limit. Probably pretty high.
+  private flowFields = new LRUCache<string, [number, number][][]>(
+    GRID_CACHE_LIMIT
+  ); // TODO: Determine memory usage and valid size limit. Probably pretty high.
 
   constructor(ecs: ECS) {
     this.ecs = ecs;
@@ -42,7 +43,7 @@ export class GridManager {
     // However if we have an animated object, the width is stored differently - and inconsistenyl, since each animation frame can have a different width.
     // In an optimal world I would constrain the sprite texture to a predetermined width, but for now, I'm just gonna use the current frame's width I guess (or maybe I need to proces on load and determine the widest one.) Since this wont be updated on animation frame changes, only location changes, it could cause flickering.... Oh well. Widest would be best.
     // Also NOTE: I don't really know how to translate the sprite pixels to grid tiles. I was trying to use 256 as a fraction of 1. But I don't think that's how it's working in reality. However, because of what I'm doing here, we can fudge as long as we're consistent, and err on the side of tolerance. We'll start with considering the pixel width as a fraction of 256 and translate that to grid tiles.
-    const normalizedRadius = radius / 256; // TODO: This is to match the constant TILE_SIZE
+    const normalizedRadius = radius / TILE_SIZE;
 
     // Determine which cells are overlapped....
     // Calculate the range of grid cells covered by the circle

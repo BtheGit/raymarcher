@@ -47,14 +47,7 @@ import { AudioManager } from "./AudioManager/AudioManager";
 import { Broker } from "./utils/events";
 import { FlowingMovementSystem } from "./systems/FlowingMovementSystem";
 import { Howler } from "howler";
-
-export const TILE_SIZE = 256;
-
-const DEFAULT_SETTINGS = {
-  width: 768,
-  height: 512,
-  canvasId: "raymarcher-display",
-};
+import { TILE_SIZE, DEFAULT_SETTINGS } from "./constants";
 
 // TODO: Default Wad
 

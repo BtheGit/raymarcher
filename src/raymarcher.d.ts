@@ -299,6 +299,10 @@ export interface SpatialPartitioningSettingsComponent {
   // TODO: visibility
 }
 
+export interface PlayerInteractionsComponent {
+  active: boolean;
+}
+
 export interface BaseObjectEntity {
   actor: GameActorType;
   objectType: string;
@@ -314,6 +318,7 @@ export interface BaseObjectEntity {
   collider?: ColliderComponent;
   collisions?: CollisionReport[];
   collisionLayer?: CollisionLayerComponent;
+  playerInteractions?: PlayerInteractionsComponent;
 }
 
 export interface StaticObjectEntity extends BaseObjectEntity {

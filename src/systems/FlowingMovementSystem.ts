@@ -2,8 +2,7 @@ import { GridManager } from "../GridManager/GridManager";
 import { BaseObjectEntity } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Vector2 } from "../utils/math";
-
-const PI2 = Math.PI * 2;
+import { PI2 } from "../constants";
 
 // TODO: Making this a generic system, means we probably want actors to indicate their swarm influence. IE, should they be subtly guided by it (like things floating in a light wind current - TODO: add in a perlin noise based flow field for wind currents.) or very influenced (like enemies pathfinding)
 

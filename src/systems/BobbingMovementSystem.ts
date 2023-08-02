@@ -1,7 +1,6 @@
 import { Entity } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
-
-const PI2 = Math.PI * 2;
+import { PI2 } from "../constants";
 
 export class BobbingMovementSystem implements System {
   private ecs: ECS;

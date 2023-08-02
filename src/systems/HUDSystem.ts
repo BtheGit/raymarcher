@@ -17,8 +17,7 @@ import {
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 import SingletonInputSystem from "./SingletonInputSystem";
-
-const PI2 = Math.PI * 2;
+import { PI2 } from "../constants";
 
 // TODO: Text Defaults so every message doesn't have to specify.
 
