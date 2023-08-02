@@ -6,7 +6,6 @@
  *
  */
 
-import { EventManager } from "../EventManager/EventManager";
 import { GridManager } from "../GridManager/GridManager";
 import { TextureManager } from "../TextureManager/TextureManager";
 import {
@@ -15,6 +14,8 @@ import {
   PlayerEntity,
   SkyboxEntity,
   ObjectEntity,
+  RaysUpdatedEvent,
+  Ray,
 } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
 import {
@@ -24,7 +25,8 @@ import {
   Vector2,
 } from "../utils/math";
 import { SpriteManager } from "../SpriteManager/SpriteManager";
-import { EquipableWeapon } from "../enums";
+import { EquipableWeapon, EventMessageName } from "../enums";
+import { Broker } from "../utils/events";
 
 export function adjustBrightness(canvas, brightness) {
   const adjustedCanvas = document.createElement("canvas");
@@ -107,7 +109,7 @@ export class RenderSystem implements System {
   spriteManager: SpriteManager;
   gridManager: GridManager;
   gameSettings: GameSettingsComponent;
-  eventManager: EventManager;
+  broker: Broker;
   camera: PlayerEntity; // We need this for the non-world items (sky, hud) namely for direction, rotation... Ideally we can get that another way in the future. So much fun decoupling potential! (that'll I'll probably ignore for the next shiny project)
   currentRayFrame = -Infinity;
   skyboxEntity: SkyboxEntity;
@@ -170,7 +172,7 @@ export class RenderSystem implements System {
     textureManager: TextureManager,
     spriteManager: SpriteManager,
     gridManager: GridManager,
-    eventManager: EventManager,
+    broker: Broker,
     camera: PlayerEntity,
     skyboxEntity: SkyboxEntity
   ) {
@@ -179,7 +181,7 @@ export class RenderSystem implements System {
     this.textureManager = textureManager;
     this.spriteManager = spriteManager;
     this.gridManager = gridManager;
-    this.eventManager = eventManager;
+    this.broker = broker;
     this.camera = camera;
     this.skyboxEntity = skyboxEntity;
 
@@ -223,6 +225,8 @@ export class RenderSystem implements System {
 
     // TODO: Should really be worried about sprites, not object
     this.objects = ecs.entityManager.with(["objectType"]);
+
+    this.broker.subscribe(EventMessageName.RaysUpdated, this.handleRaysUpdated);
   }
 
   // TODO: Memoize and make sure its rerun on screen size chagnes.
@@ -374,18 +378,13 @@ export class RenderSystem implements System {
     this.offscreenCtx.drawImage(this.skyCanvas, 0, 0);
   }
 
-  renderWorld() {
+  renderWorld(rays: Ray[]) {
     // We may still render non world things (like a hud) on a different cycle. But no need to rerender the world (should be stored in a buffer separate from anything else)
-    const nextRayFrame = this.eventManager.nextRays;
-    if (nextRayFrame.id === this.currentRayFrame) {
-      return;
-    }
-    this.currentRayFrame = nextRayFrame.id;
 
     // We'll need to record the perpendicular distance of each column for sprite clipping later.
-    for (let i = 0; i < nextRayFrame.rays.length; i++) {
+    for (let i = 0; i < rays.length; i++) {
       const x = i;
-      const ray = nextRayFrame.rays[i];
+      const ray = rays[i];
       const {
         normalizedDistance,
         wall,
@@ -801,7 +800,7 @@ export class RenderSystem implements System {
     );
   }
 
-  renderObjects() {
+  renderObjects(rays: Ray[]) {
     const objects = this.ecs.entityManager.with(["objectType"]);
     // Sort the sprites by distance from the camera
     const sortedObjects = objects.sort((a, b) => {
@@ -816,9 +815,7 @@ export class RenderSystem implements System {
 
     if (!sortedObjects.length) return;
 
-    const zBuffer = this.eventManager.nextRays.rays.map(
-      (nextRay) => nextRay.normalizedDistance
-    );
+    const zBuffer = rays.map((nextRay) => nextRay.normalizedDistance);
 
     for (const object of sortedObjects) {
       // Render each sprite
@@ -1057,8 +1054,13 @@ export class RenderSystem implements System {
     this.ctx.drawImage(this.offscreenCanvas, 0, 0);
   }
 
-  // TODO: Framerate limit this.
-  update(dt: number) {
+  handleRaysUpdated = (e: RaysUpdatedEvent) => {
+    // TODO: I should be able to deprecate this since it's event based now and not polling. Might have the otehr issue instead where I dont finish a render pass before the next event.
+    if (e.timestamp === this.currentRayFrame) {
+      return;
+    }
+    this.currentRayFrame = e.timestamp;
+
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.offscreenCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     // TODO: Render Sky
@@ -1066,10 +1068,10 @@ export class RenderSystem implements System {
     // TODO: Render World (Walls, Floors, Ceilings, Sprites)
     // this.renderFloors();
     // console.time("render world");
-    this.renderWorld();
+    this.renderWorld(e.rays);
     // console.timeEnd("render world");
     // console.time("render objects");
-    this.renderObjects();
+    this.renderObjects(e.rays);
     // console.timeEnd("render objects");
 
     this.renderEquippedWeapon();
@@ -1080,5 +1082,8 @@ export class RenderSystem implements System {
 
     // TODO: Render offscreen buffer to the screen. Clear offscreen buffer for next pass (double buffer)
     this.draw();
-  }
+  };
+
+  // TODO: Framerate limit this.
+  update(dt: number) {}
 }

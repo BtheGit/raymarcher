@@ -40,7 +40,6 @@ import {
   EventMessageName,
 } from "./enums";
 // TO Allay future confusion, event manager is not an event system. Ideally it shoudl be replaced with an event system though.
-import { EventManager } from "./EventManager/EventManager";
 import { AnimationSystem } from "./systems/AnimationSystem";
 import { SpriteManager } from "./SpriteManager/SpriteManager";
 import { AnimationManager } from "./AnimationManager/AnimationManager";
@@ -452,9 +451,8 @@ const loadLevel = async (
 
   // TODO:
   // Once again, I don't know the ideal way to separate concerns here (without huge time overhead for good event stuff), so I'm going to short term undo all my good efforts and hard connect systems. Namely the renderer and the raycaster in this case. In fact, until I get smarter, they really shouldn't be two systems at all. But oh well, the renderer will at least have other concerns like text and a HUD that have nothing to do with raycasting. So I'm going to make a very fake eventBus to pass stuff along short term.
-  const eventManager = new EventManager();
   ecs.systems.add(
-    new RaycasterSystem(gridManager, eventManager, playerEntity, settings.width)
+    new RaycasterSystem(gridManager, broker, playerEntity, settings.width)
   );
 
   // There's no huge reason to pass this here except maybe to eventually sync the frame rates for all animations.
@@ -472,7 +470,7 @@ const loadLevel = async (
       textureManager,
       spriteManager,
       gridManager,
-      eventManager,
+      broker,
       playerEntity,
       skyboxEntity
     )
@@ -491,7 +489,6 @@ const loadLevel = async (
       textureManager,
       spriteManager,
       gridManager,
-      eventManager,
       playerEntity,
       UserInputSystem,
       broker

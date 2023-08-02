@@ -3,7 +3,6 @@
  * (Maybe even text?)
  */
 
-import { EventManager } from "../EventManager/EventManager";
 import { GridManager } from "../GridManager/GridManager";
 import { SpriteManager } from "../SpriteManager/SpriteManager";
 import { TextureManager } from "../TextureManager/TextureManager";
@@ -45,7 +44,6 @@ export class HUDSystem implements System {
   private textureManager: TextureManager;
   private spriteManager: SpriteManager;
   private gridManager: GridManager;
-  private eventManager: EventManager;
   private gameSettings: GameSettingsComponent;
   private camera: PlayerEntity;
   private inputSystem: SingletonInputSystem;
@@ -87,7 +85,6 @@ export class HUDSystem implements System {
     textureManager: TextureManager,
     spriteManager: SpriteManager,
     gridManager: GridManager,
-    eventManager: EventManager,
     camera: PlayerEntity,
     inputSystem: SingletonInputSystem,
     broker: Broker
@@ -97,7 +94,6 @@ export class HUDSystem implements System {
     this.textureManager = textureManager;
     this.spriteManager = spriteManager;
     this.gridManager = gridManager;
-    this.eventManager = eventManager;
     this.camera = camera;
     this.inputSystem = inputSystem;
     this.broker = broker;

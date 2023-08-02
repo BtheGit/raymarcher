@@ -4,26 +4,27 @@
  */
 
 import { Vector2 } from "../utils/math";
-import { EventManager } from "../EventManager/EventManager";
 import { GridManager } from "../GridManager/GridManager";
 import { Entity, GridTileEntity, PlayerEntity, Ray } from "../raymarcher";
 import { ECS, System } from "../utils/ECS/ECS";
+import { Broker } from "../utils/events";
+import { EventMessageName } from "../enums";
 
 export class RaycasterSystem implements System {
-  gridManager: GridManager;
-  eventManager: EventManager;
+  private gridManager: GridManager;
+  private broker: Broker;
   camera: PlayerEntity;
   width: number;
   rays: Ray[] = [];
 
   constructor(
     gridManager: GridManager,
-    eventManager: EventManager,
+    broker: Broker,
     camera: PlayerEntity,
     width: number
   ) {
     this.gridManager = gridManager;
-    this.eventManager = eventManager;
+    this.broker = broker;
     // Could just pass int he player for now until we actually have a dynamic camera (read never)
     // this.camera = ecs.entityManager.with(["camera"])[0];
     // TODO: This makes the value undynamic and there's no reason not to just instantiate with it... so I will...until that changes...if ever.
@@ -135,6 +136,10 @@ export class RaycasterSystem implements System {
       rays.push(ray);
     }
     this.rays = rays;
-    this.eventManager.rays = rays;
+    this.broker.emit(EventMessageName.RaysUpdated, {
+      name: EventMessageName.RaysUpdated,
+      rays,
+      timestamp: Date.now(),
+    });
   }
 }

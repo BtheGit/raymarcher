@@ -614,6 +614,12 @@ export interface EventMessageBase {
   // directives: InteractionDirective[];
 }
 
+export interface RaysUpdatedEvent extends EventMessageBase {
+  name: EventMessageName.RaysUpdated;
+  rays: Ray[];
+  timestamp: number;
+}
+
 export interface EmitProjectileEvent extends EventMessageBase {
   name: EventMessageName.EmitProjectile;
   emitter: "player";
