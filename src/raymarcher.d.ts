@@ -557,6 +557,7 @@ export interface WADObjectEntity {
   collisionLayer?: number;
   ai?: any;
   audioSource?: AudioSourceComponent;
+  playerInteractions?: PlayerInteractionsComponent;
 }
 
 export interface WADAnimation {
@@ -632,6 +633,7 @@ export interface RaysUpdatedEvent extends EventMessageBase {
   rays: Ray[];
   timestamp: number;
   intersectedObjects: ObjectEntity[];
+  playerInteractionsTarget: ObjectEntity; // TODO: Walls
 }
 
 export interface EmitProjectileEvent extends EventMessageBase {

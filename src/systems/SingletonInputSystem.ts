@@ -1,3 +1,5 @@
+// TODO: Turn into manager since it's not really a system by our paradigm
+
 export class SingletonInputSystem {
   private static instance: SingletonInputSystem;
   private keysPressed: { [key: string]: boolean } = {};

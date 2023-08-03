@@ -2147,6 +2147,9 @@ const map_1 = {
           currentIndex: 0,
         },
       },
+      playerInteractions: {
+        active: true,
+      },
     },
   ],
 };

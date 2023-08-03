@@ -15,6 +15,10 @@ import {
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 import { EventMessageName } from "../enums";
+import {
+  INTERACTION_DISTANCE_SQUARED,
+  INTERACTION_TARGET_GENERIC_WIDTH,
+} from "../constants";
 
 export class RaycasterSystem implements System {
   private gridManager: GridManager;
@@ -23,6 +27,8 @@ export class RaycasterSystem implements System {
   width: number;
   rays: Ray[] = [];
   intersectedObjects: Set<ObjectEntity>;
+  interactiveTarget: any;
+  interactiveTargetDistance: number;
 
   constructor(
     gridManager: GridManager,
@@ -39,23 +45,86 @@ export class RaycasterSystem implements System {
     this.camera = camera;
     this.width = width;
     this.intersectedObjects = new Set<ObjectEntity>();
+    this.resetInteractiveTarget();
   }
 
-  addIntersectedObjects = (x, y) => {
+  resetInteractiveTarget = () => {
+    this.interactiveTarget = null;
+    this.interactiveTargetDistance = Infinity;
+  };
+
+  rayToRectIntersection(object: ObjectEntity) {
+    // Short term, I'm going to cheat hard and just use a standard width. This will make it harder at close distances.
+    // Need a standard way to determine this with walls.
+    const HALF_WIDTH = INTERACTION_TARGET_GENERIC_WIDTH / 2;
+    const tminX =
+      (object.transform.position.x -
+        HALF_WIDTH -
+        this.camera.transform.position.x) /
+      this.camera.transform.direction.x;
+    const tmaxX =
+      (object.transform.position.x +
+        INTERACTION_TARGET_GENERIC_WIDTH -
+        this.camera.transform.position.x) /
+      this.camera.transform.direction.x;
+    const tminY =
+      (object.transform.position.y -
+        HALF_WIDTH -
+        this.camera.transform.position.y) /
+      this.camera.transform.direction.y;
+    const tmaxY =
+      (object.transform.position.y +
+        INTERACTION_TARGET_GENERIC_WIDTH -
+        this.camera.transform.position.y) /
+      this.camera.transform.direction.y;
+
+    const tmin = Math.max(Math.min(tminX, tmaxX), Math.min(tminY, tmaxY));
+    const tmax = Math.min(Math.max(tminX, tmaxX), Math.max(tminY, tmaxY));
+
+    // If the minimum intersection time is greater than the maximum intersection time,
+    // then there's no intersection.
+    if (tmin > tmax) {
+      return false;
+    }
+
+    // If both tmin and tmax are positive or zero, the ray intersects with the rectangle.
+    return tmin >= 0 && tmax >= 0;
+  }
+
+  addIntersectedObjects = (x, y, findInteractiveTarget) => {
     const objects = this.gridManager.getObjectEntitiesByGridLocation(x, y);
     for (const object of objects) {
       this.intersectedObjects.add(object);
+      if (findInteractiveTarget) {
+        if (object.hasOwnProperty("playerInteractions")) {
+          const distanceSquared = this.camera.transform.position.distanceTo(
+            object.transform.position
+          );
+          if (
+            distanceSquared < this.interactiveTargetDistance &&
+            distanceSquared < INTERACTION_DISTANCE_SQUARED &&
+            this.rayToRectIntersection(object)
+          ) {
+            this.interactiveTarget = object;
+            this.interactiveTargetDistance = distanceSquared;
+          }
+        }
+      }
     }
   };
 
   // TODO: add in an early return for maximum cast distance
-  castRay(cameraX, castDistance = Infinity) {
+  castRay(cameraX, findInteractiveTarget: boolean, castDistance = Infinity) {
     const rayDirection = this.camera.plane
       .scale(cameraX)
       .add(this.camera.transform.direction);
     // NOTE: Interestingly Lode uses what looks like a round, not floor here. but taht doesnt work for me. Maybe its different in c++ and always casts ints with floor.
     const activeCell = this.camera.transform.position.map(Math.floor);
-    this.addIntersectedObjects(activeCell.x, activeCell.y);
+    this.addIntersectedObjects(
+      activeCell.x,
+      activeCell.y,
+      findInteractiveTarget
+    );
 
     // The distance from the nearest cell walls
     const distanceDelta = rayDirection.map((scalar) => Math.abs(1 / scalar));
@@ -110,7 +179,8 @@ export class RaycasterSystem implements System {
       }
       this.addIntersectedObjects(
         currentCell.gridLocation.x,
-        currentCell.gridLocation.y
+        currentCell.gridLocation.y,
+        findInteractiveTarget
       );
     }
 
@@ -148,12 +218,14 @@ export class RaycasterSystem implements System {
   update(dt: number) {
     const rays: Ray[] = [];
     this.intersectedObjects = new Set<ObjectEntity>();
+    this.resetInteractiveTarget();
 
     // For each pixel, cast a ray and push to a ray map.
     // TODO: Can I reverse this?
     for (let i = 0; i < this.width; i++) {
       const cameraX = (2 * i) / this.width - 1; // x-Coordinate in camera space
-      const ray = this.castRay(cameraX);
+      const findInteractiveTarget = i === Math.floor(this.width / 2);
+      const ray = this.castRay(cameraX, findInteractiveTarget);
       rays.push(ray);
     }
     this.rays = rays;
@@ -162,6 +234,7 @@ export class RaycasterSystem implements System {
       rays,
       timestamp: Date.now(),
       intersectedObjects: [...this.intersectedObjects],
+      playerInteractionsTarget: this.interactiveTarget,
     });
   }
 }

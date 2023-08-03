@@ -283,6 +283,7 @@ const loadLevel = async (
       interactionDirectives,
       bobbingMovement,
       audioSource,
+      playerInteractions,
     } = object;
 
     let objectEntity = {
@@ -335,6 +336,12 @@ const loadLevel = async (
       (objectEntity as ObjectEntity).interactionDirectives = [
         ...interactionDirectives,
       ];
+    }
+
+    if (playerInteractions) {
+      (objectEntity as ObjectEntity).playerInteractions = {
+        ...playerInteractions,
+      };
     }
 
     if (sprite) {

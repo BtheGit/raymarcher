@@ -27,6 +27,7 @@ import {
 import { SpriteManager } from "../SpriteManager/SpriteManager";
 import { EquipableWeapon, EventMessageName } from "../enums";
 import { Broker } from "../utils/events";
+import { INTERACTION_BRIGHTNESS_ADJUSTMENT_FACTOR } from "../constants";
 
 export function adjustBrightness(canvas, brightness) {
   const adjustedCanvas = document.createElement("canvas");
@@ -800,7 +801,11 @@ export class RenderSystem implements System {
     );
   }
 
-  renderObjects(rays: Ray[], objects: ObjectEntity[]) {
+  renderObjects(
+    rays: Ray[],
+    objects: ObjectEntity[],
+    playerInteractionsTarget: ObjectEntity
+  ) {
     // const objects = this.ecs.entityManager.with(["objectType"]);
     // Sort the sprites by distance from the camera
     const sortedObjects = objects.sort((a, b) => {
@@ -949,8 +954,12 @@ export class RenderSystem implements System {
         // const drawEndX = Math.floor(spriteScreenX + spriteWidth / 2);
 
         // Darkened sprites! But at great frame rate cost (20ms to 50-60ms for this call)
-        const brightness =
+        let brightness =
           this.lookupWallBrightnessModifier[Math.floor(transformY)];
+
+        if (playerInteractionsTarget === object) {
+          brightness *= INTERACTION_BRIGHTNESS_ADJUSTMENT_FACTOR;
+        }
         const adjustedCanvas = adjustBrightness(texture!.canvas, brightness);
 
         // Draw sprite in vertical strips.
@@ -1071,7 +1080,11 @@ export class RenderSystem implements System {
     this.renderWorld(e.rays);
     // console.timeEnd("render world");
     // console.time("render objects");
-    this.renderObjects(e.rays, e.intersectedObjects);
+    this.renderObjects(
+      e.rays,
+      e.intersectedObjects,
+      e.playerInteractionsTarget
+    );
     // console.timeEnd("render objects");
 
     this.renderEquippedWeapon();

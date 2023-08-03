@@ -108,6 +108,7 @@ In the interests of making lists that never get completed, here are some potenti
 - [] Confirm option for messages (so I can trigger audio at level start)
 - [x] BUG Bird state changes suck. bobbing stops after fleeing. Needs to be readded.
 - [x] Grid based culling for game objects (so we don't have to render everything)
+- [] Projectiles shouldn't intersect with pickups
 
 ### Immediate bug fixes
 
