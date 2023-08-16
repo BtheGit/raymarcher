@@ -6,7 +6,7 @@ import {
   PlayerEntity,
   Ray,
   RaysUpdatedEvent,
-} from "../raymarcher";
+} from "../types";
 import { ECS, System } from "../utils/ECS/ECS";
 import SingletonInputSystem from "./SingletonInputSystem";
 import { Broker } from "../utils/events";

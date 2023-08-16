@@ -16,7 +16,7 @@ import {
   ObjectEntity,
   RaysUpdatedEvent,
   Ray,
-} from "../raymarcher";
+} from "../types";
 import { ECS, System } from "../utils/ECS/ECS";
 import {
   apparentDirectionAngle,

@@ -6,7 +6,7 @@ import {
   GridNode,
   ObjectEntity,
   PlayerEntity,
-} from "../raymarcher";
+} from "../types";
 import { ECS } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 import { Vector2 } from "../utils/math";

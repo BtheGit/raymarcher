@@ -1,5 +1,5 @@
 import { GridManager } from "../GridManager/GridManager";
-import { BaseObjectEntity } from "../raymarcher";
+import { BaseObjectEntity } from "../types";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Vector2 } from "../utils/math";
 import { PI2 } from "../constants";

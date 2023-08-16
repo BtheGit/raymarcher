@@ -3,12 +3,7 @@
  */
 
 import { GRID_CACHE_LIMIT, TILE_SIZE } from "../constants";
-import {
-  GridCoord,
-  GridTileEntity,
-  ObjectEntity,
-  WADGrid,
-} from "../raymarcher";
+import { GridCoord, GridTileEntity, ObjectEntity, WADGrid } from "../types";
 import { ECS } from "../utils/ECS/ECS";
 import { shortestPathBFS } from "../utils/bfs";
 import { LRUCache } from "../utils/cache";

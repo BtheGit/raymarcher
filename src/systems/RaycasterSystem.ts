@@ -11,7 +11,7 @@ import {
   ObjectEntity,
   PlayerEntity,
   Ray,
-} from "../raymarcher";
+} from "../types";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 import { EventMessageName } from "../enums";

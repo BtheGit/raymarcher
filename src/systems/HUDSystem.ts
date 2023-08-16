@@ -13,7 +13,7 @@ import {
   GameSettingsEntity,
   PlayerActorCollisionEvent,
   PlayerEntity,
-} from "../raymarcher";
+} from "../types";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 import SingletonInputSystem from "./SingletonInputSystem";

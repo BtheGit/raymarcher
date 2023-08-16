@@ -1,4 +1,4 @@
-import { Entity } from "../raymarcher";
+import { Entity } from "../types";
 import { ECS, System } from "../utils/ECS/ECS";
 import { PI2 } from "../constants";
 

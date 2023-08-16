@@ -4,7 +4,7 @@
 
 import { GridManager } from "../GridManager/GridManager";
 import { EventMessageName, GameActorType } from "../enums";
-import { BaseObjectEntity, Entity } from "../raymarcher";
+import { BaseObjectEntity, Entity } from "../types";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 

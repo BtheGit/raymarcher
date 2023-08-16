@@ -9,7 +9,7 @@ import { GridManager } from "../GridManager/GridManager";
 
 // Oh. I take that back. The grid manager does not keep an actual grid of the map. So maybe we should keep a copy there for this. But also another remapped one as well for search graphs. Using a remapped grid would essentially make this algorithm independent of the grid manager which would only be responsible for generating a (cached) representation of accessible grid tiles. We can decouple that pretty easily later.
 
-import { GridCoord, GridNode } from "../raymarcher";
+import { GridCoord, GridNode } from "../types";
 
 const directions = [
   { x: -1, y: 0 },

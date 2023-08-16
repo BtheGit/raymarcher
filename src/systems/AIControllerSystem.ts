@@ -5,7 +5,7 @@ import {
   DogFriendlyEntity,
   ObjectEntity,
   PlayerEntity,
-} from "../raymarcher";
+} from "../types";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 import { AIDogFriendlySystem } from "./AIDogFriendlySystem";

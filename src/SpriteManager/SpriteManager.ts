@@ -3,7 +3,7 @@
 
 import { TextureBuffer } from "../TextureManager/TextureBuffer";
 import { TextureManager } from "../TextureManager/TextureManager";
-import { SpritesheetData, SpriteFrameData } from "../raymarcher";
+import { SpritesheetData, SpriteFrameData } from "../types";
 
 export interface SpriteData {
   frame: {

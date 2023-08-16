@@ -1,7 +1,7 @@
 // TODO: I should go back and define all these managers as singletons properly...
 
 import { EquipableWeapon } from "../enums";
-import { EquipableWeaponAssets } from "../raymarcher";
+import { EquipableWeaponAssets } from "../types";
 
 export class WeaponAssetManger {
   private static instance: WeaponAssetManger;

@@ -1,5 +1,5 @@
 import { TextureManager } from "../TextureManager/TextureManager";
-import { AnimatedObjectEntity } from "../raymarcher";
+import { AnimatedObjectEntity } from "../types";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 

@@ -1,6 +1,6 @@
 // This lets us share animations between entities, but also have a fallback for all entity states without one.
 
-import { AnimationDefinition } from "../raymarcher";
+import { AnimationDefinition } from "../types";
 
 export class AnimationManager {
   private animations = new Map<string, AnimationDefinition>();

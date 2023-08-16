@@ -3,7 +3,7 @@ import {
   EmitProjectileEvent,
   DestroyProjectileEvent,
   ProjectileEntity,
-} from "../raymarcher";
+} from "../types";
 import { CollisionLayer, EventMessageName, ProjectileState } from "../enums";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";

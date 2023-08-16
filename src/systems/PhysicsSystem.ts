@@ -1,10 +1,5 @@
 import { GridManager } from "../GridManager/GridManager";
-import {
-  Entity,
-  KineticEntity,
-  ObjectEntity,
-  PlayerEntity,
-} from "../raymarcher";
+import { Entity, KineticEntity, ObjectEntity, PlayerEntity } from "../types";
 import { CollisionLayer } from "../enums";
 
 import { ECS, System } from "../utils/ECS/ECS";

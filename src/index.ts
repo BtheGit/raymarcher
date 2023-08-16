@@ -32,7 +32,7 @@ import {
   WADObjectEntity,
   WAD,
   WADTextureAnimationSprite,
-} from "./raymarcher";
+} from "./types";
 import {
   CollisionLayer,
   EquipableWeapon,

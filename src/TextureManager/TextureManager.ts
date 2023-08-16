@@ -4,7 +4,7 @@ import {
   WADTextureAnimation,
   WADTextureAnimationFlatWarp,
   WADTextureAnimationSprite,
-} from "../raymarcher";
+} from "../types";
 import { TextureBuffer } from "./TextureBuffer";
 import { SpriteManager } from "../SpriteManager/SpriteManager";
 export class TextureManager {

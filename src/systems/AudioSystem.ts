@@ -4,11 +4,7 @@
 
 import { AudioManager } from "../AudioManager/AudioManager";
 import { EventMessageName } from "../enums";
-import {
-  PlayerEntity,
-  AudioSourceComponent,
-  ObjectEntity,
-} from "../raymarcher";
+import { PlayerEntity, AudioSourceComponent, ObjectEntity } from "../types";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
 
