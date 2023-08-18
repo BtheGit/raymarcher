@@ -554,7 +554,9 @@ export interface WADObjectEntity {
     initialElevation: number;
   };
   movementSettings?: MovementSettings;
-  collisionLayer?: number;
+  collisionLayer?: {
+    layer: CollisionLayer;
+  };
   ai?: any;
   audioSource?: AudioSourceComponent;
   playerInteractions?: PlayerInteractionsComponent;

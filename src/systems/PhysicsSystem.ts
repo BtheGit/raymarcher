@@ -176,6 +176,12 @@ export class PhysicsSystem implements System {
           ) {
             continue;
           }
+          if (
+            collisionLayer === CollisionLayer.PlayerProjectile &&
+            collidingCollisionLayer === CollisionLayer.PickupItem
+          ) {
+            continue;
+          }
 
           const collidingPosition = collidingEntity.transform.position!;
           const collidingCollider = collidingEntity.collider!;

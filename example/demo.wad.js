@@ -1489,6 +1489,9 @@ const map_1 = {
         height: 0.8,
         solid: false,
       },
+      collisionLayer: {
+        layer: "PickupItem",
+      },
     },
     {
       transform: {
@@ -1514,6 +1517,9 @@ const map_1 = {
         width: 0.15,
         height: 0.8,
         solid: false,
+      },
+      collisionLayer: {
+        layer: "PickupItem",
       },
     },
     {
@@ -1541,6 +1547,9 @@ const map_1 = {
         height: 0.8,
         solid: false,
       },
+      collisionLayer: {
+        layer: "PickupItem",
+      },
     },
     {
       transform: {
@@ -1567,6 +1576,9 @@ const map_1 = {
         height: 0.8,
         solid: false,
       },
+      collisionLayer: {
+        layer: "PickupItem",
+      },
     },
     {
       transform: {
@@ -1592,6 +1604,9 @@ const map_1 = {
         width: 0.15,
         height: 0.8,
         solid: false,
+      },
+      collisionLayer: {
+        layer: "PickupItem",
       },
     },
     {
@@ -2387,6 +2402,9 @@ const map_2 = {
         height: 0.8,
         solid: false,
       },
+      collisionLayer: {
+        layer: "PickupItem",
+      },
     },
     {
       transform: {
@@ -2429,6 +2447,9 @@ const map_2 = {
         width: 0.15,
         height: 0.8,
         solid: false,
+      },
+      collisionLayer: {
+        layer: "PickupItem",
       },
     },
     {

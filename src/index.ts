@@ -277,6 +277,7 @@ const loadLevel = async (
       states,
       initialState,
       collider,
+      collisionLayer,
       ai,
       movementSettings,
       actor,
@@ -312,6 +313,10 @@ const loadLevel = async (
     if (collider) {
       (objectEntity as ObjectEntity).collider = { ...collider };
       (objectEntity as ObjectEntity).collisions = [];
+    }
+
+    if (collisionLayer) {
+      (objectEntity as ObjectEntity).collisionLayer = { ...collisionLayer };
     }
 
     if (ai) {

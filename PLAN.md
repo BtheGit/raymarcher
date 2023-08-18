@@ -81,7 +81,7 @@ In the interests of making lists that never get completed, here are some potenti
 - [] Sound
   - [x] Sound effects on trigger
   - [] Ambient sound effects
-  - [] Sound modulated by distance with falloff
+  - [x] Sound modulated by distance with falloff
   - [] Music
 - [x] Another interaction type taht triggers text/dialogue
   - [] Characters can talk (ignore dialogue trees for now, just a canned response (or one from a random pool))
@@ -102,12 +102,12 @@ In the interests of making lists that never get completed, here are some potenti
 - [] Sound drop off more naturally
 - [] Move wad ingestion and setup out of main function for better clarity
 - [] Deepclone all wad stuff so we have fresh copy on level change. Not a mutated one.
-- [] Different weapons and switching between them
-- [] An interaction button for walls and sprites. So it's independent of weapon.
 - [x] Weapon bobbing (would be easier if I had a flag for moving)
 - [] Confirm option for messages (so I can trigger audio at level start)
 - [x] BUG Bird state changes suck. bobbing stops after fleeing. Needs to be readded.
 - [x] Grid based culling for game objects (so we don't have to render everything)
+- [] Different weapons and switching between them
+- [] An interaction button for walls and sprites. So it's independent of weapon.
 - [] Projectiles shouldn't intersect with pickups
 
 ### Immediate bug fixes

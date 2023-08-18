@@ -1,8 +1,9 @@
 export enum CollisionLayer {
-  None,
-  Player,
-  PlayerProjectile,
-  FriendlyNPC,
+  None = "None",
+  Player = "Player",
+  PlayerProjectile = "PlayerProjectile",
+  FriendlyNPC = "FriendlyNPC",
+  PickupItem = "PickupItem",
 }
 
 export enum EquipableWeapon {
