@@ -55,9 +55,20 @@ export enum EventMessageName {
   PlaySound = "PlaySound",
   InteractionDirective = "InteractionDirective",
   RaysUpdated = "RaysUpdated",
+  LoadLevel = "LoadLevel",
 }
 
 export enum InteractionDirectiveName {
   ShowMessage = "ShowMessage",
   PlayAudio = "PlayAudio",
+  LoadLevel = "LoadLevel",
+}
+
+export enum CustomEventType {
+  GameEvent = "GameEvent",
+}
+
+export enum GameEvent {
+  LoadLevel = "LoadLevel",
+  // TeleportPlayer = "TeleportPlayer",
 }

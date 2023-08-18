@@ -6,11 +6,18 @@
 import { GridManager } from "../GridManager/GridManager";
 import { SpriteManager } from "../SpriteManager/SpriteManager";
 import { TextureManager } from "../TextureManager/TextureManager";
-import { EventMessageName, InteractionDirectiveName } from "../enums";
+import {
+  CustomEventType,
+  EventMessageName,
+  GameEvent,
+  InteractionDirectiveName,
+} from "../enums";
 import {
   EventMessage,
   GameSettingsComponent,
   GameSettingsEntity,
+  InteractionDirective,
+  LoadLevelInteractionDirective,
   PlayerActorCollisionEvent,
   PlayerEntity,
 } from "../types";
@@ -114,7 +121,7 @@ export class HUDSystem implements System {
     // At first a generic effect made sense but in fact, I'd rather the emitter not know how the data will be used, and only focus on what happened.
     this.broker.subscribe(
       EventMessageName.PlayerActorCollision,
-      this.handleItemPickup
+      this.handlePlayerActorCollision
     );
 
     this.broker.subscribe(
@@ -127,7 +134,7 @@ export class HUDSystem implements System {
     this.handleInteractionDirective(e);
   };
 
-  handleInteractionDirective = (directive) => {
+  handleInteractionDirective = (directive: InteractionDirective) => {
     switch (directive.type) {
       case InteractionDirectiveName.ShowMessage: {
         this.queueTextMessage(directive.body, directive.priority);
@@ -139,10 +146,23 @@ export class HUDSystem implements System {
           // volume: directive.volume, // Not being used right now (Nor is priority with this mechanism that is just passing it on.)
         });
       }
+      case InteractionDirectiveName.LoadLevel: {
+        document.dispatchEvent(
+          new CustomEvent(CustomEventType.GameEvent, {
+            detail: {
+              type: GameEvent.LoadLevel,
+              // TODO: Support specifying data later.
+              data: {
+                level: (directive as LoadLevelInteractionDirective).level,
+              },
+            },
+          })
+        );
+      }
     }
   };
 
-  handleItemPickup = (event: PlayerActorCollisionEvent) => {
+  handlePlayerActorCollision = (event: PlayerActorCollisionEvent) => {
     if (!event.collidedWithEntity?.interactionDirectives?.length) {
       return;
     }

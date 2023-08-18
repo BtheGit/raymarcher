@@ -1655,11 +1655,21 @@ const map_1 = {
           animation: "magic_dust_portal",
         },
       ],
+      interactionDirectives: [
+        {
+          type: "LoadLevel",
+          priority: 5,
+          level: "map_2",
+        },
+      ],
       collider: {
         type: "aabb",
         width: 0.15,
         height: 0.8,
         solid: false,
+      },
+      collisionLayer: {
+        layer: "PickupItem",
       },
       audioSource: {
         name: "looping_groaning",
@@ -1695,6 +1705,9 @@ const map_1 = {
         width: 0.8,
         height: 0.8,
         solid: true,
+      },
+      collisionLayer: {
+        layer: "PickupItem",
       },
     },
     {
@@ -2357,11 +2370,21 @@ const map_2 = {
           animation: "magic_dust_portal",
         },
       ],
+      interactionDirectives: [
+        {
+          type: "LoadLevel",
+          priority: 5,
+          level: "map_1",
+        },
+      ],
       collider: {
         type: "aabb",
         width: 0.2,
         height: 0.8,
         solid: false,
+      },
+      collisionLayer: {
+        layer: "PickupItem",
       },
       audioSource: {
         name: "looping_groaning",

@@ -3,7 +3,12 @@
  */
 
 import { GridManager } from "../GridManager/GridManager";
-import { EventMessageName, GameActorType } from "../enums";
+import {
+  CustomEventType,
+  EventMessageName,
+  GameActorType,
+  GameEvent,
+} from "../enums";
 import { BaseObjectEntity, Entity } from "../types";
 import { ECS, System } from "../utils/ECS/ECS";
 import { Broker } from "../utils/events";
@@ -26,24 +31,7 @@ export class InteractionSystem implements System {
 
   handlePlayerActorCollision = (event) => {
     switch (event.actor) {
-      case GameActorType.Portal: {
-        // Prevent any more collisions before anything else.
-        this.ecs.entityManager.remove(event.collidedWithEntity);
-        // Emit level change action. (Hard coding this behavior for now.)
-        // TODO: add level specification.
-        // TODO: Generify portal to allow other actions? Or make a trigger instead and forget portal, it's just one trigger behavior?
-        document.dispatchEvent(
-          new CustomEvent("game_event", {
-            detail: {
-              type: "load_level",
-              // TODO: Support specifying data later.
-              // data: {
-              //   level: 'fsdfsdf'
-              // }
-            },
-          })
-        );
-      }
+      case GameActorType.Portal:
       case GameActorType.Book:
       case GameActorType.Coin: {
         this.gridManager.removeObjectEntityGridTracking(

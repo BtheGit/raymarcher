@@ -108,7 +108,9 @@ In the interests of making lists that never get completed, here are some potenti
 - [x] Grid based culling for game objects (so we don't have to render everything)
 - [] Different weapons and switching between them
 - [] An interaction button for walls and sprites. So it's independent of weapon.
-- [] Projectiles shouldn't intersect with pickups
+- [x] Projectiles shouldn't intersect with pickups
+- [] BUG Projectiles are still interacting with Actors, even with collision layer set to pickupitem.
+- [] Interaction Directives Should probably not go straight to the HUD... I dunno. But I guess that's where we land this version.
 
 ### Immediate bug fixes
 

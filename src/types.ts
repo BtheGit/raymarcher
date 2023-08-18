@@ -252,9 +252,16 @@ export interface PlayAudioInteractionDirective
   volume: number;
 }
 
+export interface LoadLevelInteractionDirective
+  extends BaseInteractionDirective {
+  type: InteractionDirectiveName.LoadLevel;
+  level: string;
+}
+
 export type InteractionDirective =
   | MessageInteractionDirective
-  | PlayAudioInteractionDirective;
+  | PlayAudioInteractionDirective
+  | LoadLevelInteractionDirective;
 
 export interface BaseAIComponent {
   aiType: string;

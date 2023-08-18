@@ -35,9 +35,11 @@ import {
 } from "./types";
 import {
   CollisionLayer,
+  CustomEventType,
   EquipableWeapon,
   EquipableWeaponState,
   EventMessageName,
+  GameEvent,
 } from "./enums";
 // TO Allay future confusion, event manager is not an event system. Ideally it shoudl be replaced with an event system though.
 import { AnimationSystem } from "./systems/AnimationSystem";
@@ -585,22 +587,26 @@ const main = async (wad: WAD, settings = DEFAULT_SETTINGS) => {
   const wadSettings = wad.wadSettings;
   let level = await loadLevel(wad, settings, wadSettings.firstMap);
 
-  document.addEventListener("game_event", async (e: Event) => {
+  const handleGameEvent = async (e: Event) => {
     const detail = (<CustomEvent>e).detail;
     const { type } = detail;
 
-    // Just for testing, choose a random level that's not the current one and switch
-    const levels = Object.keys(wad.maps);
-    const otherLevels = levels.filter((name) => name !== level.levelName);
-    const newLevel =
-      otherLevels[Math.floor(Math.random() * otherLevels.length)];
+    if (type === GameEvent.LoadLevel) {
+      // Just for testing, choose a random level that's not the current one and switch
+      const levels = Object.keys(wad.maps);
+      const otherLevels = levels.filter((name) => name !== level.levelName);
+      const newLevel =
+        otherLevels[Math.floor(Math.random() * otherLevels.length)];
 
-    // This is just for fun to try out an interlevel screen. Just black flash for now.
+      // This is just for fun to try out an interlevel screen. Just black flash for now.
 
-    level.unload();
+      level.unload();
 
-    level = await loadLevel(wad, settings, newLevel);
-  });
+      level = await loadLevel(wad, settings, newLevel);
+    }
+  };
+
+  document.addEventListener(CustomEventType.GameEvent, handleGameEvent);
 };
 
 export default main;
