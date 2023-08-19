@@ -142,8 +142,8 @@ export class AIBirdSkittishSystem {
   getFleeTarget = (entity: BirdSkittishEntity) => {
     const FLEE_DISTANCE = 5;
 
-    const maxAttempts = 10;
-    const maxSampleRadius = 7;
+    const maxAttempts = 20;
+    const maxSampleRadius = 10;
     const reverseDistance = 10; // Distance threshold to start moving in the opposite direction
 
     const fleeDirection = Vector2.normalize(
@@ -219,10 +219,11 @@ export class AIBirdSkittishSystem {
     );
 
     // TODO: Short term. If there are entity entity collisions. I really just want to reset the path and hope my system makes a new one. However, the bfs pathing doesn't take into account sprites. So really, the simplest thing to do is pick a new target and let that keep happening until we stop colliding. Not pretty, but the least amount of new processes until I figure out something better.
+    // Unfortunately, this isn't really working as once there is a wall collision, the entity is not being moved back and it's stuck flipping state while colliding with a wall or player. Need to change direction maybe, or at least reverse movement enough to not collide. Turns out, just skipping this may be the simplest. Will have sprites clip with each other, but... meh.
     if (entity.collisions?.length) {
       entity.collisions = [];
-      entity.ai.seekTarget.target = null;
-      entity.ai.seekPath.path = null;
+      // entity.ai.seekTarget.target = null;
+      // entity.ai.seekPath.path = null;
     }
 
     // TODO: If the state is idle, switch back to wander, I'm going to make that discrete change now with a check so that later we can consider onStart specifics.
