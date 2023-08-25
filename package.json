@@ -1,6 +1,6 @@
 {
   "name": "raymarcher",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A raymarching-based virtual world.",
   "files": [
     "dist"
@@ -18,7 +18,7 @@
     "dev": "vite",
     "watch": "vite build --watch",
     "build": "vite build",
-    "publish": "npm run build && mkdir demo && cp -r ./dist ./demo/dist && cp -r ./example ./demo/example",
+    "publish": "rm -rf demo && npm run build && mkdir demo && cp -r ./dist ./demo/dist && cp -r ./example ./demo/example",
     "dev:spritemap": "npx audiosprite --format howler2 --export mp3 --output example/audio/sprites/spritemap example/audio/sounds/*.*"
   },
   "repository": {
