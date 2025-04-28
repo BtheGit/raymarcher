@@ -1,18 +1,18 @@
-import audioSpritemap from "./audio/sprites/spritemap.json" assert { type: "json" };
-import SpriteScientist from "./images/sprites/scientist.json" assert { type: "json" };
-import SpriteTree_1 from "./images/sprites/tree_1.json" assert { type: "json" };
-import BananaMan from "./images/sprites/banana.json" assert { type: "json" };
-import BlueCrystal from "./images/sprites/blue_crystal.json" assert { type: "json" };
-import PurpleBall from "./images/sprites/purple_ball.json" assert { type: "json" };
-import MagicShot from "./images/sprites/magic_shot.json" assert { type: "json" };
-import GreenFlame from "./images/sprites/green_flame.json" assert { type: "json" };
-import KoopaTroopa from "./images/sprites/koopa_troopa.json" assert { type: "json" };
-import AnimatedWater1 from "./images/sprites/animated_water_1.json" assert { type: "json" };
-import MagicHands from "./images/sprites/magic_hands.json" assert { type: "json" };
-import MagicDust from "./images/sprites/magic_dust.json" assert { type: "json" };
-import Bat from "./images/sprites/bat_1.json" assert { type: "json" };
-import Pickups1 from "./images/sprites/pickups_1.json" assert { type: "json" };
-import MusicPlayers from "./images/sprites/music_players.json" assert { type: "json" };
+import audioSpritemap from "./audio/sprites/spritemap.json" with { type: "json" };
+import SpriteScientist from "./images/sprites/scientist.json" with { type: "json" };
+import SpriteTree_1 from "./images/sprites/tree_1.json" with { type: "json" };
+import BananaMan from "./images/sprites/banana.json" with { type: "json" };
+import BlueCrystal from "./images/sprites/blue_crystal.json" with { type: "json" };
+import PurpleBall from "./images/sprites/purple_ball.json" with { type: "json" };
+import MagicShot from "./images/sprites/magic_shot.json" with { type: "json" };
+import GreenFlame from "./images/sprites/green_flame.json" with { type: "json" };
+import KoopaTroopa from "./images/sprites/koopa_troopa.json" with { type: "json" };
+import AnimatedWater1 from "./images/sprites/animated_water_1.json" with { type: "json" };
+import MagicHands from "./images/sprites/magic_hands.json" with { type: "json" };
+import MagicDust from "./images/sprites/magic_dust.json" with { type: "json" };
+import Bat from "./images/sprites/bat_1.json" with { type: "json" };
+import Pickups1 from "./images/sprites/pickups_1.json" with { type: "json" };
+import MusicPlayers from "./images/sprites/music_players.json" with { type: "json" };
 
 // We can explore preprocessing these files so the full gridCell objects don't have to be built, instead a function perhaps.
 
